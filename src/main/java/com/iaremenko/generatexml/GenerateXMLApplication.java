@@ -28,7 +28,7 @@ public class GenerateXMLApplication {
         makeFolder();
         service.convertObjectToXML(readTargetData());
         toZip.createZip();
-        //senderService.sendFile(TestData.reportFolderZipName);
+        senderService.sendFile(TestData.reportFolderZipName);
     }
 
     private void makeFolder() {
