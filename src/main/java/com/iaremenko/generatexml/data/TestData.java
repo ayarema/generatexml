@@ -7,5 +7,5 @@ public interface TestData {
     String fileName = "ReportGenerated.xml";
     String filePath = "target/surefire-reports/example.users.Users.json";
     String reportFolder = "out/reports/";
-    String reportFolderZipName = "zipReportPortalGenerated.zip";
+    String reportFolderZipName = "zipReportGenerated.zip";
 }
