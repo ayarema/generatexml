@@ -44,6 +44,7 @@ public class GenerateXMLApplication {
     @Nullable
     private ReportDocumentDto readTargetData() {
         LOGGER.info("Method readTargetData invoked");
+
         try (Reader reader = new FileReader(TestData.filePath)) {
             String jsonString = IOUtils.toString(reader);
             String newJsonString = jsonString.substring(1, jsonString.length()-1);
