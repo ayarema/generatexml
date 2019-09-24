@@ -1,5 +1,6 @@
 package com.iaremenko.generatexml.service;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -13,9 +14,15 @@ import java.util.Properties;
  * and sent to this server needed files
  */
 public class SenderService {
-    private static final Logger LOGGER = LogManager.getLogger(SenderService.class);
+
+    private static final Logger LOGGER = LogManager.getLogger(SenderService.class.getName());
+
     private Properties appProps = new Properties();
     private Process process;
+
+    public SenderService() {
+        LOGGER.log(Level.INFO, "Start to call sender functionality");
+    }
 
     public void sendFile(String fileName) {
         try {

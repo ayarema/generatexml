@@ -7,6 +7,6 @@ public class GenerateXMLTest {
 
     @Test
     public void generateXmlTest() {
-        application.generateXML();
+        application.generateXML().sendXML();
     }
 }
