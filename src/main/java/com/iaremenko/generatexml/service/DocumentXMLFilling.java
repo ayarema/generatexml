@@ -1,6 +1,6 @@
 package com.iaremenko.generatexml.service;
 
-import com.iaremenko.generatexml.data.TestData;
+import com.iaremenko.generatexml.data.DefaultData;
 import com.iaremenko.generatexml.dto.ReportDocumentDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
@@ -17,10 +16,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
 import java.io.File;
 import java.io.IOException;
 
@@ -30,7 +25,11 @@ import java.io.IOException;
 public class DocumentXMLFilling extends XMLServiceExtended {
 
     private static final Logger LOGGER = LogManager.getLogger(DocumentXMLFilling.class);
-    private String filePath = TestData.reportFolder.concat(TestData.fileName);
+    private String filePath = DefaultData.reportFolder.concat(DefaultData.fileName);
+
+    public DocumentXMLFilling() {
+
+    }
 
     @Override
     public DocumentXMLFilling convertObjectToXML(ReportDocumentDto reportDocument) {
@@ -42,9 +41,9 @@ public class DocumentXMLFilling extends XMLServiceExtended {
 
             m.marshal(reportDocument, System.out);
 
-            m.marshal(reportDocument, new File(TestData.reportFolder.concat(TestData.fileName)));
+            m.marshal(reportDocument, new File(DefaultData.reportFolder.concat(DefaultData.fileName)));
             addNodesToXMLDocument(reportDocument);
-            LOGGER.info("File ".concat(TestData.fileName).concat(" was created"));
+            LOGGER.info("File ".concat(DefaultData.fileName).concat(" was created"));
             return this;
         } catch (JAXBException e) {
             LOGGER.error(e.getMessage());

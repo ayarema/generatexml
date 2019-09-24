@@ -1,7 +1,7 @@
 package com.iaremenko.generatexml;
 
 import com.iaremenko.generatexml.configuration.Configuration;
-import com.iaremenko.generatexml.data.TestData;
+import com.iaremenko.generatexml.data.DefaultData;
 import com.iaremenko.generatexml.dto.ReportDocumentDto;
 import com.iaremenko.generatexml.service.DocProcessingXML;
 import com.iaremenko.generatexml.service.SenderService;
@@ -18,6 +18,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class GenerateXMLApplication {
 
@@ -48,9 +52,10 @@ public class GenerateXMLApplication {
         try {
             if (configuration != null) {
                 //create new folder where new XML report will create
-                createReportFolder(configuration.getReportFolder());
+                createReportFolder();
 
                 //convert JSON file in XML
+                parserJSONToXML.parseJSON(getJsonFilesFromReportDir(configuration.getReportFolder()));
                 service.convertObjectToXML(readTargetData());
 
                 //create ZIP file from XML which created from previews step
@@ -71,9 +76,31 @@ public class GenerateXMLApplication {
         }
     }
 
+    private List<String> getJsonFilesFromReportDir(File reportFolder) {
+
+        List<String> extensions = Collections.singletonList(DefaultData.defaultFileExtensions);
+
+        List<String> out = new ArrayList<>();
+        File[] files = reportFolder.listFiles();
+
+        //might be null
+        if(files == null) {
+            LOGGER.log(Level.INFO, "Report folder ".concat(reportFolder.getName()).concat(" aren't contain any files!"));
+            return out;
+        }
+
+        for (File file : files) {
+            if(file.isFile() && extensions.contains(file.getName().substring(file.getName().lastIndexOf('.') + 1))) {
+                out.add(file.getName());
+            }
+        }
+
+        return out;
+    }
+
     public void sendXML() {
         try {
-            senderService.sendFile(TestData.reportFolderZipName);
+            senderService.sendFile(DefaultData.reportFolderZipName);
         } catch (Exception e) {
             generateErrorReport(e);
         }
@@ -86,10 +113,10 @@ public class GenerateXMLApplication {
     private void createReportFolder() {
         LOGGER.log(Level.INFO, "Try to create new folder in project directory by default parameters");
 
-        File newFolder = new File(TestData.reportFolder);
+        File newFolder = new File(DefaultData.reportFolder);
         if (!newFolder.exists()) {
             if (newFolder.mkdirs()) {
-                LOGGER.log(Level.INFO, "Direction ".concat(TestData.reportFolder).concat(" was created"));
+                LOGGER.log(Level.INFO, "Direction ".concat(DefaultData.reportFolder).concat(" was created"));
             }
         }
     }
@@ -106,9 +133,9 @@ public class GenerateXMLApplication {
 
     @Nullable
     private ReportDocumentDto readTargetData() {
-        LOGGER.info("Method readTargetData invoked");
+        LOGGER.log(Level.INFO, "Method readTargetData invoked");
 
-        try (Reader reader = new FileReader(TestData.filePath)) {
+        try (Reader reader = new FileReader(DefaultData.reportDirPath)) {
             String jsonString = IOUtils.toString(reader);
             String newJsonString = jsonString.substring(1, jsonString.length()-1);
             return processing.createObjectFromDoc(newJsonString);

@@ -14,7 +14,7 @@ public class Configuration {
     private List<String> filesToConvert;
 
     public Configuration(File reportFolder) {
-        LOGGER.log(Level.INFO, "Create configuration for application");
+        LOGGER.log(Level.INFO, "Create configuration for application with defined report folder");
         this.reportFolder = reportFolder;
     }
 

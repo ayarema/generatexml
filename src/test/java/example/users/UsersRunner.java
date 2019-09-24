@@ -14,6 +14,6 @@ public class UsersRunner {
 
     @Test
     public void testParallelUser() {
-        Results results = Runner.parallel(getClass(), 3);
+        Results results = Runner.parallel(getClass(), 1);
     }
 }
