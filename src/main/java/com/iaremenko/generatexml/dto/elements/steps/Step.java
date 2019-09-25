@@ -1,9 +1,9 @@
 package com.iaremenko.generatexml.dto.elements.steps;
 
 import com.google.gson.annotations.SerializedName;
-import com.iaremenko.generatexml.dto.elements.steps.docstrings.DocStringDto;
-import com.iaremenko.generatexml.dto.elements.steps.matches.MatchDto;
-import com.iaremenko.generatexml.dto.elements.steps.results.ResultDto;
+import com.iaremenko.generatexml.dto.elements.steps.docstrings.DocString;
+import com.iaremenko.generatexml.dto.elements.steps.matches.Match;
+import com.iaremenko.generatexml.dto.elements.steps.results.Result;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -18,16 +18,16 @@ import javax.xml.bind.annotation.XmlType;
         "line",
         "docString"
 })
-public class StepDto {
+public class Step {
 
     @SerializedName("name")
     private String name;
 
     @SerializedName("result")
-    private ResultDto result;
+    private Result result;
 
     @SerializedName("match")
-    private MatchDto match;
+    private Match match;
 
     @SerializedName("keyword")
     private String keyword;
@@ -36,7 +36,7 @@ public class StepDto {
     private Integer line;
 
     @SerializedName("doc_string")
-    private DocStringDto docString;
+    private DocString docString;
 
     @XmlElement(name = "name")
     public String getName() {
@@ -48,20 +48,20 @@ public class StepDto {
     }
 
     @XmlElement(name = "result")
-    private ResultDto getResult() {
+    private Result getResult() {
         return result;
     }
 
-    public void setResult(ResultDto result) {
+    public void setResult(Result result) {
         this.result = result;
     }
 
     @XmlElement(name = "match")
-    private MatchDto getMatch() {
+    private Match getMatch() {
         return match;
     }
 
-    public void setMatch(MatchDto match) {
+    public void setMatch(Match match) {
         this.match = match;
     }
 
@@ -84,11 +84,11 @@ public class StepDto {
     }
 
     @XmlElement(name = "doc_string")
-    private DocStringDto getDocString() {
+    private DocString getDocString() {
         return docString;
     }
 
-    public void setDocString(DocStringDto docString) {
+    public void setDocString(DocString docString) {
         this.docString = docString;
     }
 }

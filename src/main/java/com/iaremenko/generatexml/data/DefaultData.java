@@ -7,6 +7,6 @@ public interface DefaultData {
     String defaultFileExtensions = "json";
     String fileName = "ReportGenerated.xml";
     String reportDirPath = "target/surefire-reports/";
-    String reportFolder = "out/reports/";
+    String reportResultsFolder = "out/reports/";
     String reportFolderZipName = "zipReportGenerated.zip";
 }

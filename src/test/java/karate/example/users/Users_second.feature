@@ -1,6 +1,5 @@
 @users
-Feature: sample karate test script
-  for help, see: https://github.com/intuit/karate/wiki/IDE-Support
+Feature: second test script for demo
 
   Background:
     * url 'https://jsonplaceholder.typicode.com'

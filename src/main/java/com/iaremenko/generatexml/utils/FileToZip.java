@@ -15,12 +15,16 @@ import java.util.zip.ZipOutputStream;
  */
 public class FileToZip {
 
-    private static final Logger LOGGER = LogManager.getLogger(FileToZip.class);
+    private static final Logger LOGGER = LogManager.getLogger(FileToZip.class.getName());
+
+    public FileToZip() {
+
+    }
 
     public void createZip() {
         try {
             LOGGER.info("Start to create new ZIP archive in project root directory");
-            String sourceFile = DefaultData.reportFolder.concat(DefaultData.fileName);
+            String sourceFile = DefaultData.reportResultsFolder.concat(DefaultData.fileName);
             FileOutputStream fos = new FileOutputStream(DefaultData.reportFolderZipName);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
             File fileToZip = new File(sourceFile);
@@ -37,11 +41,11 @@ public class FileToZip {
     private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) {
         try {
             if (fileToZip.isHidden()) {
-                LOGGER.error("File which located in ".concat(DefaultData.reportFolder.concat(DefaultData.fileName)).concat(" is hidden"));
+                LOGGER.error("File which located in ".concat(DefaultData.reportResultsFolder.concat(DefaultData.fileName)).concat(" is hidden"));
                 return;
             }
             if (fileToZip.isDirectory()) {
-                LOGGER.info("File which located in ".concat(DefaultData.reportFolder.concat(DefaultData.fileName)).concat(" is direction"));
+                LOGGER.info("File which located in ".concat(DefaultData.reportResultsFolder.concat(DefaultData.fileName)).concat(" is direction"));
                 if (fileName.endsWith("/")) {
                     zipOut.putNextEntry(new ZipEntry(fileName));
                     zipOut.closeEntry();

@@ -1,7 +1,7 @@
 package com.iaremenko.generatexml.service;
 
 import com.iaremenko.generatexml.data.DefaultData;
-import com.iaremenko.generatexml.dto.ReportDocumentDto;
+import com.iaremenko.generatexml.dto.ReportDocument;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -25,23 +25,23 @@ import java.io.IOException;
 public class DocumentXMLFilling extends XMLServiceExtended {
 
     private static final Logger LOGGER = LogManager.getLogger(DocumentXMLFilling.class);
-    private String filePath = DefaultData.reportFolder.concat(DefaultData.fileName);
+    private String filePath = DefaultData.reportResultsFolder.concat(DefaultData.fileName);
 
     public DocumentXMLFilling() {
 
     }
 
     @Override
-    public DocumentXMLFilling convertObjectToXML(ReportDocumentDto reportDocument) {
+    public DocumentXMLFilling convertObjectToXML(ReportDocument reportDocument) {
         try {
-            LOGGER.info("Start to create XML file from Java Object ".concat(ReportDocumentDto.class.getName()));
-            JAXBContext context = JAXBContext.newInstance(ReportDocumentDto.class);
+            LOGGER.info("Start to create XML file from Java Object ".concat(ReportDocument.class.getName()));
+            JAXBContext context = JAXBContext.newInstance(ReportDocument.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
             m.marshal(reportDocument, System.out);
 
-            m.marshal(reportDocument, new File(DefaultData.reportFolder.concat(DefaultData.fileName)));
+            m.marshal(reportDocument, new File(DefaultData.reportResultsFolder.concat(DefaultData.fileName)));
             addNodesToXMLDocument(reportDocument);
             LOGGER.info("File ".concat(DefaultData.fileName).concat(" was created"));
             return this;
@@ -51,7 +51,7 @@ public class DocumentXMLFilling extends XMLServiceExtended {
         }
     }
 
-    private void addNodesToXMLDocument(ReportDocumentDto reportDocument) {
+    private void addNodesToXMLDocument(ReportDocument reportDocument) {
         File xmlFile = new File(filePath);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
@@ -71,7 +71,7 @@ public class DocumentXMLFilling extends XMLServiceExtended {
         }
     }
 
-    private void addElement(@NotNull Document existDoc, Document doc, ReportDocumentDto reportDocument) {
+    private void addElement(@NotNull Document existDoc, Document doc, ReportDocument reportDocument) {
         LOGGER.debug("Method addElement invoked");
         Element rootElement = doc.createElement("testsuite");
         rootElement.setAttribute("failures", "0");

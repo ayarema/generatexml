@@ -1,4 +1,4 @@
-package example.users;
+package karate.example.users;
 
 import com.intuit.karate.KarateOptions;
 import com.intuit.karate.Results;

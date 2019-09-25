@@ -22,6 +22,8 @@
         <jaxb.api.version>2.3.1</jaxb.api.version>
         <javax.version>1.1.1</javax.version>
         <jaxb.runtime.version>2.3.2</jaxb.runtime.version>
+        <fasterxml.version>2.9.10</fasterxml.version>
+        <apache.common.version>3.9</apache.common.version>
         <log4j.version>2.10.0</log4j.version>
         <tika.version>1.22</tika.version>
         <jetbrains.annotaion.version>17.0.0</jetbrains.annotaion.version>
@@ -90,6 +92,18 @@
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>${jaxb.runtime.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${fasterxml.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache.common.version}</version>
         </dependency>
 
         <dependency>
@@ -195,7 +209,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.iaremenko.generatexml.GenerateXMLApplication</mainClass>
+                            <mainClass>com.iaremenko.generatexml.GenerateXMLReport</mainClass>
                             <classpathPrefix>generatexml-jars/</classpathPrefix>
                         </manifest>
                     </archive>

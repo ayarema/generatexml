@@ -1,7 +1,7 @@
 package com.iaremenko.generatexml.dto.elements;
 
 import com.google.gson.annotations.SerializedName;
-import com.iaremenko.generatexml.dto.elements.steps.StepDto;
+import com.iaremenko.generatexml.dto.elements.steps.Step;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -19,7 +19,7 @@ import java.util.List;
         "keyword",
         "steps"
 })
-public class ElementDto {
+public class Element {
 
     @SerializedName("line")
     private Integer line;
@@ -42,7 +42,7 @@ public class ElementDto {
     @XmlElementWrapper(name = "steps")
     @XmlElement(name = "step")
     @SerializedName("steps")
-    private List<StepDto> steps = null;
+    private List<Step> steps = null;
 
     @XmlElement(name = "line")
     private Integer getLine() {
@@ -89,11 +89,11 @@ public class ElementDto {
         this.keyword = keyword;
     }
 
-    private List<StepDto> getSteps() {
+    private List<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(List<StepDto> steps) {
+    public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
 

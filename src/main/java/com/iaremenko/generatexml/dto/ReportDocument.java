@@ -1,8 +1,8 @@
 package com.iaremenko.generatexml.dto;
 
 import com.google.gson.annotations.SerializedName;
-import com.iaremenko.generatexml.dto.elements.ElementDto;
-import com.iaremenko.generatexml.dto.tags.TagDto;
+import com.iaremenko.generatexml.dto.elements.Element;
+import com.iaremenko.generatexml.dto.tags.Tag;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -25,7 +25,7 @@ import java.util.List;
         "uri",
         "tags"
 })
-public class ReportDocumentDto {
+public class ReportDocument {
 
     @SerializedName("line")
     private Integer line;
@@ -33,7 +33,7 @@ public class ReportDocumentDto {
     @XmlElementWrapper(name = "elements")
     @XmlElement(name = "element")
     @SerializedName("elements")
-    private List<ElementDto> elements = null;
+    private List<Element> elements = null;
 
     @SerializedName("name")
     private String name;
@@ -51,7 +51,7 @@ public class ReportDocumentDto {
     private String uri;
 
     @SerializedName("tags")
-    private List<TagDto> tags = null;
+    private List<Tag> tags = null;
 
     @XmlElement(name = "line")
     private Integer getLine() {
@@ -62,11 +62,11 @@ public class ReportDocumentDto {
         this.line = line;
     }
 
-    private List<ElementDto> getElements() {
+    private List<Element> getElements() {
         return elements;
     }
 
-    public void setElements(List<ElementDto> elements) {
+    public void setElements(List<Element> elements) {
         this.elements = elements;
     }
 
@@ -116,11 +116,11 @@ public class ReportDocumentDto {
     }
 
     @XmlElement(name = "tags")
-    private List<TagDto> getTags() {
+    private List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<TagDto> tags) {
+    public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 }

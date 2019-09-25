@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "doc_string")
-public class DocStringDto {
+public class DocString {
 
     @SerializedName("content_type")
     @Expose

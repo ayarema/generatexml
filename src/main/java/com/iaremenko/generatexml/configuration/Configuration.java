@@ -5,13 +5,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Configuration {
 
     private static final Logger LOGGER = LogManager.getLogger(Configuration.class.getName());
     private File reportFolder;
-    private List<String> filesToConvert;
+    private Collection<String> jsonFiles;
+    private Collection<ConfigurationMode> configurationMode = new ArrayList<>();
 
     public Configuration(File reportFolder) {
         LOGGER.log(Level.INFO, "Create configuration for application with defined report folder");
@@ -20,10 +22,10 @@ public class Configuration {
 
     /**
      * Method which added JSON files to new list
-     * @param filesToConvert the list which stored all JSON files which after should be converted to XML
+     * @param jsonFiles the list which stored all JSON files which after should be converted to XML
      */
-    public void addFilesToConvert(List<String> filesToConvert) {
-        this.filesToConvert = filesToConvert;
+    public void addJsonFiles(Collection<String> jsonFiles) {
+        this.jsonFiles = jsonFiles;
     }
 
     /**
@@ -36,7 +38,24 @@ public class Configuration {
     /**
      * @return the list of files which should be converted from JSON to XML
      */
-    public List<String> getFilesToConvert() {
-        return filesToConvert;
+    public Collection<String> getJsonFiles() {
+        return jsonFiles;
+    }
+
+    /**
+     * Describe functionality where user wants to include zipping functionality
+     * @param configurationMode parameter that include specific functionality
+     */
+    public void addConfigurationMode(ConfigurationMode configurationMode) {
+        this.configurationMode.add(configurationMode);
+    }
+
+    /**
+     * Describe method which check that needed parameter exist or added before for specific functionality
+     * @param configurationMode parameter which should be checked
+     * @return boolean value if passed parameter exist in configuration mode
+     */
+    public boolean containsConfigurationMode(ConfigurationMode configurationMode) {
+        return this.configurationMode.contains(configurationMode);
     }
 }

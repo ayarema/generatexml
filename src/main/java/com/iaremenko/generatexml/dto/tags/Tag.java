@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "tags")
-public class TagDto {
+public class Tag {
 
     @SerializedName("name")
     private String name;

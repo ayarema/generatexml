@@ -1,22 +1,24 @@
-import com.iaremenko.generatexml.GenerateXMLApplication;
+import com.iaremenko.generatexml.GenerateXMLReport;
 import com.iaremenko.generatexml.configuration.Configuration;
+import com.iaremenko.generatexml.configuration.ConfigurationMode;
 import org.junit.Test;
 
 import java.io.File;
 
 public class GenerateXMLTest {
 
-    private GenerateXMLApplication application = new GenerateXMLApplication();
-
     @Test
     public void generateXmlTest() {
-        application.generateXML().sendXML();
+        GenerateXMLReport application = new GenerateXMLReport();
+        application.generateXMLreport().sendXML();
     }
 
     @Test
     public void generateXmlTestWithConf() {
         Configuration conf = new Configuration(new File("target/surefire-reports/"));
-        GenerateXMLApplication appWithConf = new GenerateXMLApplication(conf);
-        appWithConf.generateXML().sendXML();
+        conf.addConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_FILE);
+        conf.addConfigurationMode(ConfigurationMode.SEND_RESULT_TO_REPORT_PORTAL);
+        GenerateXMLReport appWithConf = new GenerateXMLReport(conf);
+        appWithConf.generateXMLreport().sendXML();
     }
 }

@@ -1,13 +1,13 @@
 package com.iaremenko.generatexml.service;
 
 import com.google.gson.stream.JsonReader;
-import com.iaremenko.generatexml.dto.ReportDocumentDto;
-import com.iaremenko.generatexml.dto.elements.ElementDto;
-import com.iaremenko.generatexml.dto.elements.steps.StepDto;
-import com.iaremenko.generatexml.dto.elements.steps.docstrings.DocStringDto;
-import com.iaremenko.generatexml.dto.elements.steps.matches.MatchDto;
-import com.iaremenko.generatexml.dto.elements.steps.results.ResultDto;
-import com.iaremenko.generatexml.dto.tags.TagDto;
+import com.iaremenko.generatexml.dto.ReportDocument;
+import com.iaremenko.generatexml.dto.elements.Element;
+import com.iaremenko.generatexml.dto.elements.steps.Step;
+import com.iaremenko.generatexml.dto.elements.steps.docstrings.DocString;
+import com.iaremenko.generatexml.dto.elements.steps.matches.Match;
+import com.iaremenko.generatexml.dto.elements.steps.results.Result;
+import com.iaremenko.generatexml.dto.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -23,12 +23,16 @@ public class DocProcessingXML {
 
     private static final Logger LOGGER = LogManager.getLogger(DocProcessingXML.class);
 
-    private ReportDocumentDto documentDto = new ReportDocumentDto();
-    private List<TagDto> tagDtos = new ArrayList<>();
-    private List<ElementDto> elementDtos = new ArrayList<>();
-    private List<StepDto> stepDtos = new ArrayList<>();
+    private ReportDocument documentDto = new ReportDocument();
+    private List<Tag> tags = new ArrayList<>();
+    private List<Element> elements = new ArrayList<>();
+    private List<Step> steps = new ArrayList<>();
 
-    public ReportDocumentDto createObjectFromDoc(String substring) {
+    public DocProcessingXML() {
+
+    }
+
+    public ReportDocument deserializeReportDocumentToObject(String substring) {
         try {
             LOGGER.info("Method createObjectFromDoc invoked");
             JsonReader reader = new JsonReader(new StringReader(substring));
@@ -73,32 +77,32 @@ public class DocProcessingXML {
         }
     }
 
-    private List<TagDto> deserializeTags(@NotNull JsonReader reader) {
+    private List<Tag> deserializeTags(@NotNull JsonReader reader) {
         try {
             LOGGER.debug("Method deserializeTags invoked");
             reader.beginArray();
             while (reader.hasNext()) {
                 reader.beginObject();
-                TagDto tagDto = new TagDto();
+                Tag tag = new Tag();
                 while (reader.hasNext()) {
                     String tagName = reader.nextName();
                     switch (tagName) {
                         case "name":
-                            tagDto.setName(reader.nextString());
+                            tag.setName(reader.nextString());
                             break;
                         case "line":
-                            tagDto.setLine(reader.nextInt());
+                            tag.setLine(reader.nextInt());
                             break;
                         default:
                             reader.skipValue();
                             break;
                     }
                 }
-                tagDtos.add(tagDto);
+                tags.add(tag);
                 reader.endObject();
             }
             reader.endArray();
-            return tagDtos;
+            return tags;
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return Collections.emptyList();
@@ -107,44 +111,44 @@ public class DocProcessingXML {
         }
     }
 
-    private List<ElementDto> deserializeElements(@NotNull JsonReader reader) {
+    private List<Element> deserializeElements(@NotNull JsonReader reader) {
         try {
             LOGGER.debug("Method deserializeElements invoked");
             reader.beginArray();
             while (reader.hasNext()) {
                 reader.beginObject();
-                ElementDto elementDto = new ElementDto();
+                Element element = new Element();
                 while (reader.hasNext()) {
                     String elementName = reader.nextName();
                     switch (elementName) {
                         case "name":
-                            elementDto.setName(reader.nextString());
+                            element.setName(reader.nextString());
                             break;
                         case "description":
-                            elementDto.setDescription(reader.nextString());
+                            element.setDescription(reader.nextString());
                             break;
                         case "type":
-                            elementDto.setType(reader.nextString());
+                            element.setType(reader.nextString());
                             break;
                         case "keyword":
-                            elementDto.setKeyword(reader.nextString());
+                            element.setKeyword(reader.nextString());
                             break;
                         case "id":
-                            elementDto.setId(reader.nextString());
+                            element.setId(reader.nextString());
                             break;
                         case "steps":
-                            elementDto.setSteps(deserializeSteps(reader));
+                            element.setSteps(deserializeSteps(reader));
                             break;
                         default:
                             reader.skipValue();
                             break;
                     }
                 }
-                elementDtos.add(elementDto);
+                elements.add(element);
                 reader.endObject();
             }
             reader.endArray();
-            return elementDtos;
+            return elements;
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return Collections.emptyList();
@@ -153,44 +157,44 @@ public class DocProcessingXML {
         }
     }
 
-    private List<StepDto> deserializeSteps(@NotNull JsonReader reader) {
+    private List<Step> deserializeSteps(@NotNull JsonReader reader) {
         try {
             LOGGER.debug("Method deserializeSteps invoked");
             reader.beginArray();
             while (reader.hasNext()) {
                 reader.beginObject();
-                StepDto stepDto = new StepDto();
+                Step step = new Step();
                 while (reader.hasNext()) {
                     String stepName = reader.nextName();
                     switch (stepName) {
                         case "name":
-                            stepDto.setName(reader.nextString());
+                            step.setName(reader.nextString());
                             break;
                         case "result":
-                            stepDto.setResult(deserializeResults(reader));
+                            step.setResult(deserializeResults(reader));
                             break;
                         case "match":
-                            stepDto.setMatch(deserializeMatch(reader));
+                            step.setMatch(deserializeMatch(reader));
                             break;
                         case "keyword":
-                            stepDto.setKeyword(reader.nextString());
+                            step.setKeyword(reader.nextString());
                             break;
                         case "line":
-                            stepDto.setLine(reader.nextInt());
+                            step.setLine(reader.nextInt());
                             break;
                         case "doc_string":
-                            stepDto.setDocString(deserializeDocString(reader));
+                            step.setDocString(deserializeDocString(reader));
                             break;
                         default:
                             reader.skipValue();
                             break;
                     }
                 }
-                stepDtos.add(stepDto);
+                steps.add(step);
                 reader.endObject();
             }
             reader.endArray();
-            return stepDtos;
+            return steps;
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return Collections.emptyList();
@@ -200,19 +204,19 @@ public class DocProcessingXML {
     }
 
     @Nullable
-    private ResultDto deserializeResults(@NotNull JsonReader reader) {
+    private Result deserializeResults(@NotNull JsonReader reader) {
         try {
             LOGGER.debug("Method deserializeResults invoked");
             reader.beginObject();
-            ResultDto resultDto = new ResultDto();
+            Result result = new Result();
             while (reader.hasNext()) {
                 String resultName = reader.nextName();
                 switch (resultName) {
                     case "duration":
-                        resultDto.setDuration(reader.nextLong());
+                        result.setDuration(reader.nextLong());
                         break;
                     case "status":
-                        resultDto.setStatus(reader.nextString());
+                        result.setStatus(reader.nextString());
                         break;
                     default:
                         reader.skipValue();
@@ -220,7 +224,7 @@ public class DocProcessingXML {
                 }
             }
             reader.endObject();
-            return resultDto;
+            return result;
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return null;
@@ -230,16 +234,16 @@ public class DocProcessingXML {
     }
 
     @Nullable
-    private MatchDto deserializeMatch(@NotNull JsonReader reader) {
+    private Match deserializeMatch(@NotNull JsonReader reader) {
         try {
             LOGGER.debug("Method deserializeMatch invoked");
             reader.beginObject();
-            MatchDto matchDto = new MatchDto();
+            Match match = new Match();
             while (reader.hasNext()) {
                 String matchName = reader.nextName();
                 switch (matchName) {
                     case "location":
-                        matchDto.setLocation(reader.nextString());
+                        match.setLocation(reader.nextString());
                         break;
                     case "arguments":
                         reader.beginArray();
@@ -249,10 +253,10 @@ public class DocProcessingXML {
                         reader.skipValue();
                         break;
                 }
-                matchDto.setArguments(Collections.emptyList());
+                match.setArguments(Collections.emptyList());
             }
             reader.endObject();
-            return matchDto;
+            return match;
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return null;
@@ -262,22 +266,22 @@ public class DocProcessingXML {
     }
 
     @Nullable
-    private DocStringDto deserializeDocString(@NotNull JsonReader reader) {
+    private DocString deserializeDocString(@NotNull JsonReader reader) {
         try {
             LOGGER.debug("Method deserializeDocString invoked");
             reader.beginObject();
-            DocStringDto docStringDto = new DocStringDto();
+            DocString docString = new DocString();
             while (reader.hasNext()) {
                 String docName = reader.nextName();
                 switch (docName) {
                     case "content_type":
-                        docStringDto.setContentType(reader.nextString());
+                        docString.setContentType(reader.nextString());
                         break;
                     case "value":
-                        docStringDto.setValue(reader.nextString().replace("\n", " "));
+                        docString.setValue(reader.nextString().replace("\n", " "));
                         break;
                     case "line":
-                        docStringDto.setLine(reader.nextInt());
+                        docString.setLine(reader.nextInt());
                         break;
                     default:
                         reader.skipValue();
@@ -285,7 +289,7 @@ public class DocProcessingXML {
                 }
             }
             reader.endObject();
-            return docStringDto;
+            return docString;
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return null;

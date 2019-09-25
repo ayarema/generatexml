@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "result")
-public class ResultDto {
+public class Result {
 
     @SerializedName("duration")
     @Expose

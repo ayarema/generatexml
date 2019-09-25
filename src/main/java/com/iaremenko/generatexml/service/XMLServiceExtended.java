@@ -1,6 +1,6 @@
 package com.iaremenko.generatexml.service;
 
-import com.iaremenko.generatexml.dto.ReportDocumentDto;
+import com.iaremenko.generatexml.dto.ReportDocument;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -15,7 +15,7 @@ import java.io.File;
 
 abstract class XMLServiceExtended implements XMLService {
 
-    private static final Logger LOGGER = LogManager.getLogger(XMLServiceExtended.class);
+    private static final Logger LOGGER = LogManager.getLogger(XMLServiceExtended.class.getName());
 
     @Override
     public void writeXMLtoFile(Document doc, String filePath) {
@@ -77,5 +77,5 @@ abstract class XMLServiceExtended implements XMLService {
         }
     }
 
-    abstract XMLServiceExtended convertObjectToXML(ReportDocumentDto reportDocument);
+    abstract XMLServiceExtended convertObjectToXML(ReportDocument reportDocument);
 }
