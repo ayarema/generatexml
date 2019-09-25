@@ -64,6 +64,7 @@ public class GenerateXMLReport {
 
                 //create ZIP file from XML which created from previews step
                 if (configuration.containsConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_FILE)) toZip.createZip();
+                if (configuration.containsConfigurationMode(ConfigurationMode.SEND_RESULT_TO_REPORT_PORTAL)) sendXML();
                 return this;
             } else {
                 //convert JSON file in XML
@@ -76,7 +77,7 @@ public class GenerateXMLReport {
         }
     }
 
-    public void sendXML() {
+    private void sendXML() {
         try {
             senderService.sendFile(DefaultData.reportFolderZipName);
         } catch (Exception e) {

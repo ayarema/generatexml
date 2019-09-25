@@ -10,7 +10,7 @@ public class GenerateXMLTest {
     @Test
     public void generateXmlTest() {
         GenerateXMLReport application = new GenerateXMLReport();
-        application.generateXMLreport().sendXML();
+        application.generateXMLreport();
     }
 
     @Test
@@ -19,6 +19,6 @@ public class GenerateXMLTest {
         conf.addConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_FILE);
         conf.addConfigurationMode(ConfigurationMode.SEND_RESULT_TO_REPORT_PORTAL);
         GenerateXMLReport appWithConf = new GenerateXMLReport(conf);
-        appWithConf.generateXMLreport().sendXML();
+        appWithConf.generateXMLreport();
     }
 }
