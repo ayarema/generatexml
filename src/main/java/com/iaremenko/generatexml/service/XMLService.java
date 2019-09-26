@@ -7,6 +7,7 @@ public interface XMLService {
     /**
      * Write something to XML document.
      * @param doc XML document in which will write text by specific logic
+     * @param filePath path to file in which will write data
      */
     void writeXMLtoFile(Document doc, String filePath);
 

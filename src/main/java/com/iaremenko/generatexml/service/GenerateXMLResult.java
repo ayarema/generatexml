@@ -2,6 +2,7 @@ package com.iaremenko.generatexml.service;
 
 import com.iaremenko.generatexml.data.DefaultData;
 import com.iaremenko.generatexml.dto.ReportDocument;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -22,17 +23,17 @@ import java.io.IOException;
 /**
  * The service class @link DocumentXMLFilling which convert JAVA Object in XML file
  */
-public class DocumentXMLFilling extends XMLServiceExtended {
+public class GenerateXMLResult extends XMLServiceExtended {
 
-    private static final Logger LOGGER = LogManager.getLogger(DocumentXMLFilling.class);
+    private static final Logger LOGGER = LogManager.getLogger(GenerateXMLResult.class.getName());
     private String filePath = DefaultData.reportResultsFolder.concat(DefaultData.fileName);
 
-    public DocumentXMLFilling() {
-
+    public GenerateXMLResult() {
+        LOGGER.log(Level.DEBUG, "Generate XML file from Java Object invoked");
     }
 
     @Override
-    public DocumentXMLFilling convertObjectToXML(ReportDocument reportDocument) {
+    public GenerateXMLResult convertObjectToXML(ReportDocument reportDocument) {
         try {
             LOGGER.info("Start to create XML file from Java Object ".concat(ReportDocument.class.getName()));
             JAXBContext context = JAXBContext.newInstance(ReportDocument.class);

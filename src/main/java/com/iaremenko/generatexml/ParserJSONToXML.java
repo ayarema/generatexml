@@ -25,9 +25,14 @@ class ParserJSONToXML {
     private final ObjectMapper mapper = new ObjectMapper();
 
     ParserJSONToXML(Configuration configuration) {
+        LOGGER.log(Level.INFO, "Start parse JSON report to Object with specified Configuration");
         this.configuration = configuration;
+
+        //added specific parameters to mapper
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+
+        //enable injection functionality
         InjectableValues values = new InjectableValues.Std().addValue(Configuration.class, configuration);
         mapper.setInjectableValues(values);
     }
@@ -36,7 +41,7 @@ class ParserJSONToXML {
         Collection<ReportDocument> reportDocuments = new ArrayList<>();
 
         if (configuration.getJsonFiles().isEmpty()) {
-            throw new ValidationException("None report file was added!");
+            throw new ValidationException("None JSON report files was added!");
         }
 
         for (String jsonFile : configuration.getJsonFiles()) {
@@ -45,12 +50,17 @@ class ParserJSONToXML {
         }
 
         if (reportDocuments.isEmpty()) {
-            throw new ValidationException("Passed files have no cucumber report!");
+            throw new ValidationException("Passed files have no specified Cucumber standard report! Please check your JSON reports in target direction");
         }
 
         return reportDocuments;
     }
 
+    /**
+     * Describe functionality where JSON files are parsed in java Object
+     * @param jsonFile JSON files with a Cucumber standard describing the result of running tests
+     * @return ReportDocument object with values from JSON files
+     */
     private ReportDocument[] parseForReportDocuments(String jsonFile) {
         try (Reader reader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8)) {
             ReportDocument[] reportDocuments = mapper.readValue(reader, ReportDocument[].class);

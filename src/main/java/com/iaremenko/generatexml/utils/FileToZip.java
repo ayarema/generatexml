@@ -11,7 +11,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @link FileToZip.class used for creating ZIP archive
+ * FileToZip used for creating ZIP archive
  */
 public class FileToZip {
 

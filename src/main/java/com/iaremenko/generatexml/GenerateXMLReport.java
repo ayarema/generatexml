@@ -6,7 +6,7 @@ import com.iaremenko.generatexml.data.DefaultData;
 import com.iaremenko.generatexml.dto.ReportDocument;
 import com.iaremenko.generatexml.service.DocProcessingXML;
 import com.iaremenko.generatexml.service.SenderService;
-import com.iaremenko.generatexml.service.DocumentXMLFilling;
+import com.iaremenko.generatexml.service.GenerateXMLResult;
 import com.iaremenko.generatexml.utils.FileToZip;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +29,7 @@ public class GenerateXMLReport {
     private Configuration configuration;
 
     private DocProcessingXML processing = new DocProcessingXML();
-    private DocumentXMLFilling service = new DocumentXMLFilling();
+    private GenerateXMLResult service = new GenerateXMLResult();
     private FileToZip toZip = new FileToZip();
     private SenderService senderService = new SenderService();
 
@@ -46,7 +46,7 @@ public class GenerateXMLReport {
      * Functionality provided files and generates the XML report. When generating process fails
      * report with information about error is provided.
      */
-    public GenerateXMLReport generateXMLreport() {
+    public void generateXMLreport() {
         //create new folder where new XML report will be created
         createResultsReportFolder();
 
@@ -65,15 +65,12 @@ public class GenerateXMLReport {
                 //create ZIP file from XML which created from previews step
                 if (configuration.containsConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_FILE)) toZip.createZip();
                 if (configuration.containsConfigurationMode(ConfigurationMode.SEND_RESULT_TO_REPORT_PORTAL)) sendXML();
-                return this;
             } else {
                 //convert JSON file in XML
                 service.convertObjectToXML(readTargetData());
-                return null;
             }
         } catch (Exception e) {
             generateErrorReport(e);
-            return null;
         }
     }
 
@@ -85,6 +82,11 @@ public class GenerateXMLReport {
         }
     }
 
+    /**
+     * Functionality which read files with specific extension and collect path to this files in new collection
+     * @param reportFolder folder where locate all files after launching tests
+     * @return collection of String with defined path to JSON files
+     */
     @NotNull
     private Collection<String> getJsonFilesFrom(@NotNull File reportFolder) {
         Collection<String> extensions = Collections.singletonList(DefaultData.defaultFileExtensions);
@@ -104,7 +106,6 @@ public class GenerateXMLReport {
                         .concat(file.getName()));
             }
         }
-
         return out;
     }
 
@@ -112,6 +113,10 @@ public class GenerateXMLReport {
         LOGGER.log(Level.ERROR, "Unexpected error", e);
     }
 
+    /**
+     * Describe creating folder for XML report result
+     * This folder will zip later if needed configuration will pass
+     */
     private void createResultsReportFolder() {
         LOGGER.log(Level.INFO, "Try to create new folder in project directory by default parameters");
 

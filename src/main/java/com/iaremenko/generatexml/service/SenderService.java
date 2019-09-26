@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * @link SenderService class was created for connection to specific sefver
+ * SenderService class was created for connection to specific sefver
  * and sent to this server needed files
  */
 public class SenderService {

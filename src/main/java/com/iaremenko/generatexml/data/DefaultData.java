@@ -1,7 +1,7 @@
 package com.iaremenko.generatexml.data;
 
 /**
- * @link TestData class was created for storing test static data
+ * Default data class was created for storing test static data
  */
 public interface DefaultData {
     String defaultFileExtensions = "json";
