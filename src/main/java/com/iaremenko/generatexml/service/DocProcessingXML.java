@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @deprecated functionality
+ */
+@Deprecated
 public class DocProcessingXML {
 
     private static final Logger LOGGER = LogManager.getLogger(DocProcessingXML.class);

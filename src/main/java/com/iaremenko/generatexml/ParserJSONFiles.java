@@ -5,12 +5,10 @@ import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iaremenko.generatexml.configuration.Configuration;
 import com.iaremenko.generatexml.dto.ReportDocument;
-import com.iaremenko.generatexml.service.DocProcessingXML;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tika.io.IOUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -18,13 +16,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-class ParserJSONToXML {
+class ParserJSONFiles {
 
-    private static final Logger LOGGER = LogManager.getLogger(GenerateXMLReport.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(XMLReportApplication.class.getName());
     private Configuration configuration;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    ParserJSONToXML(Configuration configuration) {
+    ParserJSONFiles() {}
+
+    ParserJSONFiles(Configuration configuration) {
         LOGGER.log(Level.INFO, "Start parse JSON report to Object with specified Configuration");
         this.configuration = configuration;
 
@@ -38,21 +38,28 @@ class ParserJSONToXML {
     }
 
     Collection<ReportDocument> parseJSON() {
+        return getReportDocumentsList(configuration.getJsonFiles());
+    }
+
+    Collection<ReportDocument> parseJSON(Collection<String> jsonFiles) {
+        return getReportDocumentsList(jsonFiles);
+    }
+
+    private Collection<ReportDocument> getReportDocumentsList(Collection<String> jsonFiles) {
         Collection<ReportDocument> reportDocuments = new ArrayList<>();
 
-        if (configuration.getJsonFiles().isEmpty()) {
+        if (jsonFiles.isEmpty()) {
             throw new ValidationException("None JSON report files was added!");
         }
 
-        for (String jsonFile : configuration.getJsonFiles()) {
-                ReportDocument[] reportDocuments_ = parseForReportDocuments(jsonFile);
-                reportDocuments.addAll(Arrays.asList(reportDocuments_));
+        for (String jsonFile : jsonFiles) {
+            ReportDocument[] reportDocuments_ = parseForReportDocuments(jsonFile);
+            reportDocuments.addAll(Arrays.asList(reportDocuments_));
         }
 
         if (reportDocuments.isEmpty()) {
             throw new ValidationException("Passed files have no specified Cucumber standard report! Please check your JSON reports in target direction");
         }
-
         return reportDocuments;
     }
 

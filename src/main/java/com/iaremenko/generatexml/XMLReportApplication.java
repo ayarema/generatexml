@@ -3,41 +3,33 @@ package com.iaremenko.generatexml;
 import com.iaremenko.generatexml.configuration.Configuration;
 import com.iaremenko.generatexml.configuration.ConfigurationMode;
 import com.iaremenko.generatexml.data.DefaultData;
-import com.iaremenko.generatexml.dto.ReportDocument;
-import com.iaremenko.generatexml.service.DocProcessingXML;
 import com.iaremenko.generatexml.service.SenderService;
 import com.iaremenko.generatexml.service.GenerateXMLResult;
 import com.iaremenko.generatexml.utils.FileToZip;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tika.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class GenerateXMLReport {
+public class XMLReportApplication {
 
-    private static final Logger LOGGER = LogManager.getLogger(GenerateXMLReport.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(XMLReportApplication.class.getName());
     private Configuration configuration;
 
-    private DocProcessingXML processing = new DocProcessingXML();
-    private GenerateXMLResult service = new GenerateXMLResult();
+    private GenerateXMLResult generateXMLResult = new GenerateXMLResult();
     private FileToZip toZip = new FileToZip();
     private SenderService senderService = new SenderService();
 
-    public GenerateXMLReport() {
+    public XMLReportApplication() {
         LOGGER.log(Level.INFO, "Start application to convert JSON report to XML report");
     }
 
-    public GenerateXMLReport(@NotNull Configuration configuration) {
+    public XMLReportApplication(@NotNull Configuration configuration) {
         LOGGER.log(Level.INFO, "Start application to convert JSON report to XML report with specified Configuration");
         this.configuration = configuration;
     }
@@ -54,20 +46,19 @@ public class GenerateXMLReport {
             if (configuration != null) {
 
                 configuration.addJsonFiles(getJsonFilesFrom(configuration.getReportFolder()));
-                ParserJSONToXML parserJSONToXML = new ParserJSONToXML(configuration);
+                ParserJSONFiles parserJSONFiles = new ParserJSONFiles(configuration);
 
                 //convert JSON file in XML
-                parserJSONToXML.parseJSON()
-                        .forEach(feature -> {
-                            service.convertObjectToXML(feature);
-                        });
+                parserJSONFiles.parseJSON()
+                        .forEach(reportDocument -> generateXMLResult.convertObjectToXML(reportDocument));
 
                 //create ZIP file from XML which created from previews step
                 if (configuration.containsConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_FILE)) toZip.createZip();
                 if (configuration.containsConfigurationMode(ConfigurationMode.SEND_RESULT_TO_REPORT_PORTAL)) sendXML();
             } else {
-                //convert JSON file in XML
-                service.convertObjectToXML(readTargetData());
+                ParserJSONFiles parserJSONFiles = new ParserJSONFiles();
+                parserJSONFiles.parseJSON(getJsonFilesFrom(new File(DefaultData.reportDirPath)))
+                        .forEach(feature -> generateXMLResult.convertObjectToXML(feature));
             }
         } catch (Exception e) {
             generateErrorReport(e);
@@ -125,20 +116,6 @@ public class GenerateXMLReport {
             if (resultsFolder.mkdirs()) {
                 LOGGER.log(Level.INFO, "Direction ".concat(DefaultData.reportResultsFolder).concat(" was created"));
             }
-        }
-    }
-
-    @Nullable
-    private ReportDocument readTargetData() {
-        LOGGER.log(Level.INFO, "Method readTargetData invoked");
-
-        try (Reader reader = new FileReader(DefaultData.reportDirPath)) {
-            String jsonString = IOUtils.toString(reader);
-            String newJsonString = jsonString.substring(1, jsonString.length()-1);
-            return processing.deserializeReportDocumentToObject(newJsonString);
-        } catch (IOException e) {
-            LOGGER.info(e.getMessage());
-            return null;
         }
     }
 }
