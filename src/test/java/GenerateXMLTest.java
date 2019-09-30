@@ -1,9 +1,7 @@
-import com.iaremenko.generatexml.XMLReportApplication;
-import com.iaremenko.generatexml.configuration.Configuration;
-import com.iaremenko.generatexml.configuration.ConfigurationMode;
-import com.iaremenko.generatexml.data.DefaultData;
-import com.iaremenko.generatexml.dto.ReportDocument;
-import com.iaremenko.generatexml.dto.ReportDocumentResult;
+import com.easytestit.generatexml.XMLReportApplication;
+import com.easytestit.generatexml.configuration.Configuration;
+import com.easytestit.generatexml.configuration.ConfigurationMode;
+import com.easytestit.generatexml.dto.FeatureResult;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -31,13 +29,13 @@ public class GenerateXMLTest {
     @Test
     public void generateXmlResult() {
         String resultString = "Given url 'https://jsonplaceholder.typicode.com/users' .................... passed";
-        ReportDocumentResult result = new ReportDocumentResult();
+        FeatureResult result = new FeatureResult();
         result.setStepsInfo(resultString);
         result.setTestSuite("test suit for all test cases");
         result.setTestCases("first test cases");
         try {
             System.out.println("Start to create XML file from Java Object ");
-            JAXBContext context = JAXBContext.newInstance(ReportDocumentResult.class);
+            JAXBContext context = JAXBContext.newInstance(FeatureResult.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
