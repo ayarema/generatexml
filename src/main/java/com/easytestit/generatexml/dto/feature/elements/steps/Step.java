@@ -1,9 +1,9 @@
-package com.easytestit.generatexml.dto.elements.steps;
+package com.easytestit.generatexml.dto.feature.elements.steps;
 
-import com.easytestit.generatexml.dto.elements.steps.docstrings.DocString;
+import com.easytestit.generatexml.dto.feature.elements.steps.docstrings.DocString;
 import com.google.gson.annotations.SerializedName;
-import com.easytestit.generatexml.dto.elements.steps.matches.Match;
-import com.easytestit.generatexml.dto.elements.steps.results.Result;
+import com.easytestit.generatexml.dto.feature.elements.steps.matches.Match;
+import com.easytestit.generatexml.dto.feature.elements.steps.results.Result;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

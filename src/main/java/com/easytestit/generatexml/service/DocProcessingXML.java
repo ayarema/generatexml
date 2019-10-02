@@ -1,13 +1,13 @@
 package com.easytestit.generatexml.service;
 
 import com.google.gson.stream.JsonReader;
-import com.easytestit.generatexml.dto.Feature;
-import com.easytestit.generatexml.dto.elements.Element;
-import com.easytestit.generatexml.dto.elements.steps.Step;
-import com.easytestit.generatexml.dto.elements.steps.docstrings.DocString;
-import com.easytestit.generatexml.dto.elements.steps.matches.Match;
-import com.easytestit.generatexml.dto.elements.steps.results.Result;
-import com.easytestit.generatexml.dto.tags.Tag;
+import com.easytestit.generatexml.dto.feature.Feature;
+import com.easytestit.generatexml.dto.feature.elements.Element;
+import com.easytestit.generatexml.dto.feature.elements.steps.Step;
+import com.easytestit.generatexml.dto.feature.elements.steps.docstrings.DocString;
+import com.easytestit.generatexml.dto.feature.elements.steps.matches.Match;
+import com.easytestit.generatexml.dto.feature.elements.steps.results.Result;
+import com.easytestit.generatexml.dto.feature.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;

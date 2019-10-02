@@ -1,13 +1,15 @@
 import com.easytestit.generatexml.XMLReportApplication;
 import com.easytestit.generatexml.configuration.Configuration;
 import com.easytestit.generatexml.configuration.ConfigurationMode;
-import com.easytestit.generatexml.dto.FeatureResult;
+import com.easytestit.generatexml.dto.result.*;
+import com.easytestit.generatexml.dto.result.testcase.FeatureTestCaseResult;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.File;
+import java.util.Collections;
 
 public class GenerateXMLTest {
 
@@ -28,11 +30,33 @@ public class GenerateXMLTest {
 
     @Test
     public void generateXmlResult() {
-        String resultString = "Given url 'https://jsonplaceholder.typicode.com/users' .................... passed";
+        File file = new File("testXMLReport.xml");
+
         FeatureResult result = new FeatureResult();
-        result.setStepsInfo(resultString);
-        result.setTestSuite("test suit for all test cases");
-        result.setTestCases("first test cases");
+        FeatureTestCaseResult caseResult = new FeatureTestCaseResult();
+
+        CaseBackground background = new CaseBackground();
+        CaseScenario scenario = new CaseScenario();
+        CaseStep step = new CaseStep();
+
+        result.setName("Smoke testing");
+        result.setFailures("0");
+        result.setTests("1");
+        result.setTime("0.446274");
+
+        step.setStepInfo("Given url 'https://jsonplaceholder.typicode.com/users' .................... passed");
+        scenario.setStepsInfo(Collections.singletonList(step));
+
+        background.setBackground("* url 'https://jsonplaceholder.typicode.com' .............................. passed");
+
+        caseResult.setTestName("create a user and then get it by id");
+        caseResult.setTime("0.446274");
+        caseResult.setStepsBackground(Collections.singletonList(background));
+        caseResult.setCaseScenarioCollections(Collections.singletonList(scenario));
+
+        //result.setTestSuite("");
+        result.setTestCases(Collections.singletonList(caseResult));
+
         try {
             System.out.println("Start to create XML file from Java Object ");
             JAXBContext context = JAXBContext.newInstance(FeatureResult.class);
@@ -41,7 +65,7 @@ public class GenerateXMLTest {
 
             m.marshal(result, System.out);
 
-            m.marshal(result, new File("testXMLReport.xml"));
+            m.marshal(result, file);
         } catch (JAXBException e) {
             e.getMessage();
         }

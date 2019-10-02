@@ -1,4 +1,4 @@
-package com.easytestit.generatexml.dto.elements.steps.results;
+package com.easytestit.generatexml.dto.feature.elements.steps.results;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -1,7 +1,7 @@
 package com.easytestit.generatexml.service;
 
 import com.easytestit.generatexml.data.DefaultData;
-import com.easytestit.generatexml.dto.Feature;
+import com.easytestit.generatexml.dto.feature.Feature;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

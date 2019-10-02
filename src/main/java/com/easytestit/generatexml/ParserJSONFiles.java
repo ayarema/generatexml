@@ -4,7 +4,7 @@ import com.easytestit.generatexml.configuration.Configuration;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.easytestit.generatexml.dto.Feature;
+import com.easytestit.generatexml.dto.feature.Feature;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;

@@ -1,4 +1,4 @@
-package com.easytestit.generatexml.dto.tags;
+package com.easytestit.generatexml.dto.feature.tags;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,7 +1,8 @@
-package com.easytestit.generatexml.dto.elements;
+package com.easytestit.generatexml.dto.feature;
 
+import com.easytestit.generatexml.dto.feature.elements.Element;
+import com.easytestit.generatexml.dto.feature.tags.Tag;
 import com.google.gson.annotations.SerializedName;
-import com.easytestit.generatexml.dto.elements.steps.Step;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -9,20 +10,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
-@XmlRootElement(name = "element")
+/**
+ * The root class which described logic of storing data which stored in JSON file and need it to XML file
+ * Moreover, it's a class which is a start point for test JSON report data
+ */
+@XmlRootElement(namespace = "document")
 @XmlType(propOrder = {
         "line",
+        "elements",
         "name",
         "description",
         "id",
-        "type",
         "keyword",
-        "steps"
+        "uri",
+        "tags"
 })
-public class Element {
+public class Feature {
 
     @SerializedName("line")
     private Integer line;
+
+    @XmlElementWrapper(name = "elements")
+    @XmlElement(name = "element")
+    @SerializedName("elements")
+    private List<Element> elements = null;
 
     @SerializedName("name")
     private String name;
@@ -33,16 +44,14 @@ public class Element {
     @SerializedName("id")
     private String id;
 
-    @SerializedName("type")
-    private String type;
-
     @SerializedName("keyword")
     private String keyword;
 
-    @XmlElementWrapper(name = "steps")
-    @XmlElement(name = "step")
-    @SerializedName("steps")
-    private List<Step> steps = null;
+    @SerializedName("uri")
+    private String uri;
+
+    @SerializedName("tags")
+    private List<Tag> tags = null;
 
     @XmlElement(name = "line")
     private Integer getLine() {
@@ -51,6 +60,14 @@ public class Element {
 
     public void setLine(Integer line) {
         this.line = line;
+    }
+
+    public List<Element> getElements() {
+        return elements;
+    }
+
+    public void setElements(List<Element> elements) {
+        this.elements = elements;
     }
 
     @XmlElement(name = "name")
@@ -71,13 +88,13 @@ public class Element {
         this.description = description;
     }
 
-    @XmlElement(name = "type")
-    private String getType() {
-        return type;
+    @XmlElement(name = "id")
+    private String getId() {
+        return id;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @XmlElement(name = "keyword")
@@ -89,20 +106,21 @@ public class Element {
         this.keyword = keyword;
     }
 
-    public List<Step> getSteps() {
-        return steps;
+    @XmlElement(name = "uri")
+    private String getUri() {
+        return uri;
     }
 
-    public void setSteps(List<Step> steps) {
-        this.steps = steps;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
-    @XmlElement(name = "id")
-    private String getId() {
-        return id;
+    @XmlElement(name = "tags")
+    private List<Tag> getTags() {
+        return tags;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

@@ -1,7 +1,7 @@
 package com.easytestit.generatexml.service;
 
-import com.easytestit.generatexml.dto.Feature;
-import com.easytestit.generatexml.dto.FeatureResult;
+import com.easytestit.generatexml.dto.feature.Feature;
+import com.easytestit.generatexml.dto.result.FeatureResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
