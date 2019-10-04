@@ -24,6 +24,7 @@
         <jaxb.runtime.version>2.3.2</jaxb.runtime.version>
         <fasterxml.version>2.9.10</fasterxml.version>
         <apache.common.version>3.9</apache.common.version>
+        <okhttp.version>4.2.0</okhttp.version>
         <log4j.version>2.10.0</log4j.version>
         <tika.version>1.22</tika.version>
         <jetbrains.annotaion.version>17.0.0</jetbrains.annotaion.version>
@@ -104,6 +105,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${apache.common.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <dependency>

@@ -2,6 +2,7 @@ import com.easytestit.generatexml.XMLReportApplication;
 import com.easytestit.generatexml.configuration.Configuration;
 import com.easytestit.generatexml.configuration.ConfigurationMode;
 import com.easytestit.generatexml.dto.result.*;
+import com.easytestit.generatexml.dto.result.testcase.systemout.FeatureCaseStepResult;
 import com.easytestit.generatexml.dto.result.testcase.FeatureTestCaseResult;
 import org.junit.Test;
 
@@ -35,24 +36,19 @@ public class GenerateXMLTest {
         FeatureResult result = new FeatureResult();
         FeatureTestCaseResult caseResult = new FeatureTestCaseResult();
 
-        CaseBackground background = new CaseBackground();
-        CaseScenario scenario = new CaseScenario();
-        CaseStep step = new CaseStep();
+        FeatureCaseStepResult step = new FeatureCaseStepResult();
 
         result.setName("Smoke testing");
         result.setFailures("0");
         result.setTests("1");
         result.setTime("0.446274");
+        result.setSkipped("SKIPPED");
 
-        step.setStepInfo("Given url 'https://jsonplaceholder.typicode.com/users' .................... passed");
-        scenario.setStepsInfo(Collections.singletonList(step));
-
-        background.setBackground("* url 'https://jsonplaceholder.typicode.com' .............................. passed");
+        step.setSystemOut("[STEP] ... ".concat("Given url 'https://jsonplaceholder.typicode.com/users' .................... passed"));
 
         caseResult.setTestName("create a user and then get it by id");
         caseResult.setTime("0.446274");
-        caseResult.setStepsBackground(Collections.singletonList(background));
-        caseResult.setCaseScenarioCollections(Collections.singletonList(scenario));
+        caseResult.setCaseOutInfo(Collections.singletonList(step));
 
         //result.setTestSuite("");
         result.setTestCases(Collections.singletonList(caseResult));

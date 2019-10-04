@@ -15,6 +15,7 @@ public class FeatureResult {
     private String name;
     private String failures;
     private String tests;
+    private String skipped;
     private String time;
 
     public FeatureResult() {
@@ -55,6 +56,15 @@ public class FeatureResult {
     @XmlAttribute(name = "tests")
     public void setTests(String tests) {
         this.tests = tests;
+    }
+
+    public String getSkipped() {
+        return skipped;
+    }
+
+    @XmlAttribute(name = "skipped")
+    public void setSkipped(String skipped) {
+        this.skipped = skipped;
     }
 
     public String getTime() {

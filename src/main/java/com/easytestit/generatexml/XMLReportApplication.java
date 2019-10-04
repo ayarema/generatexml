@@ -76,7 +76,7 @@ public class XMLReportApplication {
 
     private void sendXML() {
         try {
-            senderService.sendFile(DefaultData.reportFolderZipName);
+            new com.easytestit.generatexml.http.SenderService().post(DefaultData.reportFolderZipName);
         } catch (Exception e) {
             generateErrorReport(e);
         }
