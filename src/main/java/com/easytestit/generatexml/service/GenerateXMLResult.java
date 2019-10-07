@@ -4,7 +4,6 @@ import com.easytestit.generatexml.ValidationException;
 import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.dto.feature.Feature;
 import com.easytestit.generatexml.dto.result.FeatureResult;
-import cucumber.api.java.de.Gegebensei;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +54,7 @@ public class GenerateXMLResult extends XMLServiceExtended {
         }
     }
 
-    public GenerateXMLResult convertObjectToXML(FeatureResult featureResult) {
+    public void convertObjectToXML(FeatureResult featureResult) {
         try {
             LOGGER.info("Start to create XML file from Java Object ".concat(FeatureResult.class.getName()));
 
@@ -66,7 +65,6 @@ public class GenerateXMLResult extends XMLServiceExtended {
             m.marshal(featureResult, System.out);
             m.marshal(featureResult, new File(DefaultData.reportResultsFolder.concat(DefaultData.fileName)));
 
-            return this;
         } catch (JAXBException e) {
             LOGGER.error(e.getMessage());
             throw new ValidationException(e);

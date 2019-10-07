@@ -45,11 +45,13 @@ public class XMLReportApplication {
         try {
             if (configuration != null) {
 
+                //read JSON files from compiled directory
                 configuration.addJsonFiles(getJsonFilesFrom(configuration.getReportFolder()));
                 ParserJSONFiles parserJSONFiles = new ParserJSONFiles(configuration);
 
                 //convert JSON file in XML
-                new ResultBuilder().generateAggregatedReport(parserJSONFiles.parseJSON());
+                generateXMLResult.convertObjectToXML(
+                        new ResultBuilder().generateAggregatedReport(parserJSONFiles.parseJSON()));
 
                 //create ZIP file from XML which created from previews step
                 if (configuration.containsConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_FILE)) createZip();
