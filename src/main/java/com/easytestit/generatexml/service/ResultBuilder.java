@@ -13,9 +13,9 @@ public class ResultBuilder {
     private Long duration = 0L;
 
     public Collection<FeatureResult> generateAggregatedReport(Collection<Feature> parseJSON) {
-        parseJSON.forEach(feature -> {
-            FeatureResult featureResult = new FeatureResult();
+        FeatureResult featureResult = new FeatureResult();
 
+        parseJSON.forEach(feature -> {
             feature.getElements().forEach(
                     featureElement -> {
                         featureElement.getSteps().forEach(
@@ -33,8 +33,6 @@ public class ResultBuilder {
 
             aggregatedResults.add(featureResult);
         });
-
-
 
         return aggregatedResults;
     }

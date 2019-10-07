@@ -53,8 +53,8 @@ class ParserJSONFiles {
         }
 
         for (String jsonFile : jsonFiles) {
-            Feature[] reportDocuments_ = parseForReportDocuments(jsonFile);
-            features.addAll(Arrays.asList(reportDocuments_));
+            Feature[] reportDocuments = parseForReportDocuments(jsonFile);
+            features.addAll(Arrays.asList(reportDocuments));
         }
 
         if (features.isEmpty()) {

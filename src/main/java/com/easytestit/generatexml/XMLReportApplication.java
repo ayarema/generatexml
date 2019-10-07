@@ -2,8 +2,8 @@ package com.easytestit.generatexml;
 
 import com.easytestit.generatexml.configuration.Configuration;
 import com.easytestit.generatexml.configuration.ConfigurationMode;
+import com.easytestit.generatexml.http.SenderService;
 import com.easytestit.generatexml.service.ResultBuilder;
-import com.easytestit.generatexml.service.SenderService;
 import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.service.GenerateXMLResult;
 import com.easytestit.generatexml.utils.FileToZip;
@@ -24,7 +24,6 @@ public class XMLReportApplication {
 
     private GenerateXMLResult generateXMLResult = new GenerateXMLResult();
     private FileToZip toZip = new FileToZip();
-    private SenderService senderService = new SenderService();
 
     public XMLReportApplication() {
         LOGGER.log(Level.INFO, "Start application to convert JSON report to XML report with default parameters");
@@ -50,15 +49,16 @@ public class XMLReportApplication {
                 ParserJSONFiles parserJSONFiles = new ParserJSONFiles(configuration);
 
                 //convert JSON file in XML
-                ResultBuilder resultBuilder = new ResultBuilder();
-                resultBuilder.generateAggregatedReport(parserJSONFiles.parseJSON());
+                new ResultBuilder().generateAggregatedReport(parserJSONFiles.parseJSON());
 
                 //create ZIP file from XML which created from previews step
                 if (configuration.containsConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_FILE)) createZip();
                 if (configuration.containsConfigurationMode(ConfigurationMode.SEND_RESULT_TO_REPORT_PORTAL)) sendXML();
             } else {
-                ParserJSONFiles parserJSONFiles = new ParserJSONFiles();
-                parserJSONFiles.parseJSON(getJsonFilesFrom(new File(DefaultData.reportDirPath)))
+                //when configuration is null start functionality with default parameters
+                new ParserJSONFiles().parseJSON(
+                        getJsonFilesFrom(
+                                new File(DefaultData.reportDirPath)))
                         .forEach(feature -> generateXMLResult.convertObjectToXML(feature));
             }
         } catch (Exception e) {
@@ -76,7 +76,7 @@ public class XMLReportApplication {
 
     private void sendXML() {
         try {
-            new com.easytestit.generatexml.http.SenderService().post(DefaultData.reportFolderZipName);
+            new SenderService().post(DefaultData.reportFolderZipName);
         } catch (Exception e) {
             generateErrorReport(e);
         }
@@ -106,6 +106,7 @@ public class XMLReportApplication {
                         .concat(file.getName()));
             }
         }
+
         return out;
     }
 
@@ -119,7 +120,6 @@ public class XMLReportApplication {
      */
     private void createResultsReportFolder() {
         LOGGER.log(Level.INFO, "Try to create new folder in project directory by default parameters");
-
         File resultsFolder = new File(DefaultData.reportResultsFolder);
         if (!resultsFolder.exists()) {
             if (resultsFolder.mkdirs()) {
