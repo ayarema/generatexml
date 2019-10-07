@@ -38,14 +38,14 @@ class ParserJSONFiles {
     }
 
     Collection<Feature> parseJSON() {
-        return getReportDocumentsList(configuration.getJsonFiles());
+        return getFeatureDocumentsList(configuration.getJsonFiles());
     }
 
     Collection<Feature> parseJSON(Collection<String> jsonFiles) {
-        return getReportDocumentsList(jsonFiles);
+        return getFeatureDocumentsList(jsonFiles);
     }
 
-    private Collection<Feature> getReportDocumentsList(Collection<String> jsonFiles) {
+    private Collection<Feature> getFeatureDocumentsList(Collection<String> jsonFiles) {
         Collection<Feature> features = new ArrayList<>();
 
         if (jsonFiles.isEmpty()) {
@@ -53,8 +53,8 @@ class ParserJSONFiles {
         }
 
         for (String jsonFile : jsonFiles) {
-            Feature[] reportDocuments = parseForReportDocuments(jsonFile);
-            features.addAll(Arrays.asList(reportDocuments));
+            Feature[] reportFeatures = parseForFeatureDocuments(jsonFile);
+            features.addAll(Arrays.asList(reportFeatures));
         }
 
         if (features.isEmpty()) {
@@ -68,7 +68,7 @@ class ParserJSONFiles {
      * @param jsonFile JSON files with a Cucumber standard describing the result of running tests
      * @return ReportDocument object with values from JSON files
      */
-    private Feature[] parseForReportDocuments(String jsonFile) {
+    private Feature[] parseForFeatureDocuments(String jsonFile) {
         try (Reader reader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8)) {
             Feature[] features = mapper.readValue(reader, Feature[].class);
             if (ArrayUtils.isEmpty(features)) {

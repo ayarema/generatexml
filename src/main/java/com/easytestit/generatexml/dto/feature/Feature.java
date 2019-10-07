@@ -80,7 +80,7 @@ public class Feature {
     }
 
     @XmlElement(name = "description")
-    private String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -116,7 +116,7 @@ public class Feature {
     }
 
     @XmlElement(name = "tags")
-    private List<Tag> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 

@@ -81,7 +81,7 @@ public class Element {
     }
 
     @XmlElement(name = "keyword")
-    private String getKeyword() {
+    public String getKeyword() {
         return keyword;
     }
 

@@ -5,6 +5,7 @@ import okhttp3.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -25,16 +26,17 @@ public class SenderService {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file,
-                        RequestBody.create(MediaType.parse("application/octet-stream"),
+                        RequestBody.create(MediaType.parse(SenderServiceData.OCTET_STREAM.getValue()),
                                 new File(file)))
                 .build();
 
         Request request = new Request.Builder()
-                .addHeader(SenderServiceData.AUTHORIZATION.getValue(), SenderServiceData.BEARER.getValue().concat(" ").concat(
-                        Objects.requireNonNull(getProperties("rp.token"))))
-                .addHeader(SenderServiceData.CONTENT_TYPE.getValue(), "multipart/form-data")
-                .addHeader(SenderServiceData.ACCEPT.getValue(), "application/json")
-                .url("http://localhost:8080".concat("/api/v1/generatexml/launch/import"))
+                .addHeader(
+                        SenderServiceData.AUTHORIZATION.getValue(), SenderServiceData.BEARER.getValue().concat(" ")
+                                .concat(Objects.requireNonNull(getProperties("rp.token"))))
+                .addHeader(SenderServiceData.CONTENT_TYPE.getValue(), SenderServiceData.FORM_DATA.getValue())
+                .addHeader(SenderServiceData.ACCEPT.getValue(), SenderServiceData.APPLICATION_JSON.getValue())
+                .url(Objects.requireNonNull(getProperties("rp.url")).concat(serviceUrlBuilder()))
                 .post(requestBody)
                 .build();
 
@@ -67,5 +69,12 @@ public class SenderService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @NotNull
+    private String serviceUrlBuilder() {
+        return Objects.requireNonNull(getProperties("rp.api.version"))
+                .concat(Objects.requireNonNull(getProperties("rp.project.name")))
+                .concat(Objects.requireNonNull(getProperties("rp.service.url")));
     }
 }

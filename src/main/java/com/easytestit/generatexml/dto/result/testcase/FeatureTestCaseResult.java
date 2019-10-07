@@ -14,6 +14,7 @@ public class FeatureTestCaseResult {
 
     private String testName;
     private String time;
+    private String description;
 
     public FeatureTestCaseResult() {
 
@@ -44,5 +45,14 @@ public class FeatureTestCaseResult {
     @XmlAttribute(name = "time")
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @XmlAttribute(name = "description")
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -66,7 +66,7 @@ public class Step {
     }
 
     @XmlElement(name = "keyword")
-    private String getKeyword() {
+    public String getKeyword() {
         return keyword;
     }
 

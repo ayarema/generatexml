@@ -17,6 +17,7 @@ public class FeatureResult {
     private String tests;
     private String skipped;
     private String time;
+    private Collection<String> tags;
 
     public FeatureResult() {
 
@@ -74,5 +75,14 @@ public class FeatureResult {
     @XmlAttribute(name = "time")
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public Collection<String> getTags() {
+        return tags;
+    }
+
+    @XmlAttribute(name = "tags")
+    public void setTags(Collection<String> tags) {
+        this.tags = tags;
     }
 }

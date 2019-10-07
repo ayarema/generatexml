@@ -119,7 +119,7 @@ public class XMLReportApplication {
      * This folder will zip later if needed configuration will pass
      */
     private void createResultsReportFolder() {
-        LOGGER.log(Level.INFO, "Try to create new folder in project directory by default parameters");
+        LOGGER.log(Level.INFO, "Try to create new folder in project directory");
         File resultsFolder = new File(DefaultData.reportResultsFolder);
         if (!resultsFolder.exists()) {
             if (resultsFolder.mkdirs()) {

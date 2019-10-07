@@ -13,6 +13,7 @@ import java.util.Properties;
  * SenderService class was created for connection to specific sefver
  * and sent to this server needed files
  */
+@Deprecated
 public class SenderService {
 
     private static final Logger LOGGER = LogManager.getLogger(SenderService.class.getName());

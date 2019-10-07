@@ -1,6 +1,7 @@
 package com.easytestit.generatexml.utils;
 
 import com.easytestit.generatexml.data.DefaultData;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +24,8 @@ public class FileToZip {
 
     public void createZip() {
         try {
-            LOGGER.info("Start to create new ZIP archive in project root directory");
+            LOGGER.log(Level.INFO, "Start to create new ZIP archive in project root directory");
+
             String sourceFile = DefaultData.reportResultsFolder.concat(DefaultData.fileName);
             FileOutputStream fos = new FileOutputStream(DefaultData.reportFolderZipName);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
@@ -32,20 +34,20 @@ public class FileToZip {
             zipFile(fileToZip, fileToZip.getName(), zipOut);
             zipOut.close();
             fos.close();
-            LOGGER.info("ZIP was created");
+            LOGGER.log(Level.INFO, "ZIP was created");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.log(Level.ERROR, e.getMessage());
         }
     }
 
     private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) {
         try {
             if (fileToZip.isHidden()) {
-                LOGGER.error("File which located in ".concat(DefaultData.reportResultsFolder.concat(DefaultData.fileName)).concat(" is hidden"));
+                LOGGER.log(Level.INFO, "File which located in ".concat(DefaultData.reportResultsFolder).concat(" is hidden"));
                 return;
             }
             if (fileToZip.isDirectory()) {
-                LOGGER.info("File which located in ".concat(DefaultData.reportResultsFolder.concat(DefaultData.fileName)).concat(" is direction"));
+                LOGGER.log(Level.INFO, "File which located in ".concat(DefaultData.reportResultsFolder).concat(" is direction"));
                 if (fileName.endsWith("/")) {
                     zipOut.putNextEntry(new ZipEntry(fileName));
                     zipOut.closeEntry();
@@ -54,7 +56,7 @@ public class FileToZip {
                     zipOut.closeEntry();
                 }
                 File[] children = fileToZip.listFiles();
-                for (File childFile : children) {
+                for (File childFile : children != null ? children : new File[0]) {
                     zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
                 }
                 return;
@@ -68,9 +70,8 @@ public class FileToZip {
                 zipOut.write(bytes, 0, length);
             }
             fis.close();
-            LOGGER.info("File was identified");
         } catch (Exception e) {
-            LOGGER.info(e.getMessage());
+            LOGGER.log(Level.DEBUG, e.getMessage());
         }
     }
 }
