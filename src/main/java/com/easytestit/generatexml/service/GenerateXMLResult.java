@@ -34,7 +34,6 @@ public class GenerateXMLResult extends XMLServiceExtended {
         LOGGER.log(Level.DEBUG, "Generate XML file from Java Object invoked");
     }
 
-    @Override
     public GenerateXMLResult convertObjectToXML(Feature feature) {
         try {
             LOGGER.info("Start to create XML file from Java Object ".concat(Feature.class.getName()));
@@ -91,7 +90,7 @@ public class GenerateXMLResult extends XMLServiceExtended {
         }
     }
 
-    private void addElement(@NotNull Document existDoc, Document doc, Feature feature) {
+    private void addElement(@NotNull Document existDoc, @NotNull Document doc, @NotNull Feature feature) {
         LOGGER.debug("Method addElement invoked");
         Element rootElement = doc.createElement("testsuite");
         rootElement.setAttribute("failures", "0");

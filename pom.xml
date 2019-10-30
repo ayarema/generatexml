@@ -28,8 +28,8 @@
         <log4j.version>2.10.0</log4j.version>
         <tika.version>1.22</tika.version>
         <jetbrains.annotaion.version>17.0.0</jetbrains.annotaion.version>
+        <lombok.version>1.18.10</lombok.version>
 
-        <karate.version>0.9.4</karate.version>
         <junit.version>4.12</junit.version>
 
         <maven.compiler.version>3.8.0</maven.compiler.version>
@@ -62,15 +62,7 @@
     </developers>
 
     <dependencies>
-
         <!-- compile-->
-        <dependency>
-            <groupId>com.intuit.karate</groupId>
-            <artifactId>karate-core</artifactId>
-            <version>${karate.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -138,27 +130,19 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- test compile-->
-        <dependency>
-            <groupId>com.intuit.karate</groupId>
-            <artifactId>karate-apache</artifactId>
-            <version>${karate.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.intuit.karate</groupId>
-            <artifactId>karate-junit4</artifactId>
-            <version>${karate.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -244,6 +228,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

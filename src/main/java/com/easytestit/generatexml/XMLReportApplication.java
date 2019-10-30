@@ -6,6 +6,7 @@ import com.easytestit.generatexml.http.SenderService;
 import com.easytestit.generatexml.service.ResultBuilder;
 import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.service.GenerateXMLResult;
+import com.easytestit.generatexml.service.XMLServiceExtended;
 import com.easytestit.generatexml.utils.FileToZip;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +24,7 @@ public class XMLReportApplication {
     private Configuration configuration;
 
     private GenerateXMLResult generateXMLResult = new GenerateXMLResult();
+    private XMLServiceExtended xmlService = new GenerateXMLResult();
     private FileToZip toZip = new FileToZip();
 
     public XMLReportApplication() {
@@ -47,15 +49,15 @@ public class XMLReportApplication {
 
                 //read JSON files from compiled directory
                 configuration.addJsonFiles(getJsonFilesFrom(configuration.getReportFolder()));
-                ParserJSONFiles parserJSONFiles = new ParserJSONFiles(configuration);
+                var parserJSONFiles = new ParserJSONFiles(configuration);
 
                 //convert JSON file in XML
-                generateXMLResult.convertObjectToXML(
+                xmlService.convertObjectToXML(
                         new ResultBuilder().generateAggregatedReport(parserJSONFiles.parseJSON()));
 
                 //create ZIP file from XML which created from previews step
-                if (configuration.containsConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_FILE)) createZip();
-                if (configuration.containsConfigurationMode(ConfigurationMode.SEND_RESULT_TO_REPORT_PORTAL)) sendXML();
+                if (configuration.containsConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_TO_FILE)) createZip();
+                if (configuration.containsConfigurationMode(ConfigurationMode.SEND_RESULT_TO_RP)) sendXML();
             } else {
                 //when configuration is null start functionality with default parameters
                 new ParserJSONFiles().parseJSON(
@@ -106,6 +108,9 @@ public class XMLReportApplication {
                 out.add(String.valueOf(reportFolder)
                         .concat("\\")
                         .concat(file.getName()));
+            } else {
+                LOGGER.log(Level.INFO, "Report folder ".concat(reportFolder.getName())
+                        .concat(" aren't contain files with JSON format!"));
             }
         }
 

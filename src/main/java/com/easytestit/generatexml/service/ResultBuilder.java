@@ -3,7 +3,6 @@ package com.easytestit.generatexml.service;
 import com.easytestit.generatexml.dto.feature.Feature;
 import com.easytestit.generatexml.dto.result.FeatureResult;
 import com.easytestit.generatexml.dto.result.testcase.FeatureTestCaseResult;
-import com.easytestit.generatexml.dto.result.testcase.systemout.FeatureCaseStepResult;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,55 +12,45 @@ import java.util.Collections;
 
 public class ResultBuilder {
 
-    private Boolean isFailure = true;
     private Long duration = 0L;
+    private String stepResults = "";
+    private int failuresCount;
+    private String tempTags = "";
 
     public FeatureResult generateAggregatedReport(@NotNull Collection<Feature> parseJSON) {
-        FeatureResult featureResult = new FeatureResult();
-        Collection<String> tempTags = new ArrayList<>(Collections.emptyList());
-
-        FeatureTestCaseResult testCaseResult = new FeatureTestCaseResult();
+        var featureResult = new FeatureResult();
         Collection<FeatureTestCaseResult> testCaseResults = new ArrayList<>(Collections.emptyList());
 
-        FeatureCaseStepResult stepResult = new FeatureCaseStepResult();
-        Collection<FeatureCaseStepResult> stepResults = new ArrayList<>(Collections.emptyList());
-
         parseJSON.forEach(featureFile -> {
-
-            featureFile.getTags().forEach(tag -> tempTags.add(tag.getName()));
-            testCaseResult.setTestName(featureFile.getName());
-            testCaseResult.setDescription(featureFile.getDescription());
-
+            featureFile.getTags().stream().filter(tag -> !tempTags.contains(tag.getName())).forEach(tag -> tempTags += tag.getName().concat(" "));
             featureFile.getElements().forEach(
-                    featureElement -> {
-
-                        var keywordType = featureElement.getKeyword();
-
-                        featureElement.getSteps().forEach(
-
+                    element -> {
+                        element.getSteps().forEach(
                                 step -> {
-                                    isFailure = (!step.getResult().getStatus().contains("passed"));
+                                    if (!step.getResult().getStatus().contains("passed")) failuresCount += 1;
                                     duration += step.getResult().getDuration();
 
                                     var keyword = step.getKeyword();
                                     var stepName = step.getName();
-                                    var stepResult_ = step.getResult().getStatus();
+                                    var stepResult = step.getResult().getStatus();
 
-                                    stepResult.setSystemOut(stringOutBuilder(keywordType, keyword, stepName, stepResult_));
-
-                                    stepResults.add(stepResult);
+                                    stringOutBuilder(element.getKeyword(), keyword, stepName, stepResult);
                                 }
                         );
                     }
             );
 
-            testCaseResult.setCaseOutInfo(stepResults);
-
-            if (!isFailure) featureResult.setFailures("0");
+            featureResult.setFailures(String.valueOf(failuresCount));
             featureResult.setTests(String.valueOf(parseJSON.size()));
             featureResult.setTime(String.valueOf(duration));
 
-            testCaseResults.add(testCaseResult);
+            testCaseResults.add(
+                    new FeatureTestCaseResult()
+                            .setTestName(featureFile.getName())
+                            .setDescription(featureFile.getDescription())
+                            .setCaseOutInfo(stepResults)
+                    );
+            stepResults = "";
         });
 
         featureResult.setTags(tempTags);
@@ -70,19 +59,18 @@ public class ResultBuilder {
         return featureResult;
     }
 
-    @NotNull
     @Contract(pure = true)
-    private String stringOutBuilder(String keywordType, String keyword, String stepName, String stepResult_) {
-        var outLength = 10;
-        var outLengthSecond = 100;
-        StringBuilder outString = new StringBuilder(keywordType);
+    private void stringOutBuilder(String keywordType, String keyword, String stepName, String stepResult_) {
+        var outLength = 15;
+        var outLengthSecond = 90;
+        var outString = new StringBuilder(keywordType);
 
         while (outString.length() < outLength) outString.append(".");
         outString.append(keyword.concat(" ").concat(stepName));
         while (outString.length() < outLengthSecond) outString.append(".");
         outString.append(stepResult_);
 
-        return outString.toString();
+        stepResults += "\n".concat(outString.toString());
     }
 
 }

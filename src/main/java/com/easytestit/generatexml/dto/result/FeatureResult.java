@@ -10,79 +10,56 @@ import java.util.Collection;
 @XmlRootElement(name = "testsuite")
 public class FeatureResult {
 
+    @XmlElement(name = "testcase")
     private Collection<FeatureTestCaseResult> testCases;
 
+    @XmlAttribute(name = "name")
     private String name;
+
+    @XmlAttribute(name = "failures")
     private String failures;
+
+    @XmlAttribute(name = "tests")
     private String tests;
+
+    @XmlAttribute(name = "skipped")
     private String skipped;
+
+    @XmlAttribute(name = "time")
     private String time;
-    private Collection<String> tags;
+
+    @XmlAttribute(name = "tags")
+    private String tags;
 
     public FeatureResult() {
 
-    }
-
-    @XmlElement(name = "testcase")
-    public Collection<FeatureTestCaseResult> getTestCases() {
-        return testCases;
     }
 
     public void setTestCases(Collection<FeatureTestCaseResult> testCases) {
         this.testCases = testCases;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    @XmlAttribute(name = "name")
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getFailures() {
-        return failures;
-    }
-
-    @XmlAttribute(name = "failures")
     public void setFailures(String failures) {
         this.failures = failures;
     }
 
-    public String getTests() {
-        return tests;
-    }
-
-    @XmlAttribute(name = "tests")
     public void setTests(String tests) {
         this.tests = tests;
     }
 
-    public String getSkipped() {
-        return skipped;
-    }
-
-    @XmlAttribute(name = "skipped")
     public void setSkipped(String skipped) {
         this.skipped = skipped;
     }
 
-    public String getTime() {
-        return time;
-    }
-
-    @XmlAttribute(name = "time")
     public void setTime(String time) {
         this.time = time;
     }
 
-    public Collection<String> getTags() {
-        return tags;
-    }
-
-    @XmlAttribute(name = "tags")
-    public void setTags(Collection<String> tags) {
+    public void setTags(String tags) {
         this.tags = tags;
     }
 }

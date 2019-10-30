@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +46,8 @@ class ParserJSONFiles {
         return getFeatureDocumentsList(jsonFiles);
     }
 
-    private Collection<Feature> getFeatureDocumentsList(Collection<String> jsonFiles) {
+    @NotNull
+    private Collection<Feature> getFeatureDocumentsList(@NotNull Collection<String> jsonFiles) {
         Collection<Feature> features = new ArrayList<>();
 
         if (jsonFiles.isEmpty()) {

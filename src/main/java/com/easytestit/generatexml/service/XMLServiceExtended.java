@@ -1,6 +1,6 @@
 package com.easytestit.generatexml.service;
 
-import com.easytestit.generatexml.dto.feature.Feature;
+import com.easytestit.generatexml.dto.result.FeatureResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -13,7 +13,11 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 
-abstract class XMLServiceExtended implements XMLService {
+public abstract class XMLServiceExtended implements XMLService {
+
+    public XMLServiceExtended() {
+
+    }
 
     private static final Logger LOGGER = LogManager.getLogger(XMLServiceExtended.class.getName());
 
@@ -77,5 +81,5 @@ abstract class XMLServiceExtended implements XMLService {
         }
     }
 
-    abstract XMLServiceExtended convertObjectToXML(Feature feature);
+    public abstract void convertObjectToXML(FeatureResult featureResult);
 }

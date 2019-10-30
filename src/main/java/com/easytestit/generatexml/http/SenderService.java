@@ -23,11 +23,12 @@ public class SenderService {
     private Properties appProps = new Properties();
 
     public void post(String file) {
+        final MediaType MEDIA_TYPE = MediaType.parse(SenderServiceData.OCTET_STREAM.getValue());
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file,
-                        RequestBody.create(MediaType.parse(SenderServiceData.OCTET_STREAM.getValue()),
-                                new File(file)))
+                        RequestBody.Companion.create(
+                                new File(file), MEDIA_TYPE))
                 .build();
 
         Request request = new Request.Builder()
