@@ -35,6 +35,7 @@
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <maven.javadoc.version>3.1.1</maven.javadoc.version>
         <maven.surefire.version>2.22.0</maven.surefire.version>
+        <maven.jar.version>3.1.2</maven.jar.version>
     </properties>
 
     <ciManagement>
@@ -160,11 +161,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
-                <configuration>
+                <configureXMLReport>
                     <encoding>UTF-8</encoding>
                     <release>11</release>
                     <compilerArgument>-Werror</compilerArgument>
-                </configuration>
+                </configureXMLReport>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -183,16 +184,17 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.version}</version>
-                <configuration>
+                <configureXMLReport>
                     <!--suppress UnresolvedMavenProperty -->
                     <argLine>-javaagent:${com.nordstrom.tools:junit-foundation:jar}</argLine>
                     <skipTests>true</skipTests>
-                </configuration>
+                </configureXMLReport>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
+                <version>${maven.jar.version}</version>
+                <configureXMLReport>
                     <!-- DO NOT include log4j.properties file in your Jar -->
                     <excludes>
                         <exclude>**/log4j.properties</exclude>
@@ -200,11 +202,11 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.easytestit.generatexml.XMLReportApplication</mainClass>
+                            <mainClass>com.easytestit.generatexml.GenerateXMLReport</mainClass>
                             <classpathPrefix>generatexml-jars/</classpathPrefix>
                         </manifest>
                     </archive>
-                </configuration>
+                </configureXMLReport>
             </plugin>
             <!-- Copy project dependency -->
             <plugin>
@@ -218,11 +220,11 @@
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
-                        <configuration>
+                        <configureXMLReport>
                             <!-- exclude junit, we need runtime dependency only -->
                             <includeScope>runtime</includeScope>
                             <outputDirectory>${project.build.directory}/dependency-jars/</outputDirectory>
-                        </configuration>
+                        </configureXMLReport>
                     </execution>
                 </executions>
             </plugin>

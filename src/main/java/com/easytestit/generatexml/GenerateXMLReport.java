@@ -1,9 +1,9 @@
 package com.easytestit.generatexml;
 
-import com.easytestit.generatexml.configuration.Configuration;
-import com.easytestit.generatexml.configuration.ConfigurationMode;
+import com.easytestit.generatexml.configuration.ConfigureXMLReport;
+import com.easytestit.generatexml.configuration.ConfigureXMLMode;
 import com.easytestit.generatexml.http.SenderService;
-import com.easytestit.generatexml.service.ResultBuilder;
+import com.easytestit.generatexml.service.AggregatedXMLReportBuilder;
 import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.service.GenerateXMLResult;
 import com.easytestit.generatexml.service.XMLServiceExtended;
@@ -15,25 +15,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-public class XMLReportApplication {
+public class GenerateXMLReport {
 
-    private static final Logger LOGGER = LogManager.getLogger(XMLReportApplication.class.getName());
-    private Configuration configuration;
-
+    private static final Logger LOGGER = LogManager.getLogger(GenerateXMLReport.class.getName());
+    private ConfigureXMLReport configureXMLReport;
     private GenerateXMLResult generateXMLResult = new GenerateXMLResult();
     private XMLServiceExtended xmlService = new GenerateXMLResult();
     private FileToZip toZip = new FileToZip();
 
-    public XMLReportApplication() {
-        LOGGER.log(Level.INFO, "Start application to convert JSON report to XML report with default parameters");
+    public GenerateXMLReport() {
+        LOGGER.info("Start application to convert JSON report to XML report with default parameters");
     }
 
-    public XMLReportApplication(@NotNull Configuration configuration) {
-        LOGGER.log(Level.INFO, "Start application to convert JSON report to XML report with specified Configuration");
-        this.configuration = configuration;
+    public GenerateXMLReport(@NotNull ConfigureXMLReport configureXMLReport) {
+        LOGGER.info("Start application to convert JSON report to XML report with specified Configuration");
+        this.configureXMLReport = configureXMLReport;
     }
 
     /**
@@ -45,19 +45,17 @@ public class XMLReportApplication {
         createResultsReportFolder();
 
         try {
-            if (configuration != null) {
-
+            if (configureXMLReport != null) {
                 //read JSON files from compiled directory
-                configuration.addJsonFiles(getJsonFilesFrom(configuration.getReportFolder()));
-                var parserJSONFiles = new ParserJSONFiles(configuration);
-
+                configureXMLReport.addJsonFiles(getJsonFilesFrom(configureXMLReport.getReportFolder()));
                 //convert JSON file in XML
                 xmlService.convertObjectToXML(
-                        new ResultBuilder().generateAggregatedReport(parserJSONFiles.parseJSON()));
+                        new AggregatedXMLReportBuilder().generateAggregatedXMLReport(
+                                new ParserJSONFiles(configureXMLReport).parseJSON()));
 
                 //create ZIP file from XML which created from previews step
-                if (configuration.containsConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_TO_FILE)) createZip();
-                if (configuration.containsConfigurationMode(ConfigurationMode.SEND_RESULT_TO_RP)) sendXML();
+                if (configureXMLReport.containsConfigurationMode(ConfigureXMLMode.ZIP_XML_RESULT_TO_FILE)) createZip();
+                if (configureXMLReport.containsConfigurationMode(ConfigureXMLMode.SEND_RESULT_TO_RP)) sendXML();
             } else {
                 //when configuration is null start functionality with default parameters
                 new ParserJSONFiles().parseJSON(
@@ -93,7 +91,7 @@ public class XMLReportApplication {
      */
     @NotNull
     private Collection<String> getJsonFilesFrom(@NotNull File reportFolder) {
-        Collection<String> extensions = Collections.singletonList(DefaultData.defaultFileExtensions);
+        var extensions = Collections.singletonList(DefaultData.defaultFileExtensions);
         Collection<String> out = new ArrayList<>();
         File[] files = reportFolder.listFiles();
 
@@ -103,16 +101,16 @@ public class XMLReportApplication {
             return out;
         }
 
-        for (File file : files) {
+        Arrays.stream(files).forEach(file -> {
             if (file.isFile() && extensions.contains(file.getName().substring(file.getName().lastIndexOf('.') + 1))) {
                 out.add(String.valueOf(reportFolder)
-                        .concat("\\")
+                        .concat(String.valueOf(File.separatorChar))
                         .concat(file.getName()));
             } else {
-                LOGGER.log(Level.INFO, "Report folder ".concat(reportFolder.getName())
+                LOGGER.info("Report folder ".concat(reportFolder.getName())
                         .concat(" aren't contain files with JSON format!"));
             }
-        }
+        });
 
         return out;
     }
@@ -126,12 +124,9 @@ public class XMLReportApplication {
      * This folder will zip later if needed configuration will pass
      */
     private void createResultsReportFolder() {
-        LOGGER.log(Level.INFO, "Try to create new folder in project directory");
+        LOGGER.info("Try to create new folder in project directory");
         File resultsFolder = new File(DefaultData.reportResultsFolder);
-        if (!resultsFolder.exists()) {
-            if (resultsFolder.mkdirs()) {
-                LOGGER.log(Level.INFO, "Direction ".concat(DefaultData.reportResultsFolder).concat(" was created"));
-            }
-        }
+        if (!resultsFolder.exists() && resultsFolder.mkdirs())
+            LOGGER.info("Direction ".concat(DefaultData.reportResultsFolder).concat(" was created"));
     }
 }

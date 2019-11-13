@@ -1,11 +1,13 @@
 package com.easytestit.generatexml.dto.feature.tags;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "tags")
+@NoArgsConstructor
+@NonNull
+@Getter
 public class Tag {
 
     @SerializedName("name")
@@ -14,21 +16,4 @@ public class Tag {
     @SerializedName("line")
     private Integer line;
 
-    @XmlElement(name = "name")
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @XmlElement(name = "line")
-    public Integer getLine() {
-        return line;
-    }
-
-    public void setLine(Integer line) {
-        this.line = line;
-    }
 }

@@ -3,7 +3,7 @@ package com.easytestit.generatexml.service;
 import com.easytestit.generatexml.ValidationException;
 import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.dto.feature.Feature;
-import com.easytestit.generatexml.dto.result.FeatureResult;
+import com.easytestit.generatexml.dto.aggregatedreport.AggregatedTestSuiteResult;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,16 +53,16 @@ public class GenerateXMLResult extends XMLServiceExtended {
         }
     }
 
-    public void convertObjectToXML(FeatureResult featureResult) {
+    public void convertObjectToXML(AggregatedTestSuiteResult aggregatedTestSuiteResult) {
         try {
-            LOGGER.info("Start to create XML file from Java Object ".concat(FeatureResult.class.getName()));
+            LOGGER.info("Start to create XML file from Java Object ".concat(AggregatedTestSuiteResult.class.getName()));
 
-            JAXBContext context = JAXBContext.newInstance(FeatureResult.class);
+            JAXBContext context = JAXBContext.newInstance(AggregatedTestSuiteResult.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-            m.marshal(featureResult, System.out);
-            m.marshal(featureResult, new File(DefaultData.reportResultsFolder.concat(DefaultData.fileName)));
+            m.marshal(aggregatedTestSuiteResult, System.out);
+            m.marshal(aggregatedTestSuiteResult, new File(DefaultData.reportResultsFolder.concat(DefaultData.fileName)));
 
         } catch (JAXBException e) {
             LOGGER.error(e.getMessage());

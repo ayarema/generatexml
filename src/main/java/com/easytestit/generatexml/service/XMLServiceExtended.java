@@ -1,6 +1,6 @@
 package com.easytestit.generatexml.service;
 
-import com.easytestit.generatexml.dto.result.FeatureResult;
+import com.easytestit.generatexml.dto.aggregatedreport.AggregatedTestSuiteResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -8,7 +8,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
@@ -81,5 +85,5 @@ public abstract class XMLServiceExtended implements XMLService {
         }
     }
 
-    public abstract void convertObjectToXML(FeatureResult featureResult);
+    public abstract void convertObjectToXML(AggregatedTestSuiteResult aggregatedTestSuiteResult);
 }

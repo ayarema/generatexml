@@ -12,7 +12,7 @@ public enum SenderServiceData {
 
     private String value;
 
-    private SenderServiceData(String str) {
+    SenderServiceData(String str) {
         value = str;
     }
 

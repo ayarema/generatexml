@@ -1,7 +1,12 @@
 package com.easytestit.generatexml.http;
 
 import com.easytestit.generatexml.data.SenderServiceData;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.RequestBody;
+import okhttp3.Request;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

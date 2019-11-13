@@ -1,6 +1,6 @@
 package com.easytestit.generatexml.configuration;
 
-public enum ConfigurationMode {
+public enum ConfigureXMLMode {
 
     /**
      * Defines additional functionality that enables zipping results files to archive.

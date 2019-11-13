@@ -1,22 +1,22 @@
 package com.easytestit.generatexml.configuration;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Configuration {
+public class ConfigureXMLReport {
 
-    private static final Logger LOGGER = LogManager.getLogger(Configuration.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ConfigureXMLReport.class.getName());
     private File reportFolder;
     private Collection<String> jsonFiles;
-    private Collection<ConfigurationMode> configurationMode = new ArrayList<>();
+    private Collection<ConfigureXMLMode> configureXMLMode = new ArrayList<>();
 
-    public Configuration(File reportFolder) {
-        LOGGER.log(Level.INFO, "Create configuration for application with defined report folder");
+    public ConfigureXMLReport(@NotNull File reportFolder) {
+        LOGGER.info(String.format("Create configuration for application with defined '%s' report folder", reportFolder.getAbsolutePath()));
         this.reportFolder = reportFolder;
     }
 
@@ -29,7 +29,7 @@ public class Configuration {
     }
 
     /**
-     * @return the folder where new XML report should be created
+     * @return the folder where JSON reports locate which should be convert to XML
      */
     public File getReportFolder() {
         return reportFolder;
@@ -44,18 +44,18 @@ public class Configuration {
 
     /**
      * Describe functionality where user wants to include zipping functionality
-     * @param configurationMode parameter that include specific functionality
+     * @param configureXMLMode parameter that include specific functionality
      */
-    public void addConfigurationMode(ConfigurationMode configurationMode) {
-        this.configurationMode.add(configurationMode);
+    public void addConfigureXMLMode(ConfigureXMLMode configureXMLMode) {
+        this.configureXMLMode.add(configureXMLMode);
     }
 
     /**
      * Describe method which check that needed parameter exist or added before for specific functionality
-     * @param configurationMode parameter which should be checked
+     * @param configureXMLMode parameter which should be checked
      * @return boolean value if passed parameter exist in configuration mode
      */
-    public boolean containsConfigurationMode(ConfigurationMode configurationMode) {
-        return this.configurationMode.contains(configurationMode);
+    public boolean containsConfigurationMode(ConfigureXMLMode configureXMLMode) {
+        return this.configureXMLMode.contains(configureXMLMode);
     }
 }

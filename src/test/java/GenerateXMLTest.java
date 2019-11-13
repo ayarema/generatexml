@@ -1,6 +1,5 @@
-import com.easytestit.generatexml.XMLReportApplication;
-import com.easytestit.generatexml.configuration.Configuration;
-import com.easytestit.generatexml.configuration.ConfigurationMode;
+import com.easytestit.generatexml.GenerateXMLReport;
+import com.easytestit.generatexml.configuration.ConfigureXMLReport;
 import org.junit.Test;
 
 import java.io.File;
@@ -9,16 +8,16 @@ public class GenerateXMLTest {
 
     @Test
     public void generateXmlTest() {
-        XMLReportApplication application = new XMLReportApplication();
+        GenerateXMLReport application = new GenerateXMLReport();
         application.generateXMLreport();
     }
 
     @Test
     public void generateXmlTestWithConf() {
-        var conf = new Configuration(new File("target/surefire-reports/"));
-        conf.addConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_TO_FILE);
-        conf.addConfigurationMode(ConfigurationMode.SEND_RESULT_TO_RP);
-        XMLReportApplication appWithConf = new XMLReportApplication(conf);
+        var conf = new ConfigureXMLReport(new File("out/reports/"));
+        /*conf.addConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_TO_FILE);
+        conf.addConfigurationMode(ConfigurationMode.SEND_RESULT_TO_RP);*/
+        GenerateXMLReport appWithConf = new GenerateXMLReport(conf);
         appWithConf.generateXMLreport();
     }
 
