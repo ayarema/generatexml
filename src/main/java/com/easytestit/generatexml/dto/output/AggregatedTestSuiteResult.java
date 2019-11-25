@@ -1,4 +1,4 @@
-package com.easytestit.generatexml.dto.aggregatedreport;
+package com.easytestit.generatexml.dto.output;
 
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -15,7 +15,6 @@ import java.util.Collection;
  */
 @NoArgsConstructor
 @Setter
-@NonNull
 @XmlRootElement(name = "testsuites")
 public class AggregatedTestSuiteResult {
 

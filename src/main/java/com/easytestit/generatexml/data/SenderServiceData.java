@@ -1,5 +1,7 @@
 package com.easytestit.generatexml.data;
 
+import org.jetbrains.annotations.Contract;
+
 public enum SenderServiceData {
 
     AUTHORIZATION("Authorization"),
@@ -12,10 +14,12 @@ public enum SenderServiceData {
 
     private String value;
 
+    @Contract(pure = true)
     SenderServiceData(String str) {
         value = str;
     }
 
+    @Contract(pure = true)
     public String getValue() {
         return this.value;
     }

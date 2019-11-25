@@ -10,5 +10,5 @@ public enum ConfigureXMLMode {
     /**
      * Defines additional functionality that enables sending results archive file to report portal server.
      */
-    SEND_RESULT_TO_RP;
+    SEND_RESULT_TO_RP
 }

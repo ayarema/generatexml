@@ -1,4 +1,4 @@
-package com.easytestit.generatexml.dto.aggregatedreport.properties;
+package com.easytestit.generatexml.dto.output.properties;
 
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

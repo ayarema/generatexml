@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.easytestit</groupId> <!--  I have thoughts to rename group id to com.automathelper -->
+    <groupId>com.easytestit</groupId>
     <artifactId>generate-xml</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>generatexml</name>
     <packaging>jar</packaging>
@@ -161,11 +161,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
-                <configureXMLReport>
+                <configuration>
                     <encoding>UTF-8</encoding>
                     <release>11</release>
                     <compilerArgument>-Werror</compilerArgument>
-                </configureXMLReport>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -184,17 +184,17 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.version}</version>
-                <configureXMLReport>
+                <configuration>
                     <!--suppress UnresolvedMavenProperty -->
                     <argLine>-javaagent:${com.nordstrom.tools:junit-foundation:jar}</argLine>
                     <skipTests>true</skipTests>
-                </configureXMLReport>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven.jar.version}</version>
-                <configureXMLReport>
+                <configuration>
                     <!-- DO NOT include log4j.properties file in your Jar -->
                     <excludes>
                         <exclude>**/log4j.properties</exclude>
@@ -206,7 +206,7 @@
                             <classpathPrefix>generatexml-jars/</classpathPrefix>
                         </manifest>
                     </archive>
-                </configureXMLReport>
+                </configuration>
             </plugin>
             <!-- Copy project dependency -->
             <plugin>
@@ -220,11 +220,11 @@
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
-                        <configureXMLReport>
+                        <configuration>
                             <!-- exclude junit, we need runtime dependency only -->
                             <includeScope>runtime</includeScope>
                             <outputDirectory>${project.build.directory}/dependency-jars/</outputDirectory>
-                        </configureXMLReport>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

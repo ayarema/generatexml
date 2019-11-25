@@ -2,8 +2,8 @@ package com.easytestit.generatexml.service;
 
 import com.easytestit.generatexml.ValidationException;
 import com.easytestit.generatexml.data.DefaultData;
-import com.easytestit.generatexml.dto.feature.Feature;
-import com.easytestit.generatexml.dto.aggregatedreport.AggregatedTestSuiteResult;
+import com.easytestit.generatexml.dto.input.Feature;
+import com.easytestit.generatexml.dto.output.AggregatedTestSuiteResult;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

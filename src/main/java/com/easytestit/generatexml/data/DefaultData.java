@@ -8,6 +8,7 @@ public interface DefaultData {
     String fileName = "AggregatedReport.xml";
     String reportDirPath = "target/surefire-reports/";
     String reportResultsFolder = "out/xml-reports/";
-    String reportFolderZipName = "zipAggregatedReport.zip";
+    String reportFileZipName = "zipAggregatedReport.zip";
     String scenario = "Scenario";
+    String background = "Background";
 }

@@ -1,44 +1,33 @@
 package com.easytestit.generatexml;
 
 import com.easytestit.generatexml.configuration.ConfigureXMLReport;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.InjectableValues;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.easytestit.generatexml.dto.feature.Feature;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.Level;
+import com.easytestit.generatexml.dto.input.Feature;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
+@SuppressWarnings("unchecked")
+@NoArgsConstructor
 class ParserJSONFiles {
 
     private static final Logger LOGGER = LogManager.getLogger(GenerateXMLReport.class.getName());
     private ConfigureXMLReport configureXMLReport;
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    ParserJSONFiles() {
-
-    }
 
     ParserJSONFiles(ConfigureXMLReport configureXMLReport) {
         LOGGER.info("Start parse JSON report to Object with specified Configuration");
         this.configureXMLReport = configureXMLReport;
-        //added specific parameters to mapper
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-        //enable injection functionality
-        InjectableValues values = new InjectableValues.Std().addValue(ConfigureXMLReport.class, configureXMLReport);
-        mapper.setInjectableValues(values);
     }
 
     /**
@@ -72,9 +61,9 @@ class ParserJSONFiles {
         }
 
         jsonFiles.forEach( jsonFile -> {
-            Feature[] reportFeatures = parseForFeatureDocuments(jsonFile);
-            LOGGER.info(String.format("File '%s' contains %d features", jsonFile, reportFeatures.length));
-            features.addAll(Arrays.asList(reportFeatures));
+            Collection<Feature> reportFeatures = parseForFeatureDocuments(jsonFile);
+            LOGGER.info(String.format("File '%s' contains %d features", jsonFile, reportFeatures.size()));
+            features.addAll(reportFeatures);
         });
 
         if (features.isEmpty()) {
@@ -89,14 +78,11 @@ class ParserJSONFiles {
      * @param jsonFile JSON files with a Cucumber standard describing the result of running tests
      * @return ReportDocument object with values from JSON files
      */
-    private Feature[] parseForFeatureDocuments(String jsonFile) {
-        try (Reader reader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8)) {
-            Feature[] features = mapper.readValue(reader, Feature[].class);
-            if (ArrayUtils.isEmpty(features)) {
-                LOGGER.log(Level.INFO, String.format("Files %s does not contain karate reports", jsonFile));
-            }
-            return features;
-        } catch (IOException e) {
+    private Collection<Feature> parseForFeatureDocuments(String jsonFile) {
+        Type collectionType = new TypeToken<Collection<Feature>>(){}.getType();
+        try {
+            return (Collection<Feature>) new Gson().fromJson(new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8), collectionType);
+        } catch (FileNotFoundException e) {
             throw new ValidationException(e);
         }
     }

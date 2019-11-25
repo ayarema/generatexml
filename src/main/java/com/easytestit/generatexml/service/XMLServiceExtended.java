@@ -1,8 +1,10 @@
 package com.easytestit.generatexml.service;
 
-import com.easytestit.generatexml.dto.aggregatedreport.AggregatedTestSuiteResult;
+import com.easytestit.generatexml.dto.output.AggregatedTestSuiteResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -19,14 +21,15 @@ import java.io.File;
 
 public abstract class XMLServiceExtended implements XMLService {
 
-    public XMLServiceExtended() {
+    @Contract(pure = true)
+    XMLServiceExtended() {
 
     }
 
     private static final Logger LOGGER = LogManager.getLogger(XMLServiceExtended.class.getName());
 
     @Override
-    public void writeXMLtoFile(Document doc, String filePath) {
+    public void writeXMLtoFile(@NotNull Document doc, String filePath) {
         try {
             LOGGER.debug("Method writeXMLtoFile invoked");
             doc.getDocumentElement().normalize();
@@ -48,7 +51,7 @@ public abstract class XMLServiceExtended implements XMLService {
     public void updateElementValue(Document doc) {
         LOGGER.debug("Method updateElementValue invoked");
         NodeList users = doc.getElementsByTagName("User");
-        Element user = null;
+        Element user;
         // loop for each user
         for (int i = 0; i < users.getLength(); i++) {
             user = (Element) users.item(i);
@@ -61,7 +64,7 @@ public abstract class XMLServiceExtended implements XMLService {
     public void addElement(Document doc) {
         LOGGER.debug("Method addElement invoked");
         NodeList users = doc.getElementsByTagName("User");
-        Element emp = null;
+        Element emp;
 
         // loop for each user
         for (int i = 0; i < users.getLength(); i++) {
@@ -76,7 +79,7 @@ public abstract class XMLServiceExtended implements XMLService {
     public void deleteElement(Document doc) {
         LOGGER.debug("Method deleteElement invoked");
         NodeList users = doc.getElementsByTagName("User");
-        Element user = null;
+        Element user;
         // loop for each user
         for (int i = 0; i < users.getLength(); i++) {
             user = (Element) users.item(i);

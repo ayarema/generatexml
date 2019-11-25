@@ -1,4 +1,4 @@
-package com.easytestit.generatexml.dto.aggregatedreport.testcase;
+package com.easytestit.generatexml.dto.output.testcase;
 
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NoArgsConstructor
 @NonNull
 @XmlRootElement(name = "testcase")
-public class FeatureTestCaseResult {
+public class AggregatedTestCase {
 
     /**
      * Name of the test method
@@ -57,22 +57,22 @@ public class FeatureTestCaseResult {
     @XmlElement(name = "system-err")
     private String caseOutErr;
 
-    public FeatureTestCaseResult setTestName(String testName) {
+    public AggregatedTestCase setTestName(String testName) {
         this.testName = testName;
         return this;
     }
 
-    public FeatureTestCaseResult setDescription(String description) {
+    public AggregatedTestCase setDescription(String description) {
         this.description = description;
         return this;
     }
 
-    public FeatureTestCaseResult setCaseOutInfo(String caseOutInfo) {
+    public AggregatedTestCase setCaseOutInfo(String caseOutInfo) {
         this.caseOutInfo = caseOutInfo;
         return this;
     }
 
-    public FeatureTestCaseResult setCaseOutErr(String caseOutErr) {
+    public AggregatedTestCase setCaseOutErr(String caseOutErr) {
         this.caseOutErr = caseOutErr;
         return this;
     }

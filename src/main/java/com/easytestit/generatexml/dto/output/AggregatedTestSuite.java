@@ -1,7 +1,7 @@
-package com.easytestit.generatexml.dto.aggregatedreport;
+package com.easytestit.generatexml.dto.output;
 
-import com.easytestit.generatexml.dto.aggregatedreport.properties.AggregatedProperties;
-import com.easytestit.generatexml.dto.aggregatedreport.testcase.FeatureTestCaseResult;
+import com.easytestit.generatexml.dto.output.properties.AggregatedProperties;
+import com.easytestit.generatexml.dto.output.testcase.AggregatedTestCase;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -100,7 +100,13 @@ public class AggregatedTestSuite {
      * Test cases, see deep into test case class
      */
     @XmlElement(name = "testcase")
-    private Collection<FeatureTestCaseResult> testCases;
+    private Collection<AggregatedTestCase> testCases;
+
+    /**
+     * Test cases, see deep into test case class
+     */
+    @XmlElement(name = "tags")
+    private String tags;
 
     /**
      * Data that was written to standard out while the test suite was executed
@@ -174,8 +180,13 @@ public class AggregatedTestSuite {
         return this;
     }
 
-    public AggregatedTestSuite setTestCases(Collection<FeatureTestCaseResult> testCases) {
+    public AggregatedTestSuite setTestCases(Collection<AggregatedTestCase> testCases) {
         this.testCases = testCases;
+        return this;
+    }
+
+    public AggregatedTestSuite setTags(String tags) {
+        this.tags = tags;
         return this;
     }
 

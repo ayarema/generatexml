@@ -27,7 +27,7 @@ public class FileToZip {
             LOGGER.log(Level.INFO, "Start to create new ZIP archive in project root directory");
 
             String sourceFile = DefaultData.reportResultsFolder.concat(DefaultData.fileName);
-            FileOutputStream fos = new FileOutputStream(DefaultData.reportFolderZipName);
+            FileOutputStream fos = new FileOutputStream(DefaultData.reportFileZipName);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
             File fileToZip = new File(sourceFile);
 

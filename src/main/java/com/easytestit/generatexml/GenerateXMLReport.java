@@ -78,7 +78,7 @@ public class GenerateXMLReport {
 
     private void sendXML() {
         try {
-            new SenderService().post(DefaultData.reportFolderZipName);
+            new SenderService().post(DefaultData.reportFileZipName);
         } catch (Exception e) {
             generateErrorReport(e);
         }
