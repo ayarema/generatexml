@@ -1,29 +1,42 @@
 package com.easytestit.generatexml.service;
 
-import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.data.XMLBuilderConstants;
-import com.easytestit.generatexml.dto.output.AggregatedTestSuite;
+import com.easytestit.generatexml.dto.input.elements.Element;
+import com.easytestit.generatexml.dto.output.TestSuite;
 import com.easytestit.generatexml.dto.input.Feature;
 import com.easytestit.generatexml.dto.output.AggregatedTestSuiteResult;
 import com.easytestit.generatexml.dto.output.testcase.AggregatedTestCase;
 import com.easytestit.generatexml.dto.input.tags.Tag;
 import com.easytestit.generatexml.utils.UtilsConverter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+//todo the first class which should be refactored
 public class AggregatedXMLReportBuilder {
+
+    private static final Logger LOGGER = LogManager.getLogger(AggregatedXMLReportBuilder.class.getName());
 
     private String allTagsFromAllFeatures = "";
     private String allTagsFromEachFeature = "";
-    private Integer elementLine = 0;
+    private Map<String, Object> background = new HashMap<>();
+    private Map<String, Object> scenarioMap = new HashMap<>();
 
-    private String tempTags = "";
     private String tempTags_ = "";
     private String stepOutResults = "";
     private String stepErrResults = "";
@@ -41,8 +54,17 @@ public class AggregatedXMLReportBuilder {
     private final String[] responseDate = {""};
     private final String[] scenarioTestName = {""};
 
+    /**
+     * The main goal in this method is to convert JAVA object which was deserialized from JSON file
+     * to other JAVA object which will serialize to XML file
+     * Here concentrate logic to calculate and handle data and put this data in DTO
+     *
+     * @param parseJSON prepared JAVA feature class which should be convert to another DTO
+     * @return prepared DTO aggregated class with all needed data for serialize it to XML file
+     */
+    //TODO need to refactor this method cause here is error
     public AggregatedTestSuiteResult generateAggregatedXMLReport(@NotNull Collection<Feature> parseJSON) {
-        Collection<AggregatedTestSuite> aggregatedTestSuites = new ArrayList<>(Collections.emptyList());
+        Collection<TestSuite> testSuites = new ArrayList<>(Collections.emptyList());
         Collection<AggregatedTestCase> aggregatedTestCase = new ArrayList<>(Collections.emptyList());
 
         parseJSON.forEach(featureFile -> {
@@ -53,9 +75,10 @@ public class AggregatedXMLReportBuilder {
             if (featureFile.getElements() != null) {
                 featureFile.getElements().forEach(
                         element -> {
-                            if (element.getKeyword().equals(DefaultData.background)) {
-                                elementLine = element.getLine();
-                            }
+                            if (element.getKeyword().equals(XMLBuilderConstants.background)) fillBackground(element);
+
+                            if (element.getKeyword().equals(XMLBuilderConstants.scenario)) fillScenario(element);
+
                             if (element.getSteps() != null) {
                                 element.getSteps().forEach(
                                         step -> {
@@ -78,7 +101,7 @@ public class AggregatedXMLReportBuilder {
                                 );
 
                             }
-                            if (element.getKeyword().equals(DefaultData.scenario)) {
+                            if (element.getKeyword().equals(XMLBuilderConstants.scenario)) {
                                 scenarioTestName[0] = element.getName();
                                 element.getSteps().stream().filter(
                                         step -> !step.getResult().getStatus().contains(XMLBuilderConstants.PASSED)).forEach(
@@ -116,7 +139,7 @@ public class AggregatedXMLReportBuilder {
 
             aggregatedTestCase.add(getTestCaseResult(scenarioTestName[0], featureFile.getDescription(), stepOutResults, stepErrResults));
 
-            aggregatedTestSuites.add(
+            testSuites.add(
                     getTestSuiteResult(
                             featureFile.getName(),
                             featureFile.getElements().size(),
@@ -140,9 +163,16 @@ public class AggregatedXMLReportBuilder {
 
         featureFilesCount = 0;
 
-        return aggregateTestSuitesResult(allTagsFromAllFeatures.trim(), countFailuresAllErrorsFromAllFiles, countFailuresTestsFromAllFiles, successfulCountTests, duration, aggregatedTestSuites);
+        return aggregateTestSuitesResult(allTagsFromAllFeatures.trim(), countFailuresAllErrorsFromAllFiles, countFailuresTestsFromAllFiles, successfulCountTests, duration, testSuites);
     }
 
+    /**
+     * Separate method for better handling code
+     * Created for getting data about tags and pass these tags to other function
+     *
+     * @param tags object which should be handled
+     * @return string value of all tags
+     */
     @NotNull
     private String fillTagsInSuitReport(@NotNull Collection<Tag> tags) {
         tags.stream().filter(
@@ -150,6 +180,54 @@ public class AggregatedXMLReportBuilder {
         return allTagsFromEachFeature.trim();
     }
 
+    /**
+     * Helper method - which at the current time is not use
+     * @param element where located whole information about Background or Scenario
+     */
+    private void fillBackground(@NotNull Element element) {
+        final String[] stepInfo = {"", "", ""};
+        if (background.get("line") == null) {
+
+            element.getSteps().forEach(step -> {
+                stepInfo[0] += step.getName();
+                stepInfo[1] = step.getResult().getStatus();
+                stepInfo[2] = step.getKeyword();
+            });
+
+            background.put("keyword", element.getKeyword());
+            background.put("line", element.getLine());
+            background.put("stepName", stepInfo[0]);
+            background.put("stepStatus", stepInfo[1]);
+            background.put("stepKeyword", stepInfo[2]);
+
+        } else if (!background.get("line").equals(String.valueOf(element.getLine()))) {
+            LOGGER.info("Background already created but there is only one different in duration. Could be skipped.");
+        }
+    }
+
+    /**
+     * Helper method - which at the current time is not use
+     * @param element where located whole information about Background or Scenario
+     */
+    private void fillScenario(Element element) {
+        final String[] stepInfo = {"", "", "", ""};
+        if (scenarioMap.get("line") == null) {
+
+            scenarioMap.put("scenarioName", element.getName());
+            scenarioMap.put("scenarioKeyword", element.getKeyword());
+        }
+    }
+
+    /**
+     * Helper method which fill object {@link AggregatedTestCase}. This object mean Test in JUnit XML report format (Background & Scenario)
+     *
+     * @param scenarioTestDescription - description from {@link Element} object from name field
+     * @param description - description from {@link Feature} object from description field
+     * @param outResults - concatenated string from all passed steps in one Test (Test is Background & Scenario)
+     * @param errResults - concatenated string from all failed steps in one Test (Test is Background & Scenario)
+     *
+     * @return new filled and prepared {@link AggregatedTestCase} object
+     */
     private AggregatedTestCase getTestCaseResult(String scenarioTestDescription, String description, String outResults, String errResults) {
         return new AggregatedTestCase()
                 .setTestName(scenarioTestDescription)
@@ -158,13 +236,25 @@ public class AggregatedXMLReportBuilder {
                 .setCaseOutErr(errResults);
     }
 
-    private void collectFeatureTags(String featureTagName) {
-        tempTags += featureTagName;
-    }
-
+    /**
+     * Helper method which fill object {@link TestSuite}. This object related to Feature file from Cucumber, which contains all Backgrounds and Scenarios
+     *
+     * @param name of feature file
+     * @param size quantity of elements in one feature file
+     * @param tags tags which was set upped for feature file
+     * @param countInSuites quantity of errors from all scenarios and backgrounds
+     * @param failuresCountInSuites quantity of failures from all scenarios and backgrounds
+     * @param featureFilesCount ID of feature file which was parsed before
+     * @param durationOfTest long type value of duration whole backgrounds and scenarios
+     * @param hostName string value of host where request made
+     * @param dateTimeISO string value of date time when request was made
+     * @param testCaseResults object {@link AggregatedTestCase} with data
+     *
+     * @return aggregated {@link TestSuite} with all {@link AggregatedTestCase}
+     */
     @NotNull
-    private AggregatedTestSuite getTestSuiteResult(
-            @NotNull String names,
+    private TestSuite getTestSuiteResult(
+            @NotNull String name,
             int size,
             @NotNull List<Tag> tags,
             int countInSuites,
@@ -174,30 +264,42 @@ public class AggregatedXMLReportBuilder {
             String hostName,
             String dateTimeISO,
             Collection<AggregatedTestCase> testCaseResults) {
-        var aggregatedTestSuite = new AggregatedTestSuite();
-        String[] name = names.split("/");
+        var testSuite = new TestSuite();
+        String[] names = name.split("/");
         tags.stream().filter(
                 tag -> !tempTags_.contains(tag.getName())).forEach(tag -> tempTags_ += tag.getName().concat(" "));
 
         if (tempTags_.contains(XMLBuilderConstants.DISABLED)) {
             var j = StringUtils.countMatches(tempTags_, XMLBuilderConstants.DISABLED);
-            aggregatedTestSuite.setDisabled(String.valueOf(j));
+            testSuite.setDisabled(String.valueOf(j));
         }
 
-        aggregatedTestSuite.setName(getLastElement(Arrays.stream(name).collect(Collectors.toList())))
+        testSuite.setName(getLastElement(Arrays.stream(names).collect(Collectors.toList())))
                 .setTests(String.valueOf(size))
                 .setErrors(String.valueOf(countInSuites))
                 .setFailures(String.valueOf(failuresCountInSuites))
                 .setId(String.valueOf(featureFilesCount))
-                .setPackageName(names)
+                .setPackageName(name)
                 .setTime(String.valueOf(durationOfTest))
                 .setHostname(UtilsConverter.removeRedundantSymbols.apply(hostName))
                 .setTimestamp(LocalDateTime.parse(dateTimeISO, DateTimeFormatter.ofPattern(XMLBuilderConstants.DATE_FORMATTER_PATTERN, Locale.ENGLISH)).toString())
                 .setTestCases(testCaseResults);
 
-        return aggregatedTestSuite;
+        return testSuite;
     }
 
+    /**
+     * Helper method which fill object {@link AggregatedTestSuiteResult}. This object contains all Feature file from Cucumber, which contains all Backgrounds and Scenarios
+     *
+     * @param tempTags string value from all features files
+     * @param _countFailuresAllErrorsFromAllFiles string value of quantity of errors from all feature files
+     * @param _countFailuresTestsFromAllFiles string value of quantity of failures from all feature files
+     * @param successfulCountTests string value of quantity of successful tests from all feature files
+     * @param _duration string value of duration for all feature files
+     * @param testSuites object {@link TestSuite} with prepared data
+     *
+     * @return prepared object {@link AggregatedTestSuiteResult} with all prepared data
+     */
     @NotNull
     private AggregatedTestSuiteResult aggregateTestSuitesResult(
             @NotNull String tempTags,
@@ -205,7 +307,7 @@ public class AggregatedXMLReportBuilder {
             int _countFailuresTestsFromAllFiles,
             int successfulCountTests,
             Long _duration,
-            Collection<AggregatedTestSuite> aggregatedTestSuites) {
+            Collection<TestSuite> testSuites) {
         var aggregatedTestSuits = new AggregatedTestSuiteResult();
 
         if (tempTags.contains(XMLBuilderConstants.IGNORED) || tempTags.contains(XMLBuilderConstants.DISABLED)) {
@@ -218,11 +320,19 @@ public class AggregatedXMLReportBuilder {
         aggregatedTestSuits.setFailures(String.valueOf(_countFailuresTestsFromAllFiles));
         aggregatedTestSuits.setTests(String.valueOf(successfulCountTests));
         aggregatedTestSuits.setTime(String.valueOf(UtilsConverter.round.apply(_duration * XMLBuilderConstants.RATIO)));
-        aggregatedTestSuits.setTestSuites(aggregatedTestSuites);
+        aggregatedTestSuits.setTestSuites(testSuites);
 
         return aggregatedTestSuits;
     }
 
+    /**
+     * Helper method that processes the input string and accumulates its value to other string field of class
+     *
+     * @param keywordType string value keyword of Element
+     * @param keyword string value keyword of Step
+     * @param stepName string value name of Step
+     * @param stepResult_ string value result of Step
+     */
     @Contract(pure = true)
     private void stringOutBuilder(String keywordType, String keyword, String stepName, String stepResult_) {
         var outLength = 15;
@@ -237,11 +347,23 @@ public class AggregatedXMLReportBuilder {
         stepOutResults += "\n".concat(outString.toString());
     }
 
+    /**
+     * Helper method that processes the input string and accumulates its value to other string field of class
+     *
+     * @param errMessage string value that should be accumulated
+     */
     @Contract(pure = true)
     private void stringErrBuilder(String errMessage) {
         stepErrResults += "\n".concat(errMessage);
     }
 
+    /**
+     * Functional method which get the last element from collection
+     *
+     * @param elements iterable object which should processed
+     * @param <T> the type of elements returned by the iterator
+     * @return
+     */
     @Contract(pure = true)
     private <T> T getLastElement(@NotNull final Iterable<T> elements) {
         T lastElement = null;
@@ -253,6 +375,14 @@ public class AggregatedXMLReportBuilder {
         return lastElement;
     }
 
+    /**
+     * Helper converter string to array after splitting by specific separator symbol
+     *
+     * @param str which should be split and should be convert
+     * @param separator string value of separator for split the string
+     *
+     * @return string arrays
+     */
     @NotNull
     private List<String> getArrayStringBySeparator(@NotNull String str, String separator) {
         String[] arrayList = str.split(separator);

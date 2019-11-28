@@ -1,5 +1,8 @@
 package com.easytestit.generatexml.data;
 
+/**
+ * Default data class was created for storing default test static data
+ */
 public class XMLBuilderConstants {
 
     public static final String PASSED = "passed";
@@ -11,5 +14,8 @@ public class XMLBuilderConstants {
     public static final String DATE_TEXT = "Date";
     public static final String DATE_FORMATTER_PATTERN = "EEE, d MMM yyyy HH:mm:ss";
     public static final double RATIO = 0.000000001;
+    public static final String scenario = "Scenario";
+    public static final String background = "Background";
+    public static final String SLASH_SEPARATOR = "/";
 
 }

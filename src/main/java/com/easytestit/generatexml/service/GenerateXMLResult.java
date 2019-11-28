@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * The service class @link DocumentXMLFilling which convert JAVA Object in XML file
+ * The service class {@link GenerateXMLResult} which convert JAVA Object in XML file
  */
 public class GenerateXMLResult extends XMLServiceExtended {
 

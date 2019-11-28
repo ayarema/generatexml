@@ -8,6 +8,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * The main configuration class which is defining additional functionality and how our application will work
+ */
 public class ConfigureXMLReport {
 
     private static final Logger LOGGER = LogManager.getLogger(ConfigureXMLReport.class.getName());

@@ -18,7 +18,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @NonNull
 @XmlRootElement(name = "testsuite")
-public class AggregatedTestSuite {
+public class TestSuite {
 
     /**
      * Full (class) name of the test for non-aggregated testsuite documents.
@@ -120,82 +120,82 @@ public class AggregatedTestSuite {
     @XmlElement(name = "system-err")
     private String testSuitAggregatedOutErr;
 
-    public AggregatedTestSuite setName(String name) {
+    public TestSuite setName(String name) {
         this.name = name;
         return this;
     }
 
-    public AggregatedTestSuite setTests(String tests) {
+    public TestSuite setTests(String tests) {
         this.tests = tests;
         return this;
     }
 
-    public AggregatedTestSuite setDisabled(String disabled) {
+    public TestSuite setDisabled(String disabled) {
         this.disabled = disabled;
         return this;
     }
 
-    public AggregatedTestSuite setErrors(String errors) {
+    public TestSuite setErrors(String errors) {
         this.errors = errors;
         return this;
     }
 
-    public AggregatedTestSuite setFailures(String failures) {
+    public TestSuite setFailures(String failures) {
         this.failures = failures;
         return this;
     }
 
-    public AggregatedTestSuite setHostname(String hostname) {
+    public TestSuite setHostname(String hostname) {
         this.hostname = hostname;
         return this;
     }
 
-    public AggregatedTestSuite setId(String id) {
+    public TestSuite setId(String id) {
         this.id = id;
         return this;
     }
 
-    public AggregatedTestSuite setPackageName(String packageName) {
+    public TestSuite setPackageName(String packageName) {
         this.packageName = packageName;
         return this;
     }
 
-    public AggregatedTestSuite setSkipped(String skipped) {
+    public TestSuite setSkipped(String skipped) {
         this.skipped = skipped;
         return this;
     }
 
-    public AggregatedTestSuite setTime(String time) {
+    public TestSuite setTime(String time) {
         this.time = time;
         return this;
     }
 
-    public AggregatedTestSuite setTimestamp(String timestamp) {
+    public TestSuite setTimestamp(String timestamp) {
         this.timestamp = timestamp;
         return this;
     }
 
-    public AggregatedTestSuite setAggregatedProperties(Collection<AggregatedProperties> aggregatedProperties) {
+    public TestSuite setAggregatedProperties(Collection<AggregatedProperties> aggregatedProperties) {
         this.aggregatedProperties = aggregatedProperties;
         return this;
     }
 
-    public AggregatedTestSuite setTestCases(Collection<AggregatedTestCase> testCases) {
+    public TestSuite setTestCases(Collection<AggregatedTestCase> testCases) {
         this.testCases = testCases;
         return this;
     }
 
-    public AggregatedTestSuite setTags(String tags) {
+    public TestSuite setTags(String tags) {
         this.tags = tags;
         return this;
     }
 
-    public AggregatedTestSuite setTestSuitAggregatedOutInfo(String testSuitAggregatedOutInfo) {
+    public TestSuite setTestSuitAggregatedOutInfo(String testSuitAggregatedOutInfo) {
         this.testSuitAggregatedOutInfo = testSuitAggregatedOutInfo;
         return this;
     }
 
-    public AggregatedTestSuite setTestSuitAggregatedOutErr(String testSuitAggregatedOutErr) {
+    public TestSuite setTestSuitAggregatedOutErr(String testSuitAggregatedOutErr) {
         this.testSuitAggregatedOutErr = testSuitAggregatedOutErr;
         return this;
     }

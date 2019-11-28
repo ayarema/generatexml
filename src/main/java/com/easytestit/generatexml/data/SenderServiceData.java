@@ -2,6 +2,9 @@ package com.easytestit.generatexml.data;
 
 import org.jetbrains.annotations.Contract;
 
+/**
+ * Additional enum class which was created for storing special data for generate request to the server
+ */
 public enum SenderServiceData {
 
     AUTHORIZATION("Authorization"),

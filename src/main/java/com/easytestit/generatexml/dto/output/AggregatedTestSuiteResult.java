@@ -1,7 +1,6 @@
 package com.easytestit.generatexml.dto.output;
 
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -55,6 +54,6 @@ public class AggregatedTestSuiteResult {
      * Child testsuite element, if the report has quantity runs more than 1
      */
     @XmlElement(name = "testsuite")
-    private Collection<AggregatedTestSuite> testSuites;
+    private Collection<TestSuite> testSuites;
 
 }

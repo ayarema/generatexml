@@ -1,4 +1,5 @@
 import com.easytestit.generatexml.GenerateXMLReport;
+import com.easytestit.generatexml.configuration.ConfigureXMLMode;
 import com.easytestit.generatexml.configuration.ConfigureXMLReport;
 import org.junit.Test;
 
@@ -15,8 +16,8 @@ public class GenerateXMLTest {
     @Test
     public void generateXmlTestWithConf() {
         var conf = new ConfigureXMLReport(new File("out/reports/"));
-        /*conf.addConfigurationMode(ConfigurationMode.ZIP_XML_RESULT_TO_FILE);
-        conf.addConfigurationMode(ConfigurationMode.SEND_RESULT_TO_RP);*/
+        conf.addConfigureXMLMode(ConfigureXMLMode.ZIP_XML_RESULT_TO_FILE);
+        conf.addConfigureXMLMode(ConfigureXMLMode.SEND_RESULT_TO_RP);
         GenerateXMLReport appWithConf = new GenerateXMLReport(conf);
         appWithConf.generateXMLreport();
     }

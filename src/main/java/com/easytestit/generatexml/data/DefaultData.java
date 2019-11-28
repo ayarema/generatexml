@@ -1,7 +1,7 @@
 package com.easytestit.generatexml.data;
 
 /**
- * Default data class was created for storing test static data
+ * Default data class was created for storing default test static data
  */
 public interface DefaultData {
     String defaultFileExtensions = "json";
@@ -9,6 +9,4 @@ public interface DefaultData {
     String reportDirPath = "target/surefire-reports/";
     String reportResultsFolder = "out/xml-reports/";
     String reportFileZipName = "zipAggregatedReport.zip";
-    String scenario = "Scenario";
-    String background = "Background";
 }

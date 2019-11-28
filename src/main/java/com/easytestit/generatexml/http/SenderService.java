@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
 
+/**
+ * HTTP client class created for making POST request and sending files on server
+ */
 public class SenderService {
 
     private static final Logger LOGGER = LogManager.getLogger(SenderService.class.getName());
@@ -27,6 +30,10 @@ public class SenderService {
     private OkHttpClient client = new OkHttpClient();
     private Properties appProps = new Properties();
 
+    /**
+     * Use this method if you need send POST request to the server
+     * @param file which should be added in POST request
+     */
     public void post(String file) {
         final MediaType MEDIA_TYPE = MediaType.parse(SenderServiceData.OCTET_STREAM.getValue());
         RequestBody requestBody = new MultipartBody.Builder()
@@ -48,13 +55,18 @@ public class SenderService {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) throw new IOException("Unexpected code ".concat(String.valueOf(response)));
-
             LOGGER.log(Level.INFO, Objects.requireNonNull(response.body()).string());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
+    /**
+     * Helper method which is helping read values from keys from application properties
+     *
+     * @param property name which should be read
+     * @return values which stored in key property
+     */
     @Nullable
     private String getProperties(String property) {
         LOGGER.log(Level.INFO, "Method getProperties invoked");
@@ -77,6 +89,10 @@ public class SenderService {
         }
     }
 
+    /**
+     * Helper method which is building string from many others
+     * @return concatenated string which includes values from keys from application property
+     */
     @NotNull
     private String serviceUrlBuilder() {
         return Objects.requireNonNull(getProperties("rp.api.version"))
