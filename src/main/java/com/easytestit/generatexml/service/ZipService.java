@@ -1,6 +1,7 @@
-package com.easytestit.generatexml.utils;
+package com.easytestit.generatexml.service;
 
 import com.easytestit.generatexml.data.DefaultData;
+import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,13 +15,10 @@ import java.util.zip.ZipOutputStream;
 /**
  * FileToZip used for creating ZIP archive
  */
-public class FileToZip {
+@NoArgsConstructor
+public class ZipService {
 
-    private static final Logger LOGGER = LogManager.getLogger(FileToZip.class.getName());
-
-    public FileToZip() {
-
-    }
+    private static final Logger LOGGER = LogManager.getLogger(ZipService.class.getName());
 
     public void createZip() {
         try {

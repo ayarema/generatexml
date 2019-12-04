@@ -7,7 +7,7 @@ import com.easytestit.generatexml.service.AggregatedXMLReportBuilder;
 import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.service.GenerateXMLResult;
 import com.easytestit.generatexml.service.XMLServiceExtended;
-import com.easytestit.generatexml.utils.FileToZip;
+import com.easytestit.generatexml.service.ZipService;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,21 +23,20 @@ public class GenerateXMLReport {
 
     private static final Logger LOGGER = LogManager.getLogger(GenerateXMLReport.class.getName());
     private ConfigureXMLReport configureXMLReport;
-    private GenerateXMLResult generateXMLResult = new GenerateXMLResult();
     private XMLServiceExtended xmlService = new GenerateXMLResult();
-    private FileToZip toZip = new FileToZip();
 
     public GenerateXMLReport() {
-        LOGGER.info("Start application to convert JSON report to XML report with default parameters");
+        LOGGER.info("Starting application to convert JSON report to XML report with default parameters");
     }
 
     public GenerateXMLReport(@NotNull ConfigureXMLReport configureXMLReport) {
-        LOGGER.info("Start application to convert JSON report to XML report with specified Configuration");
+        LOGGER.info("Starting application to convert JSON report to XML report with specified Configuration");
         this.configureXMLReport = configureXMLReport;
     }
 
     /**
-     * Functionality provided files and generates the XML report. When generating process fails
+     * Functionality provided files and generates the aggregated XML report.
+     * When generating process fails
      * report with information about error is provided.
      */
     public void generateXMLreport() {
@@ -58,34 +57,33 @@ public class GenerateXMLReport {
                 if (configureXMLReport.containsConfigurationMode(ConfigureXMLMode.SEND_RESULT_TO_RP)) sendXML();
             } else {
                 //when configuration is null start functionality with default parameters
-                new ParserJSONFiles().parseJSON(
-                        getJsonFilesFrom(
-                                new File(DefaultData.reportDirPath)))
-                        .forEach(feature -> generateXMLResult.convertObjectToXML(feature));
+                xmlService.convertObjectToXML(
+                        new AggregatedXMLReportBuilder().generateAggregatedXMLReport(
+                                new ParserJSONFiles().parseJSON(
+                                        getJsonFilesFrom(
+                                                new File(DefaultData.reportDirPath)))));
             }
         } catch (Exception e) {
             generateErrorReport(e);
         }
     }
 
-    private void createZip() {
-        try {
-            toZip.createZip();
-        } catch (Exception e) {
-            generateErrorReport(e);
-        }
-    }
-
-    private void sendXML() {
-        try {
-            new SenderService().post(DefaultData.reportFileZipName);
-        } catch (Exception e) {
-            generateErrorReport(e);
-        }
+    /**
+     * Provides the ability to create a directory that will later serve as the folder
+     * where the aggregated XML report will be created
+     *
+     * Also, this folder will zip later if needed configuration will pass
+     */
+    private void createResultsReportFolder() {
+        LOGGER.info("Try to create new folder in project directory");
+        File resultsFolder = new File(DefaultData.reportResultsFolder);
+        LOGGER.info(!resultsFolder.exists() && resultsFolder.mkdirs() ? "Direction ".concat(DefaultData.reportResultsFolder).concat(" was created") : "Direction ".concat(DefaultData.reportResultsFolder).concat(" was already created"));
     }
 
     /**
-     * Functionality which read files with specific extension and collect path to this files in new collection
+     * A convenience method which read files with specific extension
+     * and collects path to these files in a new collection
+     *
      * @param reportFolder folder where locate all files after launching tests
      * @return collection of String with defined path to JSON files
      */
@@ -97,10 +95,11 @@ public class GenerateXMLReport {
 
         //might be null
         if (files == null) {
-            LOGGER.log(Level.INFO, "Report folder ".concat(reportFolder.getName()).concat(" aren't contain any files!"));
+            LOGGER.info("Report folder ".concat(reportFolder.getName()).concat(" aren't contain any files!"));
             return out;
         }
 
+        //analyze files in folder and filter by specified extension and collect these to new collection
         Arrays.stream(files).forEach(file -> {
             if (file.isFile() && extensions.contains(file.getName().substring(file.getName().lastIndexOf('.') + 1))) {
                 out.add(String.valueOf(reportFolder)
@@ -108,25 +107,45 @@ public class GenerateXMLReport {
                         .concat(file.getName()));
             } else {
                 LOGGER.info("Report folder ".concat(reportFolder.getName())
-                        .concat(" aren't contain files with JSON format!"));
+                        .concat(" doesn't contain files with JSON format!"));
             }
         });
 
         return out;
     }
 
+    /**
+     * Provides the ability to create a zip file with report folder where store aggregated XML report
+     * This functionality will work if needed configuration will pass
+     */
+    private void createZip() {
+        try {
+            new ZipService().createZip();
+        } catch (Exception e) {
+            generateErrorReport(e);
+        }
+    }
+
+    /**
+     * Provides the ability to send a zipped report folder to specified server
+     * if needed configuration will pass
+     */
+    private void sendXML() {
+        try {
+            new SenderService().post(DefaultData.reportFileZipName);
+        } catch (Exception e) {
+            generateErrorReport(e);
+        }
+    }
+
+    /**
+     * A convenience method to use the error messages in many places
+     *
+     * @param e exception object
+     * The detail message which will print in a console later.
+     */
     private void generateErrorReport(Exception e) {
         LOGGER.log(Level.ERROR, "Unexpected error", e);
     }
 
-    /**
-     * Describe creating folder for XML report result
-     * This folder will zip later if needed configuration will pass
-     */
-    private void createResultsReportFolder() {
-        LOGGER.info("Try to create new folder in project directory");
-        File resultsFolder = new File(DefaultData.reportResultsFolder);
-        if (!resultsFolder.exists() && resultsFolder.mkdirs())
-            LOGGER.info("Direction ".concat(DefaultData.reportResultsFolder).concat(" was created"));
-    }
 }

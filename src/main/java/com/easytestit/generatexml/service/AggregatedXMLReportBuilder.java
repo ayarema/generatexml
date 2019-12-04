@@ -59,15 +59,15 @@ public class AggregatedXMLReportBuilder {
      * to other JAVA object which will serialize to XML file
      * Here concentrate logic to calculate and handle data and put this data in DTO
      *
-     * @param parseJSON prepared JAVA feature class which should be convert to another DTO
+     * @param features prepared JAVA feature class which should be convert to another DTO
      * @return prepared DTO aggregated class with all needed data for serialize it to XML file
      */
     //TODO need to refactor this method cause here is error
-    public AggregatedTestSuiteResult generateAggregatedXMLReport(@NotNull Collection<Feature> parseJSON) {
+    public AggregatedTestSuiteResult generateAggregatedXMLReport(@NotNull Collection<Feature> features) {
         Collection<TestSuite> testSuites = new ArrayList<>(Collections.emptyList());
         Collection<AggregatedTestCase> aggregatedTestCase = new ArrayList<>(Collections.emptyList());
 
-        parseJSON.forEach(featureFile -> {
+        features.forEach(featureFile -> {
             featureFilesCount += 1;
 
             if (featureFile.getTags() != null) allTagsFromAllFeatures += fillTagsInSuitReport(featureFile.getTags());
