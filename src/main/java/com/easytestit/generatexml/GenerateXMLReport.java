@@ -49,7 +49,7 @@ public class GenerateXMLReport {
                 configureXMLReport.addJsonFiles(getJsonFilesFrom(configureXMLReport.getReportFolder()));
                 //convert JSON file in XML
                 xmlService.convertObjectToXML(
-                        new AggregatedXMLReportBuilder().generateAggregatedXMLReport(
+                        new AggregatedXMLReportBuilder().transformFeaturesToAggregatedReport(
                                 new ParserJSONFiles(configureXMLReport).parseJSON()));
 
                 //create ZIP file from XML which created from previews step
@@ -58,7 +58,7 @@ public class GenerateXMLReport {
             } else {
                 //when configuration is null start functionality with default parameters
                 xmlService.convertObjectToXML(
-                        new AggregatedXMLReportBuilder().generateAggregatedXMLReport(
+                        new AggregatedXMLReportBuilder().transformFeaturesToAggregatedReport(
                                 new ParserJSONFiles().parseJSON(
                                         getJsonFilesFrom(
                                                 new File(DefaultData.reportDirPath)))));

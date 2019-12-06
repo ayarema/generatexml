@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NoArgsConstructor
 @NonNull
 @XmlRootElement(name = "testcase")
-public class AggregatedTestCase {
+public class TestCase {
 
     /**
      * Name of the test method
@@ -57,22 +57,22 @@ public class AggregatedTestCase {
     @XmlElement(name = "system-err")
     private String caseOutErr;
 
-    public AggregatedTestCase setTestName(String testName) {
+    public TestCase setTestName(String testName) {
         this.testName = testName;
         return this;
     }
 
-    public AggregatedTestCase setDescription(String description) {
+    public TestCase setDescription(String description) {
         this.description = description;
         return this;
     }
 
-    public AggregatedTestCase setCaseOutInfo(String caseOutInfo) {
+    public TestCase setCaseOutInfo(String caseOutInfo) {
         this.caseOutInfo = caseOutInfo;
         return this;
     }
 
-    public AggregatedTestCase setCaseOutErr(String caseOutErr) {
+    public TestCase setCaseOutErr(String caseOutErr) {
         this.caseOutErr = caseOutErr;
         return this;
     }

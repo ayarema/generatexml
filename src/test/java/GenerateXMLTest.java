@@ -7,11 +7,11 @@ import java.io.File;
 
 public class GenerateXMLTest {
 
-    @Test
+/*    @Test
     public void generateXmlTest() {
         GenerateXMLReport application = new GenerateXMLReport();
         application.generateXMLreport();
-    }
+    }*/
 
     @Test
     public void generateXmlTestWithConf() {

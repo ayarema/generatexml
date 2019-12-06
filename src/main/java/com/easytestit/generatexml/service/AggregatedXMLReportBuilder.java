@@ -2,10 +2,11 @@ package com.easytestit.generatexml.service;
 
 import com.easytestit.generatexml.data.XMLBuilderConstants;
 import com.easytestit.generatexml.dto.input.elements.Element;
+import com.easytestit.generatexml.dto.output.TemporaryTestCase;
 import com.easytestit.generatexml.dto.output.TestSuite;
 import com.easytestit.generatexml.dto.input.Feature;
 import com.easytestit.generatexml.dto.output.AggregatedTestSuiteResult;
-import com.easytestit.generatexml.dto.output.testcase.AggregatedTestCase;
+import com.easytestit.generatexml.dto.output.testcase.TestCase;
 import com.easytestit.generatexml.dto.input.tags.Tag;
 import com.easytestit.generatexml.utils.UtilsConverter;
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -63,107 +62,32 @@ public class AggregatedXMLReportBuilder {
      * @return prepared DTO aggregated class with all needed data for serialize it to XML file
      */
     //TODO need to refactor this method cause here is error
-    public AggregatedTestSuiteResult generateAggregatedXMLReport(@NotNull Collection<Feature> features) {
-        Collection<TestSuite> testSuites = new ArrayList<>(Collections.emptyList());
-        Collection<AggregatedTestCase> aggregatedTestCase = new ArrayList<>(Collections.emptyList());
+    public AggregatedTestSuiteResult transformFeaturesToAggregatedReport(@NotNull Collection<Feature> features) {
 
-        features.forEach(featureFile -> {
-            featureFilesCount += 1;
+        Map<Integer, TemporaryTestCase> tests = new HashMap<>();
+        TemporaryTestCase testCase = new TemporaryTestCase();
 
-            if (featureFile.getTags() != null) allTagsFromAllFeatures += fillTagsInSuitReport(featureFile.getTags());
+        features.forEach(feature -> {
 
-            if (featureFile.getElements() != null) {
-                featureFile.getElements().forEach(
-                        element -> {
-                            if (element.getKeyword().equals(XMLBuilderConstants.background)) fillBackground(element);
+            feature.getElements().forEach(element -> {
 
-                            if (element.getKeyword().equals(XMLBuilderConstants.scenario)) fillScenario(element);
+                testCase.setParentKeyword(element.getKeyword());
+                testCase.setParentName(element.getName());
 
-                            if (element.getSteps() != null) {
-                                element.getSteps().forEach(
-                                        step -> {
-                                            var keyword = step.getKeyword();
-                                            var stepName = step.getName();
-                                            var stepResult = step.getResult().getStatus();
+                element.getSteps().forEach(step -> {
+                    if (!step.getResult().getStatus().equals(XMLBuilderConstants.PASSED)) {
+                        countFailuresTestsFromAllFiles += 1;
+                    }
+                    stringOutBuilder(element.getKeyword(), step.getKeyword(), step.getName(), step.getResult().getStatus());
+                });
 
-                                            if (!step.getResult().getStatus().contains(XMLBuilderConstants.PASSED)) {
-                                                countFailuresAllErrorsFromAllFiles += 1;
-                                                failuresCountInSuites += 1;
-                                                stringErrBuilder(step.getResult().getErrorMessage());
-                                            } else {
-                                                successfulCountTests += 1;
-                                                stringOutBuilder(element.getKeyword(), keyword, stepName, stepResult);
-                                            }
+                tests.put(element.getLine(), testCase);
+            });
 
-                                            duration += step.getResult().getDuration();
-                                            durationOfTest += step.getResult().getDuration();
-                                        }
-                                );
-
-                            }
-                            if (element.getKeyword().equals(XMLBuilderConstants.scenario)) {
-                                scenarioTestName[0] = element.getName();
-                                element.getSteps().stream().filter(
-                                        step -> !step.getResult().getStatus().contains(XMLBuilderConstants.PASSED)).forEach(
-                                        step -> {
-                                            countFailuresTestFromOneFile += 1;
-                                            countFailuresTestsFromAllFiles += 1;
-                                        });
-                                element.getSteps().stream().filter(
-                                        step -> step.getResult().getStatus().contains(XMLBuilderConstants.SKIPPED)).forEach(
-                                        step -> skippedCountTest += 1);
-                                element.getSteps().forEach(
-                                        step -> {
-                                            if (step.getDocString() != null)
-                                                getArrayStringBySeparator(step.getDocString().getValue(), ">").forEach(
-                                                        request -> {
-                                                            if (request.toLowerCase().contains(XMLBuilderConstants.HOST)) {
-                                                                hostName[0] = getArrayStringBySeparator(request, ":").get(1);
-                                                            } else if (request.toLowerCase().contains(XMLBuilderConstants.USER_AGENT)) {
-                                                                getArrayStringBySeparator(request, "<").forEach(
-                                                                        response -> {
-                                                                            if (response.contains(XMLBuilderConstants.DATE_TEXT)) {
-                                                                                responseDate[0] = response.substring(7, 32);
-                                                                            }
-                                                                        }
-                                                                );
-                                                            }
-                                                        }
-                                                );
-                                        }
-                                );
-                            }
-                        }
-                );
-            }
-
-            aggregatedTestCase.add(getTestCaseResult(scenarioTestName[0], featureFile.getDescription(), stepOutResults, stepErrResults));
-
-            testSuites.add(
-                    getTestSuiteResult(
-                            featureFile.getName(),
-                            featureFile.getElements().size(),
-                            featureFile.getTags(),
-                            failuresCountInSuites,
-                            countFailuresTestFromOneFile,
-                            featureFilesCount,
-                            durationOfTest,
-                            hostName[0],
-                            responseDate[0],
-                            aggregatedTestCase
-                    )
-            );
-
-            failuresCountInSuites = skippedCountTest = countFailuresTestFromOneFile = 0;
-            stepOutResults = "";
-            durationOfTest = 0L;
-
-            allTagsFromEachFeature = "";
         });
 
-        featureFilesCount = 0;
 
-        return aggregateTestSuitesResult(allTagsFromAllFeatures.trim(), countFailuresAllErrorsFromAllFiles, countFailuresTestsFromAllFiles, successfulCountTests, duration, testSuites);
+        return aggregateTestSuitesResult(allTagsFromAllFeatures.trim(), countFailuresAllErrorsFromAllFiles, countFailuresTestsFromAllFiles, successfulCountTests, duration, null);
     }
 
     /**
@@ -185,6 +109,7 @@ public class AggregatedXMLReportBuilder {
      * @param element where located whole information about Background or Scenario
      */
     private void fillBackground(@NotNull Element element) {
+
         final String[] stepInfo = {"", "", ""};
         if (background.get("line") == null) {
 
@@ -219,17 +144,17 @@ public class AggregatedXMLReportBuilder {
     }
 
     /**
-     * Helper method which fill object {@link AggregatedTestCase}. This object mean Test in JUnit XML report format (Background & Scenario)
+     * Helper method which fill object {@link TestCase}. This object mean Test in JUnit XML report format (Background & Scenario)
      *
      * @param scenarioTestDescription - description from {@link Element} object from name field
      * @param description - description from {@link Feature} object from description field
      * @param outResults - concatenated string from all passed steps in one Test (Test is Background & Scenario)
      * @param errResults - concatenated string from all failed steps in one Test (Test is Background & Scenario)
      *
-     * @return new filled and prepared {@link AggregatedTestCase} object
+     * @return new filled and prepared {@link TestCase} object
      */
-    private AggregatedTestCase getTestCaseResult(String scenarioTestDescription, String description, String outResults, String errResults) {
-        return new AggregatedTestCase()
+    private TestCase getTestCaseResult(String scenarioTestDescription, String description, String outResults, String errResults) {
+        return new TestCase()
                 .setTestName(scenarioTestDescription)
                 .setDescription(description)
                 .setCaseOutInfo(outResults)
@@ -248,9 +173,9 @@ public class AggregatedXMLReportBuilder {
      * @param durationOfTest long type value of duration whole backgrounds and scenarios
      * @param hostName string value of host where request made
      * @param dateTimeISO string value of date time when request was made
-     * @param testCaseResults object {@link AggregatedTestCase} with data
+     * @param testCaseResults object {@link TestCase} with data
      *
-     * @return aggregated {@link TestSuite} with all {@link AggregatedTestCase}
+     * @return aggregated {@link TestSuite} with all {@link TestCase}
      */
     @NotNull
     private TestSuite getTestSuiteResult(
@@ -263,7 +188,7 @@ public class AggregatedXMLReportBuilder {
             Long durationOfTest,
             String hostName,
             String dateTimeISO,
-            Collection<AggregatedTestCase> testCaseResults) {
+            Collection<TestCase> testCaseResults) {
         var testSuite = new TestSuite();
         String[] names = name.split("/");
         tags.stream().filter(

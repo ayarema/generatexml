@@ -1,7 +1,7 @@
 package com.easytestit.generatexml.dto.output;
 
 import com.easytestit.generatexml.dto.output.properties.AggregatedProperties;
-import com.easytestit.generatexml.dto.output.testcase.AggregatedTestCase;
+import com.easytestit.generatexml.dto.output.testcase.TestCase;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -100,7 +100,7 @@ public class TestSuite {
      * Test cases, see deep into test case class
      */
     @XmlElement(name = "testcase")
-    private Collection<AggregatedTestCase> testCases;
+    private Collection<TestCase> testCases;
 
     /**
      * Test cases, see deep into test case class
@@ -180,7 +180,7 @@ public class TestSuite {
         return this;
     }
 
-    public TestSuite setTestCases(Collection<AggregatedTestCase> testCases) {
+    public TestSuite setTestCases(Collection<TestCase> testCases) {
         this.testCases = testCases;
         return this;
     }
