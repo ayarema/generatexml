@@ -28,7 +28,7 @@ import java.io.IOException;
 public class GenerateXMLResult extends XMLServiceExtended {
 
     private static final Logger LOGGER = LogManager.getLogger(GenerateXMLResult.class.getName());
-    private String filePath = DefaultData.reportResultsFolder.concat(DefaultData.fileName);
+    private String filePath = DefaultData.REPORT_RESULTS_FOLDER.concat(DefaultData.FILE_NAME);
 
     public GenerateXMLResult() {
         LOGGER.log(Level.DEBUG, "Generate XML file from Java Object invoked");
@@ -43,9 +43,9 @@ public class GenerateXMLResult extends XMLServiceExtended {
 
             m.marshal(feature, System.out);
 
-            m.marshal(feature, new File(DefaultData.reportResultsFolder.concat(DefaultData.fileName)));
+            m.marshal(feature, new File(DefaultData.REPORT_RESULTS_FOLDER.concat(DefaultData.FILE_NAME)));
             addNodesToXMLDocument(feature);
-            LOGGER.info("File ".concat(DefaultData.fileName).concat(" was created"));
+            LOGGER.info("File ".concat(DefaultData.FILE_NAME).concat(" was created"));
             return this;
         } catch (JAXBException e) {
             LOGGER.error(e.getMessage());
@@ -62,7 +62,7 @@ public class GenerateXMLResult extends XMLServiceExtended {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
             m.marshal(aggregatedTestSuiteResult, System.out);
-            m.marshal(aggregatedTestSuiteResult, new File(DefaultData.reportResultsFolder.concat(DefaultData.fileName)));
+            m.marshal(aggregatedTestSuiteResult, new File(DefaultData.REPORT_RESULTS_FOLDER.concat(DefaultData.FILE_NAME)));
 
         } catch (JAXBException e) {
             LOGGER.error(e.getMessage());

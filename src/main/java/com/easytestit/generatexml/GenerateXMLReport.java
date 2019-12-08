@@ -61,7 +61,7 @@ public class GenerateXMLReport {
                         new AggregatedXMLReportBuilder().transformFeaturesToAggregatedReport(
                                 new ParserJSONFiles().parseJSON(
                                         getJsonFilesFrom(
-                                                new File(DefaultData.reportDirPath)))));
+                                                new File(DefaultData.TARGET_FOLDER_PATH)))));
             }
         } catch (Exception e) {
             generateErrorReport(e);
@@ -76,8 +76,8 @@ public class GenerateXMLReport {
      */
     private void createResultsReportFolder() {
         LOGGER.info("Try to create new folder in project directory");
-        File resultsFolder = new File(DefaultData.reportResultsFolder);
-        LOGGER.info(!resultsFolder.exists() && resultsFolder.mkdirs() ? "Direction ".concat(DefaultData.reportResultsFolder).concat(" was created") : "Direction ".concat(DefaultData.reportResultsFolder).concat(" was already created"));
+        File resultsFolder = new File(DefaultData.REPORT_RESULTS_FOLDER);
+        LOGGER.info(!resultsFolder.exists() && resultsFolder.mkdirs() ? "Direction ".concat(DefaultData.REPORT_RESULTS_FOLDER).concat(" was created") : "Direction ".concat(DefaultData.REPORT_RESULTS_FOLDER).concat(" was already created"));
     }
 
     /**
@@ -89,7 +89,7 @@ public class GenerateXMLReport {
      */
     @NotNull
     private Collection<String> getJsonFilesFrom(@NotNull File reportFolder) {
-        var extensions = Collections.singletonList(DefaultData.defaultFileExtensions);
+        var extensions = Collections.singletonList(DefaultData.DEFAULT_FILE_EXTENSIONS);
         Collection<String> out = new ArrayList<>();
         File[] files = reportFolder.listFiles();
 
@@ -132,7 +132,7 @@ public class GenerateXMLReport {
      */
     private void sendXML() {
         try {
-            new SenderService().post(DefaultData.reportFileZipName);
+            new SenderService().post(DefaultData.FILE_ZIP_NAME);
         } catch (Exception e) {
             generateErrorReport(e);
         }

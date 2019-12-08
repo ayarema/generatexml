@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,10 +45,12 @@ public class AggregatedXMLReportBuilder {
     private int countFailuresTestsFromAllFiles = 0;
     private int countFailuresTestFromOneFile = 0;
     private int failuresCountInSuites = 0;
+    private int countScenarios = 0;
     private int successfulCountTests = 0;
     private int skippedCountTest = 0;
     private Long duration = 0L;
     private Long durationOfTest = 0L;
+    private Long durationOfAllTest = 0L;
 
     private final String[] hostName = {""};
     private final String[] responseDate = {""};
@@ -65,29 +68,71 @@ public class AggregatedXMLReportBuilder {
     public AggregatedTestSuiteResult transformFeaturesToAggregatedReport(@NotNull Collection<Feature> features) {
 
         Map<Integer, TemporaryTestCase> tests = new HashMap<>();
-        TemporaryTestCase testCase = new TemporaryTestCase();
+        Collection<TestSuite> testSuites = new ArrayList<>();
 
         features.forEach(feature -> {
+            featureFilesCount += 1;
 
             feature.getElements().forEach(element -> {
 
-                testCase.setParentKeyword(element.getKeyword());
-                testCase.setParentName(element.getName());
-
+                if (element.getKeyword().equals(XMLBuilderConstants.SCENARIO)) countScenarios += 1;
                 element.getSteps().forEach(step -> {
                     if (!step.getResult().getStatus().equals(XMLBuilderConstants.PASSED)) {
                         countFailuresTestsFromAllFiles += 1;
+                        countFailuresTestFromOneFile += 1;
                     }
                     stringOutBuilder(element.getKeyword(), step.getKeyword(), step.getName(), step.getResult().getStatus());
+                    durationOfTest += step.getResult().getDuration();
                 });
 
-                tests.put(element.getLine(), testCase);
+                tests.put(element.getLine(), new TemporaryTestCase()
+                        .setParentLine(element.getLine())
+                        .setParentKeyword(element.getKeyword())
+                        .setParentName(element.getName())
+                        .setTestOutputString(stepOutResults)
+                        .setTestDuration(durationOfTest));
+
+                durationOfAllTest += durationOfTest;
+                stepOutResults = "";
+                durationOfTest = 0L;
             });
 
+            testSuites.add(new TestSuite()
+                    .setName(feature.getName())
+                    .setErrors(String.valueOf(countFailuresTestFromOneFile))
+                    .setFailures(String.valueOf(countFailuresTestFromOneFile))
+                    .setId(String.valueOf(featureFilesCount))
+                    .setPackageName(feature.getName())
+                    .setTime(String.valueOf(durationOfAllTest))
+                    .setTestCases(getTestsFromFeature(tests)));
+
+            countScenarios = 0;
+            durationOfAllTest = 0L;
+            tests.clear();
         });
 
+        return aggregateTestSuitesResult(allTagsFromAllFeatures.trim(), countFailuresAllErrorsFromAllFiles, countFailuresTestsFromAllFiles, successfulCountTests, duration, testSuites);
+    }
 
-        return aggregateTestSuitesResult(allTagsFromAllFeatures.trim(), countFailuresAllErrorsFromAllFiles, countFailuresTestsFromAllFiles, successfulCountTests, duration, null);
+    @NotNull
+    private Collection<TestCase> getTestsFromFeature(@NotNull Map<Integer, TemporaryTestCase> tests) {
+        Collection<TestCase> testCases = new ArrayList<>();
+
+        String[] ss = {""};
+
+        tests.values().stream().filter(t -> t.getParentKeyword().equals(XMLBuilderConstants.BACKGROUND)).forEach(tt -> {
+            ss[0] = tt.getTestOutputString();
+        });
+
+        tests.values().stream().filter(t -> t.getParentKeyword().equals(XMLBuilderConstants.SCENARIO)).forEach(temporaryTestCase -> {
+            testCases.add(
+                    new TestCase()
+                            .setTestName(temporaryTestCase.getParentName())
+                            .setDescription(temporaryTestCase.getParentName())
+                            .setCaseOutInfo(ss[0].concat(temporaryTestCase.getTestOutputString())));
+        });
+
+        return testCases;
     }
 
     /**

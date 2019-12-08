@@ -24,8 +24,8 @@ public class ZipService {
         try {
             LOGGER.log(Level.INFO, "Start to create new ZIP archive in project root directory");
 
-            String sourceFile = DefaultData.reportResultsFolder.concat(DefaultData.fileName);
-            FileOutputStream fos = new FileOutputStream(DefaultData.reportFileZipName);
+            String sourceFile = DefaultData.REPORT_RESULTS_FOLDER.concat(DefaultData.FILE_NAME);
+            FileOutputStream fos = new FileOutputStream(DefaultData.FILE_ZIP_NAME);
             ZipOutputStream zipOut = new ZipOutputStream(fos);
             File fileToZip = new File(sourceFile);
 
@@ -41,11 +41,11 @@ public class ZipService {
     private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) {
         try {
             if (fileToZip.isHidden()) {
-                LOGGER.log(Level.INFO, "File which located in ".concat(DefaultData.reportResultsFolder).concat(" is hidden"));
+                LOGGER.log(Level.INFO, "File which located in ".concat(DefaultData.REPORT_RESULTS_FOLDER).concat(" is hidden"));
                 return;
             }
             if (fileToZip.isDirectory()) {
-                LOGGER.log(Level.INFO, "File which located in ".concat(DefaultData.reportResultsFolder).concat(" is direction"));
+                LOGGER.log(Level.INFO, "File which located in ".concat(DefaultData.REPORT_RESULTS_FOLDER).concat(" is direction"));
                 if (fileName.endsWith("/")) {
                     zipOut.putNextEntry(new ZipEntry(fileName));
                     zipOut.closeEntry();
