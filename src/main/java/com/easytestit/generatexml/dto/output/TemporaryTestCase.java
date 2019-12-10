@@ -7,25 +7,26 @@ import lombok.NoArgsConstructor;
 @Getter
 public class TemporaryTestCase {
 
-    private String parentKeyword;
-    private Integer parentLine;
-    private String parentName;
+    private String keyword;
+    private Integer line;
+    private String name;
+    private String description;
     private Long testDuration;
 
     private String testOutputString;
 
-    public TemporaryTestCase setParentKeyword(String parentKeyword) {
-        this.parentKeyword = parentKeyword;
+    public TemporaryTestCase setKeyword(String keyword) {
+        this.keyword = keyword;
         return this;
     }
 
-    public TemporaryTestCase setParentLine(Integer parentLine) {
-        this.parentLine = parentLine;
+    public TemporaryTestCase setLine(Integer line) {
+        this.line = line;
         return this;
     }
 
-    public TemporaryTestCase setParentName(String parentName) {
-        this.parentName = parentName;
+    public TemporaryTestCase setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -36,6 +37,11 @@ public class TemporaryTestCase {
 
     public TemporaryTestCase setTestOutputString(String testOutputString) {
         this.testOutputString = testOutputString;
+        return this;
+    }
+
+    public TemporaryTestCase setDescription(String description) {
+        this.description = description;
         return this;
     }
 }

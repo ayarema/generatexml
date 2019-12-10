@@ -1,6 +1,6 @@
 package com.easytestit.generatexml.service;
 
-import com.easytestit.generatexml.dto.output.AggregatedTestSuiteResult;
+import com.easytestit.generatexml.dto.output.ReportSuites;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -88,5 +88,5 @@ public abstract class XMLServiceExtended implements XMLService {
         }
     }
 
-    public abstract void convertObjectToXML(AggregatedTestSuiteResult aggregatedTestSuiteResult);
+    public abstract void convertObjectToXML(ReportSuites reportSuites);
 }

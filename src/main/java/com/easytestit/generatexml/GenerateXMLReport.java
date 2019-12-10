@@ -3,7 +3,7 @@ package com.easytestit.generatexml;
 import com.easytestit.generatexml.configuration.ConfigureXMLReport;
 import com.easytestit.generatexml.configuration.ConfigureXMLMode;
 import com.easytestit.generatexml.http.SenderService;
-import com.easytestit.generatexml.service.AggregatedXMLReportBuilder;
+import com.easytestit.generatexml.service.TransformService;
 import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.service.GenerateXMLResult;
 import com.easytestit.generatexml.service.XMLServiceExtended;
@@ -49,7 +49,7 @@ public class GenerateXMLReport {
                 configureXMLReport.addJsonFiles(getJsonFilesFrom(configureXMLReport.getReportFolder()));
                 //convert JSON file in XML
                 xmlService.convertObjectToXML(
-                        new AggregatedXMLReportBuilder().transformFeaturesToAggregatedReport(
+                        new TransformService().transformFeaturesToReportSuites(
                                 new ParserJSONFiles(configureXMLReport).parseJSON()));
 
                 //create ZIP file from XML which created from previews step
@@ -58,7 +58,7 @@ public class GenerateXMLReport {
             } else {
                 //when configuration is null start functionality with default parameters
                 xmlService.convertObjectToXML(
-                        new AggregatedXMLReportBuilder().transformFeaturesToAggregatedReport(
+                        new TransformService().transformFeaturesToReportSuites(
                                 new ParserJSONFiles().parseJSON(
                                         getJsonFilesFrom(
                                                 new File(DefaultData.TARGET_FOLDER_PATH)))));

@@ -18,7 +18,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @NonNull
 @XmlRootElement(name = "testsuite")
-public class TestSuite {
+public class SingleReportSuite {
 
     /**
      * Full (class) name of the test for non-aggregated testsuite documents.
@@ -120,82 +120,82 @@ public class TestSuite {
     @XmlElement(name = "system-err")
     private String testSuitAggregatedOutErr;
 
-    public TestSuite setName(String name) {
+    public SingleReportSuite setName(String name) {
         this.name = name;
         return this;
     }
 
-    public TestSuite setTests(String tests) {
+    public SingleReportSuite setTests(String tests) {
         this.tests = tests;
         return this;
     }
 
-    public TestSuite setDisabled(String disabled) {
+    public SingleReportSuite setDisabled(String disabled) {
         this.disabled = disabled;
         return this;
     }
 
-    public TestSuite setErrors(String errors) {
+    public SingleReportSuite setErrors(String errors) {
         this.errors = errors;
         return this;
     }
 
-    public TestSuite setFailures(String failures) {
+    public SingleReportSuite setFailures(String failures) {
         this.failures = failures;
         return this;
     }
 
-    public TestSuite setHostname(String hostname) {
+    public SingleReportSuite setHostname(String hostname) {
         this.hostname = hostname;
         return this;
     }
 
-    public TestSuite setId(String id) {
+    public SingleReportSuite setId(String id) {
         this.id = id;
         return this;
     }
 
-    public TestSuite setPackageName(String packageName) {
+    public SingleReportSuite setPackageName(String packageName) {
         this.packageName = packageName;
         return this;
     }
 
-    public TestSuite setSkipped(String skipped) {
+    public SingleReportSuite setSkipped(String skipped) {
         this.skipped = skipped;
         return this;
     }
 
-    public TestSuite setTime(String time) {
+    public SingleReportSuite setTime(String time) {
         this.time = time;
         return this;
     }
 
-    public TestSuite setTimestamp(String timestamp) {
+    public SingleReportSuite setTimestamp(String timestamp) {
         this.timestamp = timestamp;
         return this;
     }
 
-    public TestSuite setAggregatedProperties(Collection<AggregatedProperties> aggregatedProperties) {
+    public SingleReportSuite setAggregatedProperties(Collection<AggregatedProperties> aggregatedProperties) {
         this.aggregatedProperties = aggregatedProperties;
         return this;
     }
 
-    public TestSuite setTestCases(Collection<TestCase> testCases) {
+    public SingleReportSuite setTestCases(Collection<TestCase> testCases) {
         this.testCases = testCases;
         return this;
     }
 
-    public TestSuite setTags(String tags) {
+    public SingleReportSuite setTags(String tags) {
         this.tags = tags;
         return this;
     }
 
-    public TestSuite setTestSuitAggregatedOutInfo(String testSuitAggregatedOutInfo) {
+    public SingleReportSuite setTestSuitAggregatedOutInfo(String testSuitAggregatedOutInfo) {
         this.testSuitAggregatedOutInfo = testSuitAggregatedOutInfo;
         return this;
     }
 
-    public TestSuite setTestSuitAggregatedOutErr(String testSuitAggregatedOutErr) {
+    public SingleReportSuite setTestSuitAggregatedOutErr(String testSuitAggregatedOutErr) {
         this.testSuitAggregatedOutErr = testSuitAggregatedOutErr;
         return this;
     }

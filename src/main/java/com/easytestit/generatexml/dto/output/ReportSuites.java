@@ -1,5 +1,6 @@
 package com.easytestit.generatexml.dto.output;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -15,7 +16,13 @@ import java.util.Collection;
 @NoArgsConstructor
 @Setter
 @XmlRootElement(name = "testsuites")
-public class AggregatedTestSuiteResult {
+public class ReportSuites {
+
+    /**
+     * All tags from all report suites
+     */
+    @XmlAttribute(name = "tags")
+    private String tags;
 
     /**
      * Total number of disabled tests from all testsuites
@@ -54,6 +61,6 @@ public class AggregatedTestSuiteResult {
      * Child testsuite element, if the report has quantity runs more than 1
      */
     @XmlElement(name = "testsuite")
-    private Collection<TestSuite> testSuites;
+    private Collection<SingleReportSuite> singleReportSuites;
 
 }

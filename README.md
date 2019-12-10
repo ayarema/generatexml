@@ -44,8 +44,8 @@ If you don't want to create additional configuration then you could use your cod
 ```java
     @AfterAll
     public void afterAll() {
-        GenerateXMLReport appWithConf = new GenerateXMLReport();
-        appWithConf.generateXMLreport();
+        GenerateXMLReport appWithoutConf = new GenerateXMLReport();
+        appWithoutConf.generateXMLreport();
     }
 ```
 In this case keep in mind that system will take default folder where locate Cucumber JSON reports after launch all tests:
