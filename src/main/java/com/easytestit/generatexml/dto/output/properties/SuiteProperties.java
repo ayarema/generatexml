@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NonNull
 @Setter
 @XmlRootElement(name = "property")
-public class AggregatedProperties {
+public class SuiteProperties {
 
     @XmlAttribute(name = "name", required = true)
     private String name;

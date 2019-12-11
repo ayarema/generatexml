@@ -36,16 +36,16 @@ Generate-XML is simple library to use and to configure:
         var conf = new ConfigureXMLReport(new File("out/reports/"));
         conf.addConfigureXMLMode(ConfigureXMLMode.ZIP_XML_RESULT_TO_FILE);
         conf.addConfigureXMLMode(ConfigureXMLMode.SEND_RESULT_TO_RP);
-        GenerateXMLReport appWithConf = new GenerateXMLReport(conf);
-        appWithConf.generateXMLreport();
+        GenerateXML generateXML = new GenerateXML(conf);
+        generateXML.make();
     }
 ```
 If you don't want to create additional configuration then you could use your code like this:
 ```java
     @AfterAll
     public void afterAll() {
-        GenerateXMLReport appWithoutConf = new GenerateXMLReport();
-        appWithoutConf.generateXMLreport();
+        GenerateXML generateXML = new GenerateXML();
+        generateXML.make();
     }
 ```
 In this case keep in mind that system will take default folder where locate Cucumber JSON reports after launch all tests:

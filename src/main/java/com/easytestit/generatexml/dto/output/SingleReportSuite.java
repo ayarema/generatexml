@@ -1,6 +1,6 @@
 package com.easytestit.generatexml.dto.output;
 
-import com.easytestit.generatexml.dto.output.properties.AggregatedProperties;
+import com.easytestit.generatexml.dto.output.properties.SuiteProperties;
 import com.easytestit.generatexml.dto.output.testcase.TestCase;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -94,7 +94,7 @@ public class SingleReportSuite {
      */
     @XmlElementWrapper(name = "properties")
     @XmlElement(name = "property")
-    private Collection<AggregatedProperties> aggregatedProperties;
+    private Collection<SuiteProperties> suiteProperties;
 
     /**
      * Test cases, see deep into test case class
@@ -175,8 +175,8 @@ public class SingleReportSuite {
         return this;
     }
 
-    public SingleReportSuite setAggregatedProperties(Collection<AggregatedProperties> aggregatedProperties) {
-        this.aggregatedProperties = aggregatedProperties;
+    public SingleReportSuite setSuiteProperties(Collection<SuiteProperties> suiteProperties) {
+        this.suiteProperties = suiteProperties;
         return this;
     }
 

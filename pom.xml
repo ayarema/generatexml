@@ -202,7 +202,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.easytestit.generatexml.GenerateXMLReport</mainClass>
+                            <mainClass>com.easytestit.generatexml.GenerateXML</mainClass>
                             <classpathPrefix>generatexml-jars/</classpathPrefix>
                         </manifest>
                     </archive>

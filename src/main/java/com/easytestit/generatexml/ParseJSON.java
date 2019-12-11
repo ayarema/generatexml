@@ -17,32 +17,35 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Class {@link ParseJSON} describes functionality where JSON files will deserialize to Java Objects
+ */
 @SuppressWarnings("unchecked")
 @NoArgsConstructor
-class ParserJSONFiles {
+class ParseJSON {
 
-    private static final Logger LOGGER = LogManager.getLogger(GenerateXMLReport.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ParseJSON.class.getName());
     private ConfigureXMLReport configureXMLReport;
 
-    ParserJSONFiles(ConfigureXMLReport configureXMLReport) {
+    ParseJSON(ConfigureXMLReport configureXMLReport) {
         LOGGER.info("Start parse JSON report to Object with specified Configuration");
         this.configureXMLReport = configureXMLReport;
     }
 
     /**
      * Start parse JSON with predicate configuration
-     * @return Collection of Features objects
+     * @return the collection of Features objects
      */
-    Collection<Feature> parseJSON() {
+    Collection<Feature> parse() {
         return getFeatureDocumentsList(configureXMLReport.getJsonFiles());
     }
 
     /**
      * Start parse JSON without predicate configuration
-     * @param jsonFiles path to real files which locate in compiled folder
-     * @return Collection of Features objects
+     * @param jsonFiles the path to real files which locate in compiled folder
+     * @return the collection of Features objects
      */
-    Collection<Feature> parseJSON(Collection<String> jsonFiles) {
+    Collection<Feature> parse(Collection<String> jsonFiles) {
         return getFeatureDocumentsList(jsonFiles);
     }
 

@@ -1,13 +1,15 @@
 package com.easytestit.generatexml.service;
 
 import com.easytestit.generatexml.data.XMLBuilderConstants;
-import com.easytestit.generatexml.dto.output.TemporaryTestCase;
+import com.easytestit.generatexml.dto.input.elements.Element;
+import com.easytestit.generatexml.dto.input.elements.steps.Step;
 import com.easytestit.generatexml.dto.output.SingleReportSuite;
 import com.easytestit.generatexml.dto.input.Feature;
-import com.easytestit.generatexml.dto.output.ReportSuites;
+import com.easytestit.generatexml.dto.output.XMLReport;
 import com.easytestit.generatexml.dto.output.testcase.TestCase;
 import com.easytestit.generatexml.dto.input.tags.Tag;
 import com.easytestit.generatexml.utils.UtilsConverter;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -32,11 +34,13 @@ public class TransformService {
 
     private static final Logger LOGGER = LogManager.getLogger(TransformService.class.getName());
 
-    private String allTagsFromEachFeature = "";
-
-    private String tempTags_ = "";
+    private Map<Integer, TemporaryTestCase> tests = new HashMap<>();
+    private String allTagsFromAllFeatures = "";
+    private String hostName = "";
+    private String responseDate = "";
     private String stepOutResults = "";
     private String stepErrResults = "";
+    private String backgroundValue = "";
     private int featureFilesCount = 0;
     private int countFailuresTestsFromAllFiles = 0;
     private int countFailuresTestFromOneFile = 0;
@@ -46,9 +50,6 @@ public class TransformService {
     private Long durationOfAllTest = 0L;
     private Long durationOfAllTestFromAllSuites = 0L;
 
-    private final String[] hostName = {""};
-    private final String[] responseDate = {""};
-
     /**
      * The main goal in this method is to convert JAVA object which was deserialized from JSON file
      * to other JAVA object which will serialize to XML file
@@ -57,62 +58,15 @@ public class TransformService {
      * @param features prepared JAVA feature class which should be convert to another DTO
      * @return prepared DTO aggregated class with all needed data for serialize it to XML file
      */
-    public ReportSuites transformFeaturesToReportSuites(@NotNull Collection<Feature> features) {
-        Map<Integer, TemporaryTestCase> tests = new HashMap<>();
+    public XMLReport transformFeaturesToReport(@NotNull Collection<Feature> features) {
+        LOGGER.info("Method transformFeaturesToReportSuites invoked");
         Collection<SingleReportSuite> singleReportSuites = new ArrayList<>();
 
         features.forEach(feature -> {
             featureFilesCount += 1;
-
-            if (feature.getTags() != null) fillTagsInSuitReport(feature.getTags());
-
+            if (feature.getTags() != null) tagsProcessing(feature.getTags());
             if (feature.getElements() != null)
-                feature.getElements().forEach(element -> {
-
-                    if (element.getKeyword().equals(XMLBuilderConstants.SCENARIO)) {
-                        countScenarios += 1;
-                        countScenariosInSuite += 1;
-                    }
-                    if (element.getTags() != null) fillTagsInSuitReport(element.getTags());
-                    if (element.getSteps() != null)
-                        element.getSteps().forEach(step -> {
-                            if (!step.getResult().getStatus().equals(XMLBuilderConstants.PASSED)) {
-                                countFailuresTestsFromAllFiles += 1;
-                                countFailuresTestFromOneFile += 1;
-                            }
-                            stringOutBuilder(element.getKeyword(), step.getKeyword(), step.getName(), step.getResult().getStatus());
-                            durationOfTest += step.getResult().getDuration();
-
-                            if (step.getDocString() != null)
-                                getArrayStringBySeparator(step.getDocString().getValue(), ">").forEach(
-                                        request -> {
-                                            if (request.toLowerCase().contains(XMLBuilderConstants.HOST)) {
-                                                hostName[0] = getArrayStringBySeparator(request, ":").get(1);
-                                            } else if (request.toLowerCase().contains(XMLBuilderConstants.USER_AGENT)) {
-                                                getArrayStringBySeparator(request, "<").forEach(
-                                                        response -> {
-                                                            if (response.contains(XMLBuilderConstants.DATE_TEXT)) {
-                                                                responseDate[0] = response.substring(7, 32);
-                                                            }
-                                                        }
-                                                );
-                                            }
-                                        }
-                                );
-                        });
-
-                    tests.put(element.getLine(), new TemporaryTestCase()
-                            .setLine(element.getLine())
-                            .setKeyword(element.getKeyword())
-                            .setName(element.getName())
-                            .setDescription(feature.getDescription())
-                            .setTestOutputString(stepOutResults)
-                            .setTestDuration(durationOfTest));
-
-                    durationOfAllTest += durationOfTest;
-                    stepOutResults = "";
-                    durationOfTest = 0L;
-                });
+                feature.getElements().forEach(element -> elementProcessing(feature, element));
 
             singleReportSuites.add(new SingleReportSuite()
                     .setTests(String.valueOf(countScenariosInSuite))
@@ -122,12 +76,11 @@ public class TransformService {
                     .setId(String.valueOf(featureFilesCount))
                     .setPackageName(feature.getName())
                     .setTime(String.valueOf(UtilsConverter.round.apply(durationOfAllTest * XMLBuilderConstants.RATIO)))
-                    .setTimestamp(LocalDateTime.parse(responseDate[0], DateTimeFormatter.ofPattern(XMLBuilderConstants.DATE_FORMATTER_PATTERN, Locale.ENGLISH)).toString())
+                    .setTimestamp(LocalDateTime.parse(responseDate, DateTimeFormatter.ofPattern(XMLBuilderConstants.DATE_FORMATTER_PATTERN, Locale.ENGLISH)).toString())
                     .setTestCases(getTestCasesFromFeature(tests))
-                    .setHostname(UtilsConverter.removeRedundantSymbols.apply(hostName[0])));
+                    .setHostname(hostName));
 
             durationOfAllTestFromAllSuites += durationOfAllTest;
-
             durationOfAllTest = 0L;
             countScenariosInSuite = 0;
             countFailuresTestFromOneFile = 0;
@@ -135,26 +88,71 @@ public class TransformService {
             tests.clear();
         });
 
-        return aggregateTestSuitesResult(allTagsFromEachFeature.trim(), countFailuresTestsFromAllFiles, countFailuresTestsFromAllFiles, countScenarios, durationOfAllTestFromAllSuites, singleReportSuites);
+        return getReportSuites(allTagsFromAllFeatures.trim(), countFailuresTestsFromAllFiles, countFailuresTestsFromAllFiles, countScenarios, durationOfAllTestFromAllSuites, singleReportSuites);
+    }
+
+    private void elementProcessing(Feature feature, @NotNull Element element) {
+        if (element.getKeyword().equals(XMLBuilderConstants.SCENARIO)) {
+            countScenarios += 1;
+            countScenariosInSuite += 1;
+        }
+        if (element.getTags() != null) tagsProcessing(element.getTags());
+        if (element.getSteps() != null)
+            element.getSteps().forEach(step -> stepProcessing(element, step));
+
+        tests.put(element.getLine(), new TemporaryTestCase()
+                .setLine(element.getLine())
+                .setKeyword(element.getKeyword())
+                .setName(element.getName())
+                .setDescription(feature.getDescription())
+                .setTestOutputString(stepOutResults)
+                .setTestErrorOutputString(stepErrResults)
+                .setTestDuration(durationOfTest));
+
+        durationOfAllTest += durationOfTest;
+        stepOutResults = "";
+        durationOfTest = 0L;
+    }
+
+    private void stepProcessing(Element element, @NotNull Step step) {
+        if (!step.getResult().getStatus().equals(XMLBuilderConstants.PASSED)) {
+            countFailuresTestsFromAllFiles += 1;
+            countFailuresTestFromOneFile += 1;
+            stringErrBuilder(step.getResult().getErrorMessage());
+        } else if (step.getResult().getStatus().equals(XMLBuilderConstants.PASSED)) {
+            stringOutBuilder(element.getKeyword(), step.getKeyword(), step.getName(), step.getResult().getStatus());
+        }
+        durationOfTest += step.getResult().getDuration();
+
+        if (step.getDocString() != null)
+            getArrayStringBySeparator(step.getDocString().getValue(), ">").forEach(
+                    request -> {
+                        if (request.toLowerCase().contains(XMLBuilderConstants.HOST)) {
+                            hostName = UtilsConverter.removeRedundantSymbols.apply(getArrayStringBySeparator(request, ":").get(1));
+                        } else if (request.toLowerCase().contains(XMLBuilderConstants.USER_AGENT)) {
+                            getArrayStringBySeparator(request, "<").forEach(
+                                    response -> {
+                                        if (response.contains(XMLBuilderConstants.DATE_TEXT)) {
+                                            responseDate = response.substring(7, 32);
+                                        }
+                                    }
+                            );
+                        }
+                    }
+            );
     }
 
     @NotNull
     private Collection<TestCase> getTestCasesFromFeature(@NotNull Map<Integer, TemporaryTestCase> tests) {
         Collection<TestCase> testCases = new ArrayList<>();
 
-        String[] strings = {""};
-
-        tests.values().stream().filter(testCase -> testCase.getKeyword().equals(XMLBuilderConstants.BACKGROUND)).forEach(tt -> {
-            strings[0] = tt.getTestOutputString();
-        });
-
-        tests.values().stream().filter(t -> t.getKeyword().equals(XMLBuilderConstants.SCENARIO)).forEach(temporaryTestCase -> {
-            testCases.add(
-                    new TestCase()
-                            .setTestName(temporaryTestCase.getName())
-                            .setDescription(temporaryTestCase.getDescription())
-                            .setCaseOutInfo(strings[0].concat(temporaryTestCase.getTestOutputString())));
-        });
+        tests.values().stream().filter(testCase -> testCase.getKeyword().equals(XMLBuilderConstants.BACKGROUND)).forEach(tt -> backgroundValue = tt.getTestOutputString());
+        tests.values().stream().filter(t -> t.getKeyword().equals(XMLBuilderConstants.SCENARIO)).forEach(temporaryTestCase -> testCases.add(
+                new TestCase()
+                        .setTestName(temporaryTestCase.getName())
+                        .setDescription(temporaryTestCase.getDescription())
+                        .setCaseOutInfo(backgroundValue.concat(temporaryTestCase.getTestOutputString()))
+                        .setCaseOutErr(temporaryTestCase.getTestErrorOutputString())));
 
         return testCases;
     }
@@ -165,65 +163,13 @@ public class TransformService {
      *
      * @param tags object which should be handled
      */
-    private void fillTagsInSuitReport(@NotNull Collection<Tag> tags) {
+    private void tagsProcessing(@NotNull Collection<Tag> tags) {
         tags.stream().filter(
-                t -> !allTagsFromEachFeature.contains(t.getName())).forEach(tag -> allTagsFromEachFeature += tag.getName().concat(" "));
+                t -> !allTagsFromAllFeatures.contains(t.getName())).forEach(tag -> allTagsFromAllFeatures += tag.getName().concat(" "));
     }
 
     /**
-     * Helper method which fill object {@link SingleReportSuite}. This object related to Feature file from Cucumber, which contains all Backgrounds and Scenarios
-     *
-     * @param name of feature file
-     * @param size quantity of elements in one feature file
-     * @param tags tags which was set upped for feature file
-     * @param countInSuites quantity of errors from all scenarios and backgrounds
-     * @param failuresCountInSuites quantity of failures from all scenarios and backgrounds
-     * @param featureFilesCount ID of feature file which was parsed before
-     * @param durationOfTest long type value of duration whole backgrounds and scenarios
-     * @param hostName string value of host where request made
-     * @param dateTimeISO string value of date time when request was made
-     * @param testCaseResults object {@link TestCase} with data
-     *
-     * @return aggregated {@link SingleReportSuite} with all {@link TestCase}
-     */
-    @NotNull
-    private SingleReportSuite getTestSuiteResult(
-            @NotNull String name,
-            int size,
-            @NotNull List<Tag> tags,
-            int countInSuites,
-            int failuresCountInSuites,
-            int featureFilesCount,
-            Long durationOfTest,
-            String hostName,
-            String dateTimeISO,
-            Collection<TestCase> testCaseResults) {
-        var testSuite = new SingleReportSuite();
-        String[] names = name.split("/");
-        tags.stream().filter(
-                tag -> !tempTags_.contains(tag.getName())).forEach(tag -> tempTags_ += tag.getName().concat(" "));
-
-        if (tempTags_.contains(XMLBuilderConstants.DISABLED)) {
-            var j = StringUtils.countMatches(tempTags_, XMLBuilderConstants.DISABLED);
-            testSuite.setDisabled(String.valueOf(j));
-        }
-
-        testSuite.setName(getLastElement(Arrays.stream(names).collect(Collectors.toList())))
-                .setTests(String.valueOf(size))
-                .setErrors(String.valueOf(countInSuites))
-                .setFailures(String.valueOf(failuresCountInSuites))
-                .setId(String.valueOf(featureFilesCount))
-                .setPackageName(name)
-                .setTime(String.valueOf(durationOfTest))
-                .setHostname(UtilsConverter.removeRedundantSymbols.apply(hostName))
-                .setTimestamp(LocalDateTime.parse(dateTimeISO, DateTimeFormatter.ofPattern(XMLBuilderConstants.DATE_FORMATTER_PATTERN, Locale.ENGLISH)).toString())
-                .setTestCases(testCaseResults);
-
-        return testSuite;
-    }
-
-    /**
-     * Helper method which fill object {@link ReportSuites}. This object contains all Feature file from Cucumber, which contains all Backgrounds and Scenarios
+     * Helper method which fill object {@link XMLReport}. This object contains all Feature file from Cucumber, which contains all Backgrounds and Scenarios
      *
      * @param tempTags string value from all features files
      * @param _countFailuresAllErrorsFromAllFiles string value of quantity of errors from all feature files
@@ -232,17 +178,17 @@ public class TransformService {
      * @param _duration string value of duration for all feature files
      * @param singleReportSuites object {@link SingleReportSuite} with prepared data
      *
-     * @return prepared object {@link ReportSuites} with all prepared data
+     * @return prepared object {@link XMLReport} with all prepared data
      */
     @NotNull
-    private ReportSuites aggregateTestSuitesResult(
+    private XMLReport getReportSuites(
             @NotNull String tempTags,
             int _countFailuresAllErrorsFromAllFiles,
             int _countFailuresTestsFromAllFiles,
             int successfulCountTests,
             Long _duration,
             Collection<SingleReportSuite> singleReportSuites) {
-        var reportSuites = new ReportSuites();
+        var reportSuites = new XMLReport();
 
         if (tempTags.contains(XMLBuilderConstants.IGNORED) || tempTags.contains(XMLBuilderConstants.DISABLED)) {
             var i = StringUtils.countMatches(tempTags, XMLBuilderConstants.IGNORED);
@@ -250,12 +196,12 @@ public class TransformService {
             reportSuites.setDisabled(String.valueOf(i + j));
         }
 
-        reportSuites.setErrors(String.valueOf(_countFailuresAllErrorsFromAllFiles));
-        reportSuites.setFailures(String.valueOf(_countFailuresTestsFromAllFiles));
-        reportSuites.setTests(String.valueOf(successfulCountTests));
-        reportSuites.setTime(String.valueOf(UtilsConverter.round.apply(_duration * XMLBuilderConstants.RATIO)));
-        reportSuites.setSingleReportSuites(singleReportSuites);
-        reportSuites.setTags(tempTags);
+        reportSuites.setErrors(String.valueOf(_countFailuresAllErrorsFromAllFiles))
+                .setFailures(String.valueOf(_countFailuresTestsFromAllFiles))
+                .setTests(String.valueOf(successfulCountTests))
+                .setTime(String.valueOf(UtilsConverter.round.apply(_duration * XMLBuilderConstants.RATIO)))
+                .setSingleReportSuites(singleReportSuites)
+                .setTags(tempTags);
 
         return reportSuites;
     }
@@ -320,8 +266,55 @@ public class TransformService {
      */
     @NotNull
     private List<String> getArrayStringBySeparator(@NotNull String str, String separator) {
-        String[] arrayList = str.split(separator);
-        return Arrays.asList(arrayList);
+        return Arrays.asList(str.split(separator));
+    }
+
+    @NoArgsConstructor
+    @Getter
+    static class TemporaryTestCase {
+
+        private String keyword;
+        private Integer line;
+        private String name;
+        private String description;
+        private Long testDuration;
+        private String testOutputString;
+        private String testErrorOutputString;
+
+        public TemporaryTestCase setKeyword(String keyword) {
+            this.keyword = keyword;
+            return this;
+        }
+
+        public TemporaryTestCase setLine(Integer line) {
+            this.line = line;
+            return this;
+        }
+
+        public TemporaryTestCase setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public TemporaryTestCase setTestDuration(Long testDuration) {
+            this.testDuration = testDuration;
+            return this;
+        }
+
+        public TemporaryTestCase setTestOutputString(String testOutputString) {
+            this.testOutputString = testOutputString;
+            return this;
+        }
+
+        public TemporaryTestCase setDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public TemporaryTestCase setTestErrorOutputString(String testErrorOutputString) {
+            this.testErrorOutputString = testErrorOutputString;
+            return this;
+        }
     }
 
 }

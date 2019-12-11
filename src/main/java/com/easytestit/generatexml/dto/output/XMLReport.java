@@ -1,8 +1,6 @@
 package com.easytestit.generatexml.dto.output;
 
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -14,9 +12,8 @@ import java.util.Collection;
  * element can be omitted. All attributes are optional.
  */
 @NoArgsConstructor
-@Setter
 @XmlRootElement(name = "testsuites")
-public class ReportSuites {
+public class XMLReport {
 
     /**
      * All tags from all report suites
@@ -63,4 +60,43 @@ public class ReportSuites {
     @XmlElement(name = "testsuite")
     private Collection<SingleReportSuite> singleReportSuites;
 
+    public XMLReport setTags(String tags) {
+        this.tags = tags;
+        return this;
+    }
+
+    public XMLReport setDisabled(String disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    public XMLReport setErrors(String errors) {
+        this.errors = errors;
+        return this;
+    }
+
+    public XMLReport setFailures(String failures) {
+        this.failures = failures;
+        return this;
+    }
+
+    public XMLReport setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public XMLReport setTests(String tests) {
+        this.tests = tests;
+        return this;
+    }
+
+    public XMLReport setTime(String time) {
+        this.time = time;
+        return this;
+    }
+
+    public XMLReport setSingleReportSuites(Collection<SingleReportSuite> singleReportSuites) {
+        this.singleReportSuites = singleReportSuites;
+        return this;
+    }
 }
