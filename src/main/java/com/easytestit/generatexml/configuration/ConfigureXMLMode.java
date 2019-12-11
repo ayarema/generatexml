@@ -2,7 +2,7 @@ package com.easytestit.generatexml.configuration;
 
 /**
  * Additional configuration class which is defining an additional scope of functionality
- * Currently we have additional functionality namely - zipping files to folder & sending zipped files on http result view server
+ * Currently we have additional functionality namely - zipping files to folder and sending zipped files on http result view server
  */
 public enum ConfigureXMLMode {
 
