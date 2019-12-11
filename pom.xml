@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.iaremenko</groupId>
+    <groupId>com.easytestit</groupId>
     <artifactId>generate-xml</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>generatexml</name>
     <packaging>jar</packaging>
@@ -24,16 +24,18 @@
         <jaxb.runtime.version>2.3.2</jaxb.runtime.version>
         <fasterxml.version>2.9.10</fasterxml.version>
         <apache.common.version>3.9</apache.common.version>
+        <okhttp.version>4.2.0</okhttp.version>
         <log4j.version>2.10.0</log4j.version>
         <tika.version>1.22</tika.version>
         <jetbrains.annotaion.version>17.0.0</jetbrains.annotaion.version>
+        <lombok.version>1.18.10</lombok.version>
 
-        <karate.version>0.9.4</karate.version>
         <junit.version>4.12</junit.version>
 
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <maven.javadoc.version>3.1.1</maven.javadoc.version>
         <maven.surefire.version>2.22.0</maven.surefire.version>
+        <maven.jar.version>3.1.2</maven.jar.version>
     </properties>
 
     <ciManagement>
@@ -61,15 +63,7 @@
     </developers>
 
     <dependencies>
-
         <!-- compile-->
-        <dependency>
-            <groupId>com.intuit.karate</groupId>
-            <artifactId>karate-core</artifactId>
-            <version>${karate.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -107,6 +101,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
@@ -131,27 +131,19 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- test compile-->
-        <dependency>
-            <groupId>com.intuit.karate</groupId>
-            <artifactId>karate-apache</artifactId>
-            <version>${karate.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.intuit.karate</groupId>
-            <artifactId>karate-junit4</artifactId>
-            <version>${karate.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -201,6 +193,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.version}</version>
                 <configuration>
                     <!-- DO NOT include log4j.properties file in your Jar -->
                     <excludes>
@@ -209,7 +202,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.iaremenko.generatexml.GenerateXMLReport</mainClass>
+                            <mainClass>com.easytestit.generatexml.GenerateXML</mainClass>
                             <classpathPrefix>generatexml-jars/</classpathPrefix>
                         </manifest>
                     </archive>
@@ -237,6 +230,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
