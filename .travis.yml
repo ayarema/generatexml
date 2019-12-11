@@ -1,0 +1,27 @@
+language: java
+sudo: false
+
+cache:
+  directories:
+    - "$HOME/.m2"
+
+jobs:
+  include:
+    # 1.1 Check JDK
+    - stage: test
+      jdk: openjdk12
+      script: mvn clean
+      after_success:
+        - mvn clean
+
+    # 1.2 Check javadoc. We need to use this version to properly detect errors.
+    - jdk: oraclejdk12
+      env: JAVADOC=true
+      script:
+        - mvn clean verify -DskipTests=true
+        - mvn javadoc:aggregate
+
+branches:
+  only:
+    - master
+    - development
