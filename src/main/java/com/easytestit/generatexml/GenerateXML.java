@@ -34,7 +34,7 @@ public class GenerateXML {
     /**
      * <p> Method describes functionality which provided files and generates the aggregated XML report.
      * When generating process fails report with information about error is provided.
-     * <p/>
+     * </p>
      */
     public void make() {
         //create new folder where new XML report will be created
@@ -67,7 +67,7 @@ public class GenerateXML {
     /**
      * Void function which provides the ability to create a directory that will later serve as the folder
      * where the aggregated XML report will be created
-     * <p/>
+     * </p>
      * Also, this folder will zip later if needed configuration will pass
      */
     private void createResultsReportFolder() {
@@ -79,7 +79,7 @@ public class GenerateXML {
     /**
      * A convenience method which read files with specific extension
      * and collects path to these files in a new String collection
-     * <p/>
+     * </p>
      * @param reportFolder the folder where locate all files after launching tests
      * @return the collection of String with defined path to JSON files
      */
@@ -134,7 +134,7 @@ public class GenerateXML {
 
     /**
      * A convenience method to use the error messages in many places
-     * <p/>
+     * </p>
      * @param e the object which contains information about the exception
      * The detail message which will print in a console or in a log file later.
      */
