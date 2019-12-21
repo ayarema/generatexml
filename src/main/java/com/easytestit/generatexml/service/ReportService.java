@@ -30,20 +30,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
-public class TransformService {
+public class ReportService {
 
-    private static final Logger LOGGER = LogManager.getLogger(TransformService.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ReportService.class.getName());
 
     private Map<Integer, TemporaryTestCase> tests = new HashMap<>();
-    private String allTagsFromAllFeatures = "";
+    private Map<String, String> featureTagsMap = new HashMap<>();
+    private String featureTags = "";
+    private String tagsValue = "";
     private String hostName = "";
     private String responseDate = "";
     private String stepOutResults = "";
     private String stepErrResults = "";
     private String backgroundValue = "";
-    private int featureFilesCount = 0;
-    private int countFailuresTestsFromAllFiles = 0;
+    private String testCaseStatus = "";
+    private int countFailures = 0;
     private int countFailuresTestFromOneFile = 0;
+    private int countSkippedTestFromOneFile = 0;
     private int countScenarios = 0;
     private int countScenariosInSuite = 0;
     private Long durationOfTest = 0L;
@@ -59,69 +62,120 @@ public class TransformService {
      * @return prepared DTO aggregated class with all needed data for serialize it to XML file
      */
     public XMLReport transformFeaturesToReport(@NotNull Collection<Feature> features) {
-        LOGGER.info("Method transformFeaturesToReportSuites invoked");
+        LOGGER.debug("Method transformFeaturesToReportSuites invoked");
         Collection<SingleReportSuite> singleReportSuites = new ArrayList<>();
 
         features.forEach(feature -> {
-            featureFilesCount += 1;
-            if (feature.getTags() != null) tagsProcessing(feature.getTags());
-            if (feature.getElements() != null)
-                feature.getElements().forEach(element -> elementProcessing(feature, element));
+            if (feature.getTags() != null) tagProcessing("featureTags", feature.getTags());
+            if (feature.getElements() != null) feature.getElements().forEach(element -> elementProcessing(feature, element));
 
-            singleReportSuites.add(new SingleReportSuite()
-                    .setTests(String.valueOf(countScenariosInSuite))
-                    .setName(getLastElement(Arrays.stream(feature.getName().split("/")).collect(Collectors.toList())))
-                    .setErrors(String.valueOf(countFailuresTestFromOneFile))
-                    .setFailures(String.valueOf(countFailuresTestFromOneFile))
-                    .setId(String.valueOf(featureFilesCount))
-                    .setPackageName(feature.getName())
-                    .setTime(String.valueOf(UtilsConverter.round.apply(durationOfAllTest * XMLBuilderConstants.RATIO)))
-                    .setTimestamp(LocalDateTime.parse(responseDate, DateTimeFormatter.ofPattern(XMLBuilderConstants.DATE_FORMATTER_PATTERN, Locale.ENGLISH)).toString())
-                    .setTestCases(getTestCasesFromFeature(tests))
-                    .setHostname(hostName));
-
+            singleReportSuites.add(getSingleReportSuite(feature, features));
             durationOfAllTestFromAllSuites += durationOfAllTest;
-            durationOfAllTest = 0L;
-            countScenariosInSuite = 0;
-            countFailuresTestFromOneFile = 0;
-
-            tests.clear();
+            resetVariables();
         });
 
-        return getReportSuites(allTagsFromAllFeatures.trim(), countFailuresTestsFromAllFiles, countFailuresTestsFromAllFiles, countScenarios, durationOfAllTestFromAllSuites, singleReportSuites);
+        return getReportSuites(countFailures, countScenarios, durationOfAllTestFromAllSuites, singleReportSuites);
+    }
+
+    /**
+     * Separate method for better handling code
+     * Created for getting data about tags and pass these tags to other function
+     *
+     * @param tagKey the key value for processing tags for specific block of feature file
+     * @param tags object which should be handled
+     */
+    private void tagProcessing(String tagKey, @NotNull Collection<Tag> tags) {
+        tags.stream().filter(
+                t -> !featureTags.contains(t.getName())).forEach(tag -> tagsValue += tag.getName().concat(" "));
+        featureTagsMap.put(tagKey, tagsValue);
+        tagsValue = "";
     }
 
     private void elementProcessing(Feature feature, @NotNull Element element) {
+        LOGGER.debug("Method elementProcessing invoked");
+        if (element.getTags() != null) tagProcessing("elementTags", element.getTags());
         if (element.getKeyword().equals(XMLBuilderConstants.SCENARIO)) {
             countScenarios += 1;
             countScenariosInSuite += 1;
         }
-        if (element.getTags() != null) tagsProcessing(element.getTags());
         if (element.getSteps() != null)
             element.getSteps().forEach(step -> stepProcessing(element, step));
 
         tests.put(element.getLine(), new TemporaryTestCase()
                 .setLine(element.getLine())
+                .setStatus(testCaseStatus.contains(XMLBuilderConstants.FAILED) ? XMLBuilderConstants.FAILED : XMLBuilderConstants.PASSED)
                 .setKeyword(element.getKeyword())
                 .setName(element.getName())
                 .setDescription(feature.getDescription())
                 .setTestOutputString(stepOutResults)
-                .setTestErrorOutputString(stepErrResults)
-                .setTestDuration(durationOfTest));
+                .setTestErrorOutputString("Stack Trace: \n".concat(stepErrResults))
+                .setTestDuration(durationOfTest)
+                .setTags(featureTagsMap.get("elementTags")));
 
         durationOfAllTest += durationOfTest;
         stepOutResults = "";
+        stepErrResults = "";
+        testCaseStatus = "";
         durationOfTest = 0L;
+
+        featureTagsMap.remove("elementTags");
+    }
+
+    private SingleReportSuite getSingleReportSuite(Feature feature, @NotNull Collection<Feature> features) {
+        var increment = 1;
+        var ignored = 0;
+        var disabled = 0;
+
+        if (featureTags.contains(XMLBuilderConstants.IGNORED) || featureTags.contains(XMLBuilderConstants.DISABLED)) {
+            ignored = StringUtils.countMatches(featureTags, XMLBuilderConstants.IGNORED);
+            disabled = StringUtils.countMatches(featureTags, XMLBuilderConstants.DISABLED);
+        }
+
+        return new SingleReportSuite()
+                .setName(getLastElement(Arrays.stream(feature.getName().split("/")).collect(Collectors.toList())))
+                .setTests(String.valueOf(countScenariosInSuite))
+                .setFailures(String.valueOf(countFailuresTestFromOneFile))
+                .setDisabled(String.valueOf(ignored + disabled))
+                .setHostname(hostName)
+                .setId(String.valueOf(((ArrayList) features).indexOf(feature) + increment))
+                .setPackageName(feature.getName())
+                .setSkipped(String.valueOf(countSkippedTestFromOneFile))
+                .setTime(String.valueOf(UtilsConverter.round.apply(durationOfAllTest * XMLBuilderConstants.RATIO)))
+                .setTimestamp(LocalDateTime.parse(responseDate, DateTimeFormatter.ofPattern(XMLBuilderConstants.DATE_FORMATTER_PATTERN, Locale.ENGLISH)).toString())
+                .setTags(featureTagsMap.get("featureTags"))
+                .setTestCases(getTestCasesFromFeature(tests));
+    }
+
+    private void resetVariables() {
+        durationOfAllTest = 0L;
+        countScenariosInSuite = 0;
+        countFailuresTestFromOneFile = 0;
+        countSkippedTestFromOneFile = 0;
+        featureTags = "";
+
+        featureTagsMap.clear();
+        tests.clear();
     }
 
     private void stepProcessing(Element element, @NotNull Step step) {
-        if (!step.getResult().getStatus().equals(XMLBuilderConstants.PASSED)) {
-            countFailuresTestsFromAllFiles += 1;
-            countFailuresTestFromOneFile += 1;
-            stringErrBuilder(step.getResult().getErrorMessage());
-        } else if (step.getResult().getStatus().equals(XMLBuilderConstants.PASSED)) {
-            stringOutBuilder(element.getKeyword(), step.getKeyword(), step.getName(), step.getResult().getStatus());
+        switch (step.getResult().getStatus()) {
+            case XMLBuilderConstants.FAILED:
+                countFailures += 1;
+                countFailuresTestFromOneFile += 1;
+                if (!testCaseStatus.contains(XMLBuilderConstants.FAILED))
+                    testCaseStatus += step.getResult().getStatus().concat(" ");
+                stringErrBuilder(step.getResult().getErrorMessage());
+                break;
+            case XMLBuilderConstants.SKIPPED:
+                countSkippedTestFromOneFile += 1;
+                break;
+            case XMLBuilderConstants.PASSED:
+                if (!testCaseStatus.contains(XMLBuilderConstants.PASSED))
+                    testCaseStatus += step.getResult().getStatus().concat(" ");
+                break;
         }
+
+        stringOutBuilder(element.getKeyword(), step.getKeyword(), step.getName(), step.getResult().getStatus());
         durationOfTest += step.getResult().getDuration();
 
         if (step.getDocString() != null)
@@ -149,6 +203,7 @@ public class TransformService {
         tests.values().stream().filter(testCase -> testCase.getKeyword().equals(XMLBuilderConstants.BACKGROUND)).forEach(tt -> backgroundValue = tt.getTestOutputString());
         tests.values().stream().filter(t -> t.getKeyword().equals(XMLBuilderConstants.SCENARIO)).forEach(temporaryTestCase -> testCases.add(
                 new TestCase()
+                        .setStatus(temporaryTestCase.getStatus())
                         .setTestName(temporaryTestCase.getName())
                         .setDescription(temporaryTestCase.getDescription())
                         .setCaseOutInfo(backgroundValue.concat(temporaryTestCase.getTestOutputString()))
@@ -158,22 +213,9 @@ public class TransformService {
     }
 
     /**
-     * Separate method for better handling code
-     * Created for getting data about tags and pass these tags to other function
-     *
-     * @param tags object which should be handled
-     */
-    private void tagsProcessing(@NotNull Collection<Tag> tags) {
-        tags.stream().filter(
-                t -> !allTagsFromAllFeatures.contains(t.getName())).forEach(tag -> allTagsFromAllFeatures += tag.getName().concat(" "));
-    }
-
-    /**
      * Helper method which fill object {@link XMLReport}. This object contains all Feature file from Cucumber, which contains all Backgrounds and Scenarios
      *
-     * @param tempTags string value from all features files
-     * @param _countFailuresAllErrorsFromAllFiles string value of quantity of errors from all feature files
-     * @param _countFailuresTestsFromAllFiles string value of quantity of failures from all feature files
+     * @param countFailuresTestsFromAllFiles string value of quantity of failures from all feature files
      * @param successfulCountTests string value of quantity of successful tests from all feature files
      * @param _duration string value of duration for all feature files
      * @param singleReportSuites object {@link SingleReportSuite} with prepared data
@@ -182,28 +224,19 @@ public class TransformService {
      */
     @NotNull
     private XMLReport getReportSuites(
-            @NotNull String tempTags,
-            int _countFailuresAllErrorsFromAllFiles,
-            int _countFailuresTestsFromAllFiles,
+            int countFailuresTestsFromAllFiles,
             int successfulCountTests,
             Long _duration,
             Collection<SingleReportSuite> singleReportSuites) {
-        var reportSuites = new XMLReport();
+        var xmlReport = new XMLReport();
 
-        if (tempTags.contains(XMLBuilderConstants.IGNORED) || tempTags.contains(XMLBuilderConstants.DISABLED)) {
-            var i = StringUtils.countMatches(tempTags, XMLBuilderConstants.IGNORED);
-            var j = StringUtils.countMatches(tempTags, XMLBuilderConstants.DISABLED);
-            reportSuites.setDisabled(String.valueOf(i + j));
-        }
-
-        reportSuites.setErrors(String.valueOf(_countFailuresAllErrorsFromAllFiles))
-                .setFailures(String.valueOf(_countFailuresTestsFromAllFiles))
+        xmlReport
+                .setFailures(String.valueOf(countFailuresTestsFromAllFiles))
                 .setTests(String.valueOf(successfulCountTests))
                 .setTime(String.valueOf(UtilsConverter.round.apply(_duration * XMLBuilderConstants.RATIO)))
-                .setSingleReportSuites(singleReportSuites)
-                .setTags(tempTags);
+                .setSingleReportSuites(singleReportSuites);
 
-        return reportSuites;
+        return xmlReport;
     }
 
     /**
@@ -217,7 +250,7 @@ public class TransformService {
     @Contract(pure = true)
     private void stringOutBuilder(String keywordType, String keyword, String stepName, String stepResult_) {
         var outLength = 15;
-        var outLengthSecond = 90;
+        var outLengthSecond = 180;
         var outString = new StringBuilder(keywordType);
 
         while (outString.length() < outLength) outString.append(".");
@@ -242,8 +275,7 @@ public class TransformService {
      * Functional method which get the last element from collection
      *
      * @param elements iterable object which should processed
-     * @param <T> the type of elements returned by the iterator
-     * @return
+     * @return T the type of elements returned by the iterator
      */
     @Contract(pure = true)
     private <T> T getLastElement(@NotNull final Iterable<T> elements) {
@@ -274,15 +306,22 @@ public class TransformService {
     static class TemporaryTestCase {
 
         private String keyword;
+        private String status;
         private Integer line;
         private String name;
         private String description;
         private Long testDuration;
+        private String tags;
         private String testOutputString;
         private String testErrorOutputString;
 
         public TemporaryTestCase setKeyword(String keyword) {
             this.keyword = keyword;
+            return this;
+        }
+
+        public TemporaryTestCase setStatus(String status) {
+            this.status = status;
             return this;
         }
 
@@ -298,6 +337,11 @@ public class TransformService {
 
         public TemporaryTestCase setTestDuration(Long testDuration) {
             this.testDuration = testDuration;
+            return this;
+        }
+
+        public TemporaryTestCase setTags(String tags) {
+            this.tags = tags;
             return this;
         }
 

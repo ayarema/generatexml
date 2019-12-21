@@ -3,7 +3,7 @@ package com.easytestit.generatexml;
 import com.easytestit.generatexml.configuration.ConfigureXMLReport;
 import com.easytestit.generatexml.configuration.ConfigureXMLMode;
 import com.easytestit.generatexml.http.SenderService;
-import com.easytestit.generatexml.service.TransformService;
+import com.easytestit.generatexml.service.ReportService;
 import com.easytestit.generatexml.data.DefaultData;
 import com.easytestit.generatexml.service.Serialization;
 import com.easytestit.generatexml.service.ZipService;
@@ -46,7 +46,7 @@ public class GenerateXML {
                 configureXMLReport.addJsonFiles(getJsonFilesFrom(configureXMLReport.getReportFolder()));
                 //convert JSON file in XML
                 new Serialization().serializeToXML(
-                        new TransformService().transformFeaturesToReport(
+                        new ReportService().transformFeaturesToReport(
                                 new ParseJSON(configureXMLReport).parse()));
                 //create ZIP file from XML which created from previews step and send it to report server
                 if (configureXMLReport.containsConfigurationMode(ConfigureXMLMode.ZIP_XML_RESULT_TO_FILE)) createZip();
@@ -54,7 +54,7 @@ public class GenerateXML {
             } else {
                 //when configuration is null start functionality with default parameters
                 new Serialization().serializeToXML(
-                        new TransformService().transformFeaturesToReport(
+                        new ReportService().transformFeaturesToReport(
                                 new ParseJSON().parse(
                                         getJsonFilesFrom(
                                                 new File(DefaultData.TARGET_FOLDER_PATH)))));
@@ -100,8 +100,12 @@ public class GenerateXML {
                         .concat(String.valueOf(File.separatorChar))
                         .concat(file.getName()));
             } else {
-                LOGGER.info("Report folder ".concat(reportFolder.getName())
-                        .concat(" doesn't contain files with JSON format!"));
+                if (out.isEmpty()) {
+                    LOGGER.debug("Report folder ".concat(reportFolder.getName())
+                            .concat(" doesn't contain files with JSON format!"));
+                } else {
+                    LOGGER.debug("File ".concat(file.getName()).concat(" is NOT JSON format!"));
+                }
             }
         });
 

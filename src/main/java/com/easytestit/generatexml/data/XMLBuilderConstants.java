@@ -7,6 +7,7 @@ public class XMLBuilderConstants {
 
     public static final String PASSED = "passed";
     public static final String SKIPPED = "skipped";
+    public static final String FAILED = "failed";
     public static final String DISABLED = "disabled";
     public static final String IGNORED = "ignored";
     public static final String HOST = "host";

@@ -46,16 +46,21 @@ public class TestCase {
     private String description;
 
     /**
+     * Data that was written to standard error while the test was executed
+     */
+    @XmlElement(name = "system-err")
+    private String caseOutErr;
+
+    /**
      * Data that was written to standard out while the test was executed
      */
     @XmlElement(name = "system-out")
     private String caseOutInfo;
 
-    /**
-     * Data that was written to standard error while the test was executed
-     */
-    @XmlElement(name = "system-err")
-    private String caseOutErr;
+    public TestCase setStatus(String status) {
+        this.status = status;
+        return this;
+    }
 
     public TestCase setTestName(String testName) {
         this.testName = testName;
@@ -67,13 +72,13 @@ public class TestCase {
         return this;
     }
 
-    public TestCase setCaseOutInfo(String caseOutInfo) {
-        this.caseOutInfo = caseOutInfo;
+    public TestCase setCaseOutErr(String caseOutErr) {
+        this.caseOutErr = caseOutErr;
         return this;
     }
 
-    public TestCase setCaseOutErr(String caseOutErr) {
-        this.caseOutErr = caseOutErr;
+    public TestCase setCaseOutInfo(String caseOutInfo) {
+        this.caseOutInfo = caseOutInfo;
         return this;
     }
 }

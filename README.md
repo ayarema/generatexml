@@ -3,13 +3,15 @@ Let's imagine that you need to convert Cucumber's JSON BDD reports files to one 
 
 This is the open-source library that will convert JSON reports and will generate one detailed report file in [JUnit XML format](https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.2.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html#junitschema).
 
-`Generate-XML` library was written to be used if new separate JSON report files are created on your project for each individual feature file during the test. Or in case if new XML reports are created for each cucumber feature file but without detailed information.
-You could use `Generate-XML` library if you want to create one detailed and aggregated report. 
+`Generate-XML` library was written to be used if new separate JSON report files are created on your project for each individual feature file during the test. Or in case if new XML reports are created for each Cucumber feature file but without detailed information.
+You could use the `Generate-XML` library if you want to create one detailed and aggregated report.
+
+Before setting up and using the library, please note that your Cucumber reports are similar in format as in the [appendix example](#appendix example). These reports were generated, for example, using the Karate framework for testing functionality on the API layer. You can check this from the ["quick start"](https://github.com/intuit/karate#quickstart) block with the addition of the ["run in parallel"](https://github.com/intuit/karate#junit-5-parallel-execution) functionality.
 
 In addition, the implementation of this `Generate-XML` library includes the ability to send a generated aggregated XML report to the server, where the results of all reports are displayed, for example, [ReportPortal.io](https://github.com/reportportal/reportportal).
 
 ## Getting Started
-`Generate-XML` requires [Java](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 8 (at least version 1.8.0_221 or greater) and then either [Maven](http://maven.apache.org), [Gradle](https://gradle.org), [Eclipse](https://www.eclipse.org/ide/) or [IntelliJ](https://www.jetbrains.com/idea/) to be installed.
+`Generate-XML` requires [Java](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 8 (at least version 1.8.0_221 or greater) and then either [Maven](http://maven.apache.org) or [Gradle](https://gradle.org), [Eclipse](https://www.eclipse.org/ide/) or [IntelliJ](https://www.jetbrains.com/idea/) to be installed.
 
 ### Dependencies
 For start with `Generate-XML` you need just to add dependency to your:
@@ -28,7 +30,7 @@ compile group: 'com.easytestit', name: 'generate-xml', version: '1.0.0'
 ```
 
 ### How to use it?
-Generate-XML is simple library to use and to configure:
+`Generate-XML` is simple library to use and to configure:
 
 ```java
     @AfterAll
@@ -63,4 +65,54 @@ rp.service.url=/launch/import
 ```
 
 ### Results
-After launching Generate-XML functionality the new aggregated JUnit XML report will be created in: `String reportResultsFolder = "out/xml-reports/";`
+After launching `Generate-XML` functionality the new aggregated JUnit XML report will be created in: `String reportResultsFolder = "out/xml-reports/";
+
+### Appendix example
+This block presents an example of the Cucumber JSON report; in this example, all the fields that the report may contain are not completely presented, this is just an example.
+```json
+[
+  {
+    "line": 2,
+    "elements": [
+      {
+        "line": 5,
+        "name": "",
+        "description": "",
+        "type": "background",
+        "keyword": "Background",
+        "steps": [
+          {
+            "name": "url 'https:\/\/jsonplaceholder.typicode.com'",
+            "result": {
+              "duration": 182700,
+              "status": "passed"
+            },
+            "match": {
+              "location": "karate",
+              "arguments": []
+            },
+            "keyword": "*",
+            "line": 6,
+            "doc_string": {
+              "content_type": "",
+              "value": "12:26:53.367 karate.env system property was: null",
+              "line": 6
+            }
+          }
+        ]
+      }
+    ],
+    "name": "examples\/users\/users.feature",
+    "description": "sample karate test script\nfor help, see: https:\/\/github.com\/intuit\/karate\/wiki\/IDE-Support",
+    "id": "sample-karate-test-script",
+    "keyword": "Feature",
+    "uri": "examples\/users\/users.feature",
+    "tags": [
+      {
+        "name": "@smoke",
+        "line": 1
+      }
+    ]
+  }
+]
+```
