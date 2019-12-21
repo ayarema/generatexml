@@ -16,10 +16,10 @@ import java.util.Collection;
 public class XMLReport {
 
     /**
-     * All tags from all report suites
+     * Total number of failed tests from all testsuites
      */
-    @XmlAttribute(name = "tags")
-    private String tags;
+    @XmlAttribute(name = "failures")
+    private String failures;
 
     /**
      * Total number of disabled tests from all testsuites
@@ -32,12 +32,6 @@ public class XMLReport {
      */
     @XmlAttribute(name = "errors")
     private String errors;
-
-    /**
-     * Total number of failed tests from all testsuites
-     */
-    @XmlAttribute(name = "failures")
-    private String failures;
 
     @XmlAttribute(name = "name")
     private String name;
@@ -59,11 +53,6 @@ public class XMLReport {
      */
     @XmlElement(name = "testsuite")
     private Collection<SingleReportSuite> singleReportSuites;
-
-    public XMLReport setTags(String tags) {
-        this.tags = tags;
-        return this;
-    }
 
     public XMLReport setDisabled(String disabled) {
         this.disabled = disabled;

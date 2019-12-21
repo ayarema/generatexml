@@ -34,10 +34,18 @@ public class SingleReportSuite {
     private String tests;
 
     /**
-     * The total number of disabled tests in the suite
+     * The status for a feature file which accumulates all statuses.
+     * Even if one of the steps in one feature file has failed status, the scenario will have status failed.
      */
-    @XmlAttribute(name = "disabled")
-    private String disabled;
+    @XmlAttribute(name = "status")
+    private String status;
+
+    /**
+     * The total number of tests in the suite that failed. A failure is a test which the code has explicitly failed
+     * by using the mechanisms for that purpose. e.g., via an assertEquals
+     */
+    @XmlAttribute(name = "failures")
+    private String failures;
 
     /**
      * The total number of tests in the suite that errored. An errored test is one that had an unanticipated problem,
@@ -47,11 +55,10 @@ public class SingleReportSuite {
     private String errors;
 
     /**
-     * The total number of tests in the suite that failed. A failure is a test which the code has explicitly failed
-     * by using the mechanisms for that purpose. e.g., via an assertEquals
+     * The total number of disabled tests in the suite
      */
-    @XmlAttribute(name = "failures")
-    private String failures;
+    @XmlAttribute(name = "disabled")
+    private String disabled;
 
     /**
      * Host on which the tests were executed. 'localhost' should be used if the hostname cannot be determined
@@ -90,6 +97,12 @@ public class SingleReportSuite {
     private String timestamp;
 
     /**
+     * Tags which was defined for each feature file
+     */
+    @XmlAttribute(name = "tags")
+    private String tags;
+
+    /**
      * Specific properties for testsuite runs
      */
     @XmlElementWrapper(name = "properties")
@@ -103,22 +116,22 @@ public class SingleReportSuite {
     private Collection<TestCase> testCases;
 
     /**
-     * Test cases, see deep into test case class
-     */
-    @XmlElement(name = "tags")
-    private String tags;
-
-    /**
      * Data that was written to standard out while the test suite was executed
      */
     @XmlElement(name = "system-out")
-    private String testSuitAggregatedOutInfo;
+    private String testOutInfo;
 
     /**
      * Data that was written to standard error while the test suite was executed
      */
-    @XmlElement(name = "system-err")
-    private String testSuitAggregatedOutErr;
+    @XmlElement(name = "failure")
+    private String testOutErr;
+
+    /**
+     * The message which contains short description of failure step
+     */
+    @XmlAttribute(name = "message")
+    private String message;
 
     public SingleReportSuite setName(String name) {
         this.name = name;
@@ -130,8 +143,13 @@ public class SingleReportSuite {
         return this;
     }
 
-    public SingleReportSuite setDisabled(String disabled) {
-        this.disabled = disabled;
+    public SingleReportSuite setStatus(String status) {
+        this.status = status;
+        return this;
+    }
+
+    public SingleReportSuite setFailures(String failures) {
+        this.failures = failures;
         return this;
     }
 
@@ -140,8 +158,8 @@ public class SingleReportSuite {
         return this;
     }
 
-    public SingleReportSuite setFailures(String failures) {
-        this.failures = failures;
+    public SingleReportSuite setDisabled(String disabled) {
+        this.disabled = disabled;
         return this;
     }
 
@@ -175,6 +193,11 @@ public class SingleReportSuite {
         return this;
     }
 
+    public SingleReportSuite setTags(String tags) {
+        this.tags = tags;
+        return this;
+    }
+
     public SingleReportSuite setSuiteProperties(Collection<SuiteProperties> suiteProperties) {
         this.suiteProperties = suiteProperties;
         return this;
@@ -185,18 +208,17 @@ public class SingleReportSuite {
         return this;
     }
 
-    public SingleReportSuite setTags(String tags) {
-        this.tags = tags;
+    public SingleReportSuite setTestOutInfo(String testOutInfo) {
+        this.testOutInfo = testOutInfo;
         return this;
     }
 
-    public SingleReportSuite setTestSuitAggregatedOutInfo(String testSuitAggregatedOutInfo) {
-        this.testSuitAggregatedOutInfo = testSuitAggregatedOutInfo;
+    public SingleReportSuite setTestOutErr(String testOutErr) {
+        this.testOutErr = testOutErr;
         return this;
     }
 
-    public SingleReportSuite setTestSuitAggregatedOutErr(String testSuitAggregatedOutErr) {
-        this.testSuitAggregatedOutErr = testSuitAggregatedOutErr;
-        return this;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
