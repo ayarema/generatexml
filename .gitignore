@@ -73,7 +73,11 @@ nb-configuration.xml
 ##############################
 .DS_Store
 
+##############################
+## Other
+##############################
 target
 .idea
 generatexml.iml
 /*.json
+*.zip
