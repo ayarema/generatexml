@@ -1,10 +1,9 @@
 package com.easytestit.generatexml;
 
-import com.easytestit.generatexml.configuration.ConfigureXMLReport;
 import com.easytestit.generatexml.dto.input.Feature;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -21,55 +20,34 @@ import java.util.Collection;
  * Class {@link ParseJSON} describes functionality where JSON files will deserialize to Java Objects
  */
 @SuppressWarnings("unchecked")
-@NoArgsConstructor
 class ParseJSON {
 
     private static final Logger LOGGER = LogManager.getLogger(ParseJSON.class.getName());
-    private ConfigureXMLReport configureXMLReport;
-
-    ParseJSON(ConfigureXMLReport configureXMLReport) {
-        LOGGER.info("Start parse JSON report to Object with specified Configuration");
-        this.configureXMLReport = configureXMLReport;
-    }
-
-    /**
-     * Start parse JSON with predicate configuration
-     * @return the collection of Features objects
-     */
-    Collection<Feature> parse() {
-        return getFeatureDocumentsList(configureXMLReport.getJsonFiles());
-    }
-
-    /**
-     * Start parse JSON without predicate configuration
-     * @param jsonFiles the path to real files which locate in compiled folder
-     * @return the collection of Features objects
-     */
-    Collection<Feature> parse(Collection<String> jsonFiles) {
-        return getFeatureDocumentsList(jsonFiles);
-    }
 
     /**
      * Make a list of Features objects which was deserialized from JSON files
-     * @param jsonFiles path to real files which locate in compiled folder
+     *
+     * @param pathList path to real files which locate in compiled folder
      * @return Collection of Features objects with deserialized values
      */
     @NotNull
-    private Collection<Feature> getFeatureDocumentsList(@NotNull Collection<String> jsonFiles) {
+    public Collection<Feature> parse(@NotNull final Collection<String> pathList) {
         Collection<Feature> features = new ArrayList<>();
 
-        if (jsonFiles.isEmpty()) {
-            throw new ValidationException("None JSON report files was added!");
+        if (pathList.isEmpty()) {
+            throw new GenerateXMLReportException("Empty argument provided");
         }
 
-        jsonFiles.forEach( jsonFile -> {
-            Collection<Feature> reportFeatures = parseForFeatureDocuments(jsonFile);
-            LOGGER.info(String.format("File '%s' contains %d features", jsonFile, reportFeatures.size()));
-            features.addAll(reportFeatures);
+        pathList.forEach(path -> {
+            Collection<Feature> reportFeatures = parseFeatures(path);
+            if (reportFeatures != null && !reportFeatures.isEmpty()) {
+                LOGGER.info(String.format("File '%s' contains %d features", path, reportFeatures.size()));
+                features.addAll(reportFeatures);
+            }
         });
 
         if (features.isEmpty()) {
-            throw new ValidationException(String.format("Passed files have no specified Cucumber standard report! Please check your JSON reports in %s direction", configureXMLReport.getReportFolder()));
+            throw new GenerateXMLReportException("Feature files not found");
         }
 
         return features;
@@ -77,15 +55,21 @@ class ParseJSON {
 
     /**
      * Describe functionality where JSON files are parsed in java Object
-     * @param jsonFile JSON files with a Cucumber standard describing the result of running tests
+     *
+     * @param path JSON files with a Cucumber standard describing the result of running tests
      * @return ReportDocument object with values from JSON files
      */
-    private Collection<Feature> parseForFeatureDocuments(String jsonFile) {
-        Type collectionType = new TypeToken<Collection<Feature>>(){}.getType();
+    private Collection<Feature> parseFeatures(@NonNull final String path) {
+        Type collectionType = new TypeToken<Collection<Feature>>() {
+        }.getType();
+
         try {
-            return (Collection<Feature>) new Gson().fromJson(new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8), collectionType);
+            return (Collection<Feature>) new Gson().fromJson(
+                    new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8),
+                    collectionType
+            );
         } catch (FileNotFoundException e) {
-            throw new ValidationException(e);
+            throw new GenerateXMLReportException(e);
         }
     }
 }

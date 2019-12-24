@@ -1,5 +1,6 @@
 package com.easytestit.generatexml.service;
 
+import com.easytestit.generatexml.GenerateXMLReportException;
 import com.easytestit.generatexml.data.XMLBuilderConstants;
 import com.easytestit.generatexml.dto.input.elements.Element;
 import com.easytestit.generatexml.dto.input.elements.steps.Step;
@@ -11,6 +12,7 @@ import com.easytestit.generatexml.dto.input.tags.Tag;
 import com.easytestit.generatexml.utils.UtilsConverter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,7 +37,7 @@ public class ReportService {
 
     private static final Logger LOGGER = LogManager.getLogger(ReportService.class.getName());
 
-    private Map<Integer, TemporaryTestCase> tests = new HashMap<>();
+    private Map<Integer, TemporaryTestCase> tests = new LinkedHashMap<>();
     private Map<String, String> featureTagsMap = new HashMap<>();
     private String featureTags = "";
     private String tagsValue = "";
@@ -61,13 +64,19 @@ public class ReportService {
      * @param features prepared JAVA feature class which should be convert to another DTO
      * @return prepared DTO aggregated class with all needed data for serialize it to XML file
      */
-    public XMLReport transformFeaturesToReport(@NotNull Collection<Feature> features) {
+    public XMLReport transformFeaturesToReport(@NotNull final Collection<Feature> features) {
         LOGGER.debug("Method transformFeaturesToReportSuites invoked");
+
         Collection<SingleReportSuite> singleReportSuites = new ArrayList<>();
+
+        if (features.isEmpty()) {
+            throw new GenerateXMLReportException("Empty argument provided");
+        }
 
         features.forEach(feature -> {
             if (feature.getTags() != null) tagProcessing("featureTags", feature.getTags());
-            if (feature.getElements() != null) feature.getElements().forEach(element -> elementProcessing(feature, element));
+            if (feature.getElements() != null)
+                feature.getElements().forEach(element -> elementProcessing(feature, element));
 
             singleReportSuites.add(getSingleReportSuite(feature, features));
             durationOfAllTestFromAllSuites += durationOfAllTest;
@@ -82,17 +91,27 @@ public class ReportService {
      * Created for getting data about tags and pass these tags to other function
      *
      * @param tagKey the key value for processing tags for specific block of feature file
-     * @param tags object which should be handled
+     * @param tags   object which should be handled
      */
-    private void tagProcessing(String tagKey, @NotNull Collection<Tag> tags) {
-        tags.stream().filter(
-                t -> !featureTags.contains(t.getName())).forEach(tag -> tagsValue += tag.getName().concat(" "));
+    private void tagProcessing(
+            @NonNull final String tagKey,
+            @NotNull final Collection<Tag> tags
+    ) {
+        LOGGER.debug("Method tagProcessing invoked");
+
+        tags.stream()
+                .filter(t -> !featureTags.contains(t.getName()))
+                .forEach(t -> tagsValue += t.getName().concat(" "));
         featureTagsMap.put(tagKey, tagsValue);
         tagsValue = "";
     }
 
-    private void elementProcessing(Feature feature, @NotNull Element element) {
+    private void elementProcessing(
+            @NonNull final Feature feature,
+            @NotNull final Element element
+    ) {
         LOGGER.debug("Method elementProcessing invoked");
+
         if (element.getTags() != null) tagProcessing("elementTags", element.getTags());
         if (element.getKeyword().equals(XMLBuilderConstants.SCENARIO)) {
             countScenarios += 1;
@@ -121,7 +140,10 @@ public class ReportService {
         featureTagsMap.remove("elementTags");
     }
 
-    private SingleReportSuite getSingleReportSuite(Feature feature, @NotNull Collection<Feature> features) {
+    private SingleReportSuite getSingleReportSuite(
+            @NonNull final Feature feature,
+            @NotNull final Collection<Feature> features
+    ) {
         var increment = 1;
         var ignored = 0;
         var disabled = 0;
@@ -157,7 +179,7 @@ public class ReportService {
         tests.clear();
     }
 
-    private void stepProcessing(Element element, @NotNull Step step) {
+    private void stepProcessing(@NonNull final Element element, @NotNull final Step step) {
         switch (step.getResult().getStatus()) {
             case XMLBuilderConstants.FAILED:
                 countFailures += 1;
@@ -197,43 +219,47 @@ public class ReportService {
     }
 
     @NotNull
-    private Collection<TestCase> getTestCasesFromFeature(@NotNull Map<Integer, TemporaryTestCase> tests) {
+    private Collection<TestCase> getTestCasesFromFeature(@NotNull final Map<Integer, TemporaryTestCase> tests) {
         Collection<TestCase> testCases = new ArrayList<>();
 
-        tests.values().stream().filter(testCase -> testCase.getKeyword().equals(XMLBuilderConstants.BACKGROUND)).forEach(tt -> backgroundValue = tt.getTestOutputString());
-        tests.values().stream().filter(t -> t.getKeyword().equals(XMLBuilderConstants.SCENARIO)).forEach(temporaryTestCase -> testCases.add(
-                new TestCase()
-                        .setStatus(temporaryTestCase.getStatus())
-                        .setTestName(temporaryTestCase.getName())
-                        .setDescription(temporaryTestCase.getDescription())
-                        .setCaseOutInfo(backgroundValue.concat(temporaryTestCase.getTestOutputString()))
-                        .setCaseOutErr(temporaryTestCase.getTestErrorOutputString())));
+        tests.values().stream()
+                .filter(t -> t.getKeyword().equals(XMLBuilderConstants.BACKGROUND))
+                .forEach(t -> backgroundValue = t.getTestOutputString());//TODO what?
+        tests.values().stream()
+                .filter(t -> t.getKeyword().equals(XMLBuilderConstants.SCENARIO))
+                .forEach(t -> testCases.add(
+                        new TestCase()
+                                .setStatus(t.getStatus())
+                                .setTestName(t.getName())
+                                .setDescription(t.getDescription())
+                                .setCaseOutInfo(backgroundValue.concat(t.getTestOutputString()))
+                                .setCaseOutErr(t.getTestErrorOutputString())));
 
         return testCases;
     }
 
     /**
-     * Helper method which fill object {@link XMLReport}. This object contains all Feature file from Cucumber, which contains all Backgrounds and Scenarios
+     * Helper method which fill object {@link XMLReport}.
+     * This object contains all Feature file from Cucumber, which contains all Backgrounds and Scenarios
      *
      * @param countFailuresTestsFromAllFiles string value of quantity of failures from all feature files
-     * @param successfulCountTests string value of quantity of successful tests from all feature files
-     * @param _duration string value of duration for all feature files
-     * @param singleReportSuites object {@link SingleReportSuite} with prepared data
-     *
+     * @param successfulCountTests           string value of quantity of successful tests from all feature files
+     * @param duration                       string value of duration for all feature files
+     * @param singleReportSuites             object {@link SingleReportSuite} with prepared data
      * @return prepared object {@link XMLReport} with all prepared data
      */
     @NotNull
     private XMLReport getReportSuites(
-            int countFailuresTestsFromAllFiles,
-            int successfulCountTests,
-            Long _duration,
-            Collection<SingleReportSuite> singleReportSuites) {
+            final int countFailuresTestsFromAllFiles,
+            final int successfulCountTests,
+            @NonNull final Long duration,
+            @NonNull final Collection<SingleReportSuite> singleReportSuites
+    ) {
         var xmlReport = new XMLReport();
-
         xmlReport
                 .setFailures(String.valueOf(countFailuresTestsFromAllFiles))
                 .setTests(String.valueOf(successfulCountTests))
-                .setTime(String.valueOf(UtilsConverter.round.apply(_duration * XMLBuilderConstants.RATIO)))
+                .setTime(String.valueOf(UtilsConverter.round.apply(duration * XMLBuilderConstants.RATIO)))
                 .setSingleReportSuites(singleReportSuites);
 
         return xmlReport;
@@ -243,12 +269,17 @@ public class ReportService {
      * Helper method that processes the input string and accumulates its value to other string field of class
      *
      * @param keywordType string value keyword of Element
-     * @param keyword string value keyword of Step
-     * @param stepName string value name of Step
-     * @param stepResult_ string value result of Step
+     * @param keyword     string value keyword of Step
+     * @param stepName    string value name of Step
+     * @param stepResult  string value result of Step
      */
     @Contract(pure = true)
-    private void stringOutBuilder(String keywordType, String keyword, String stepName, String stepResult_) {
+    private void stringOutBuilder(
+            @NonNull final String keywordType,
+            @NonNull final String keyword,
+            @NonNull final String stepName,
+            @NonNull final String stepResult
+    ) {
         var outLength = 15;
         var outLengthSecond = 180;
         var outString = new StringBuilder(keywordType);
@@ -256,7 +287,7 @@ public class ReportService {
         while (outString.length() < outLength) outString.append(".");
         outString.append(keyword.concat(" ").concat(stepName));
         while (outString.length() < outLengthSecond) outString.append(".");
-        outString.append(stepResult_);
+        outString.append(stepResult);
 
         stepOutResults += "\n".concat(outString.toString());
     }
@@ -267,7 +298,7 @@ public class ReportService {
      * @param errMessage string value that should be accumulated
      */
     @Contract(pure = true)
-    private void stringErrBuilder(String errMessage) {
+    private void stringErrBuilder(@NonNull final String errMessage) {
         stepErrResults += "\n".concat(errMessage);
     }
 
@@ -291,20 +322,21 @@ public class ReportService {
     /**
      * Helper converter string to array after splitting by specific separator symbol
      *
-     * @param str which should be split and should be convert
+     * @param str       which should be split and should be convert
      * @param separator string value of separator for split the string
-     *
      * @return string arrays
      */
     @NotNull
-    private List<String> getArrayStringBySeparator(@NotNull String str, String separator) {
+    private List<String> getArrayStringBySeparator(
+            @NotNull final String str,
+            @NonNull final String separator
+    ) {
         return Arrays.asList(str.split(separator));
     }
 
     @NoArgsConstructor
     @Getter
     static class TemporaryTestCase {
-
         private String keyword;
         private String status;
         private Integer line;
@@ -315,50 +347,49 @@ public class ReportService {
         private String testOutputString;
         private String testErrorOutputString;
 
-        public TemporaryTestCase setKeyword(String keyword) {
+        public TemporaryTestCase setKeyword(@NonNull final String keyword) {
             this.keyword = keyword;
             return this;
         }
 
-        public TemporaryTestCase setStatus(String status) {
+        public TemporaryTestCase setStatus(@NonNull final String status) {
             this.status = status;
             return this;
         }
 
-        public TemporaryTestCase setLine(Integer line) {
+        public TemporaryTestCase setLine(@NonNull final Integer line) {
             this.line = line;
             return this;
         }
 
-        public TemporaryTestCase setName(String name) {
+        public TemporaryTestCase setName(@NonNull final String name) {
             this.name = name;
             return this;
         }
 
-        public TemporaryTestCase setTestDuration(Long testDuration) {
+        public TemporaryTestCase setTestDuration(@NonNull final Long testDuration) {
             this.testDuration = testDuration;
             return this;
         }
 
-        public TemporaryTestCase setTags(String tags) {
+        public TemporaryTestCase setTags(@NonNull final String tags) {
             this.tags = tags;
             return this;
         }
 
-        public TemporaryTestCase setTestOutputString(String testOutputString) {
+        public TemporaryTestCase setTestOutputString(@NonNull final String testOutputString) {
             this.testOutputString = testOutputString;
             return this;
         }
 
-        public TemporaryTestCase setDescription(String description) {
+        public TemporaryTestCase setDescription(@NonNull final String description) {
             this.description = description;
             return this;
         }
 
-        public TemporaryTestCase setTestErrorOutputString(String testErrorOutputString) {
+        public TemporaryTestCase setTestErrorOutputString(@NonNull final String testErrorOutputString) {
             this.testErrorOutputString = testErrorOutputString;
             return this;
         }
     }
-
 }
