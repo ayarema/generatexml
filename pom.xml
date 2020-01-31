@@ -20,14 +20,11 @@
 
         <jaxb.api.version>2.3.1</jaxb.api.version>
         <javax.version>1.1.1</javax.version>
-        <jackson.version>2.10.1</jackson.version>
         <jaxb.runtime.version>2.3.2</jaxb.runtime.version>
         <fasterxml.version>2.9.10</fasterxml.version>
         <apache.common.version>3.9</apache.common.version>
         <okhttp.version>4.2.0</okhttp.version>
         <tika.version>1.22</tika.version>
-        <jetbrains.annotaion.version>17.0.0</jetbrains.annotaion.version>
-        <lombok.version>1.18.10</lombok.version>
 
         <junit.version>4.12</junit.version>
 
@@ -70,33 +67,9 @@
     <dependencies>
         <!-- compile-->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${jaxb.api.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>${javax.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-xml</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>${jaxb.runtime.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${fasterxml.version}</version>
         </dependency>
 
         <dependency>
@@ -146,7 +119,7 @@
                     <compilerArgument>-Werror</compilerArgument>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven.javadoc.version}</version>
@@ -158,7 +131,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -186,8 +159,8 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
-            <!--<plugin>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven.jar.version}</version>
@@ -197,12 +170,11 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>com.easytestit.generatexml.GenerateXML</mainClass>
-                            &lt;!&ndash;<classpathPrefix>generate-xml</classpathPrefix>&ndash;&gt;
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>-->
-            <!--<plugin>
+            <!--&lt;!&ndash;<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${maven.shade.version}</version>
@@ -214,7 +186,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>&ndash;&gt;
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -238,7 +210,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 

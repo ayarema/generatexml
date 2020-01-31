@@ -75,9 +75,10 @@ public class ConstructorConstructor {
     private <T> ObjectConstructor<T> newDefaultConstructor(Class<? super T> rawType) {
         try {
             final Constructor<? super T> constructor = rawType.getDeclaredConstructor();
-            if (!constructor.isAccessible()) {
+            /*if (!constructor.canAccess(rawType)) {
                 accessor.makeAccessible(constructor);
-            }
+            }*/
+            accessor.makeAccessible(constructor);
             return new ObjectConstructor<T>() {
                 @SuppressWarnings("unchecked") // T is the same raw type as is requested
                 @Override public T construct() {

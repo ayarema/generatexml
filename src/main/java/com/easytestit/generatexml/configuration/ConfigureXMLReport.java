@@ -18,6 +18,7 @@ public class ConfigureXMLReport {
      * Configuration by default (no zip, no report)
      *
      * @param path path to source folder
+     * @param projectName project name
      */
     public ConfigureXMLReport(final String path, final String projectName) {
         if (path != null) {
@@ -38,6 +39,7 @@ public class ConfigureXMLReport {
      * Full configuration
      *
      * @param path path to source folder
+     * @param projectName project name
      * @param reportAsZip report as zip
      * @param sendReport send report to report portal
      */

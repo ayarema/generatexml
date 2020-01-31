@@ -15,8 +15,7 @@ public class GenerateXMLTest {
         final var projectName = "testProject";
 
         var conf = new ConfigureXMLReport(
-                //"src/test/resources/",
-                null,
+                "src/test/resources/",
                 projectName,
                 false,
                 false

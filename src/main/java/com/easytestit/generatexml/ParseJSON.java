@@ -1,14 +1,13 @@
 package com.easytestit.generatexml;
 
 import com.easytestit.generatexml.dto.input.Feature;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.easytestit.generatexml.parser.Json;
+import com.easytestit.generatexml.parser.TypeToken;
 
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,12 +18,8 @@ import java.util.Collection;
 @SuppressWarnings("unchecked")
 public class ParseJSON {
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
     public ParseJSON() {
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // this prevents printing eg. 2.20 as 2.2
-        mapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+
     }
 
     /**
@@ -65,9 +60,10 @@ public class ParseJSON {
      * @return ReportDocument object with values from JSON files
      */
     private Collection<Feature> parseFeatures(final String path) {
-        try (Reader reader = new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) {
-            return (Collection<Feature>) mapper.readValue(reader, new TypeReference<Collection<Feature>>(){});
-        } catch (IOException e) {
+        Type collectionType = new TypeToken<Collection<Feature>>(){}.getType();
+        try {
+            return (Collection<Feature>) new Json().fromJson(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8), collectionType);
+        } catch (FileNotFoundException e) {
             throw new GenerateXMLReportException(e);
         }
     }
