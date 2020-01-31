@@ -10,14 +10,8 @@ import com.easytestit.generatexml.dto.output.XMLReport;
 import com.easytestit.generatexml.dto.output.testcase.TestCase;
 import com.easytestit.generatexml.dto.input.tags.Tag;
 import com.easytestit.generatexml.utils.UtilsConverter;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,10 +26,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
 public class ReportService {
 
-    private static final Logger LOGGER = LogManager.getLogger(ReportService.class.getName());
+    public ReportService() {
+
+    }
 
     private Map<Integer, TemporaryTestCase> tests = new LinkedHashMap<>();
     private Map<String, String> featureTagsMap = new HashMap<>();
@@ -64,26 +59,32 @@ public class ReportService {
      * @param features prepared JAVA feature class which should be convert to another DTO
      * @return prepared DTO aggregated class with all needed data for serialize it to XML file
      */
-    public XMLReport transformFeaturesToReport(@NotNull final Collection<Feature> features) {
-        LOGGER.debug("Method transformFeaturesToReportSuites invoked");
+    public XMLReport transformFeaturesToReport(final Collection<Feature> features) {
+        if (features != null) {
+            Collection<SingleReportSuite> singleReportSuites = new ArrayList<>();
 
-        Collection<SingleReportSuite> singleReportSuites = new ArrayList<>();
+            if (features.isEmpty()) {
+                throw new GenerateXMLReportException("Empty argument provided");
+            }
 
-        if (features.isEmpty()) {
-            throw new GenerateXMLReportException("Empty argument provided");
+            features.forEach(feature -> {
+                if (feature != null) {
+                    if (feature.getTags() != null) tagProcessing("featureTags", feature.getTags());
+                    if (feature.getElements() != null)
+                        feature.getElements().forEach(element -> elementProcessing(feature, element));
+
+                    singleReportSuites.add(getSingleReportSuite(feature, features));
+                    durationOfAllTestFromAllSuites += durationOfAllTest;
+                    resetVariables();
+                } else {
+                    throw new GenerateXMLReportException("Argument feature from the Array features should not be null but is null");
+                }
+            });
+
+            return getReportSuites(countFailures, countScenarios, durationOfAllTestFromAllSuites, singleReportSuites);
+        } else {
+            throw new GenerateXMLReportException("Argument features should not be null but is null. See detailed stack trace: ", new NullPointerException());
         }
-
-        features.forEach(feature -> {
-            if (feature.getTags() != null) tagProcessing("featureTags", feature.getTags());
-            if (feature.getElements() != null)
-                feature.getElements().forEach(element -> elementProcessing(feature, element));
-
-            singleReportSuites.add(getSingleReportSuite(feature, features));
-            durationOfAllTestFromAllSuites += durationOfAllTest;
-            resetVariables();
-        });
-
-        return getReportSuites(countFailures, countScenarios, durationOfAllTestFromAllSuites, singleReportSuites);
     }
 
     /**
@@ -93,68 +94,74 @@ public class ReportService {
      * @param tagKey the key value for processing tags for specific block of feature file
      * @param tags   object which should be handled
      */
-    private void tagProcessing(
-            @NonNull final String tagKey,
-            @NotNull final Collection<Tag> tags
-    ) {
-        LOGGER.debug("Method tagProcessing invoked");
-
-        tags.stream()
-                .filter(t -> !featureTags.contains(t.getName()))
-                .forEach(t -> tagsValue += t.getName().concat(" "));
-        featureTagsMap.put(tagKey, tagsValue);
-        tagsValue = "";
-    }
-
-    private void elementProcessing(
-            @NonNull final Feature feature,
-            @NotNull final Element element
-    ) {
-        LOGGER.debug("Method elementProcessing invoked");
-
-        if (element.getTags() != null) tagProcessing("elementTags", element.getTags());
-        if (element.getKeyword().equals(XMLBuilderConstants.SCENARIO)) {
-            countScenarios += 1;
-            countScenariosInSuite += 1;
+    private void tagProcessing(final String tagKey, final Collection<Tag> tags) {
+        if (tags != null & tagKey != null) {
+            tags.stream()
+                    .filter(t -> !featureTags.contains(t.getName()))
+                    .forEach(t -> tagsValue += t.getName().concat(" "));
+            if (!tagsValue.isEmpty()) featureTagsMap.put(tagKey, tagsValue);
+            tagsValue = "";
+        } else {
+            throw new GenerateXMLReportException("Arguments tags, tagKey should not be null but are null. See detailed stack trace: ", new NullPointerException());
         }
-        if (element.getSteps() != null)
-            element.getSteps().forEach(step -> stepProcessing(element, step));
-
-        tests.put(element.getLine(), new TemporaryTestCase()
-                .setLine(element.getLine())
-                .setStatus(testCaseStatus.contains(XMLBuilderConstants.FAILED) ? XMLBuilderConstants.FAILED : XMLBuilderConstants.PASSED)
-                .setKeyword(element.getKeyword())
-                .setName(element.getName())
-                .setDescription(feature.getDescription())
-                .setTestOutputString(stepOutResults)
-                .setTestErrorOutputString("Stack Trace: \n".concat(stepErrResults))
-                .setTestDuration(durationOfTest)
-                .setTags(featureTagsMap.get("elementTags")));
-
-        durationOfAllTest += durationOfTest;
-        stepOutResults = "";
-        stepErrResults = "";
-        testCaseStatus = "";
-        durationOfTest = 0L;
-
-        featureTagsMap.remove("elementTags");
     }
 
-    private SingleReportSuite getSingleReportSuite(
-            @NonNull final Feature feature,
-            @NotNull final Collection<Feature> features
-    ) {
+    private void elementProcessing(final Feature feature, final Element element) {
+        if (feature != null & element != null) {
+
+            if (element.getTags() != null) tagProcessing("elementTags", element.getTags());
+            if (element.getKeyword().equals(XMLBuilderConstants.SCENARIO)) {
+                countScenarios += 1;
+                countScenariosInSuite += 1;
+            }
+            if (element.getSteps() != null)
+                element.getSteps().forEach(step -> stepProcessing(element, step));
+
+            var tagStrValues = "";
+            if (!(featureTagsMap.get("elementTags") == null)) tagStrValues += featureTagsMap.get("elementTags");
+            if (!(featureTagsMap.get("featureTags") == null)) tagStrValues += featureTagsMap.get("featureTags");
+
+            tests.put(element.getLine(), new TemporaryTestCase()
+                    .setLine(element.getLine())
+                    .setStatus(testCaseStatus.contains(XMLBuilderConstants.FAILED) ? XMLBuilderConstants.FAILED : XMLBuilderConstants.PASSED)
+                    .setKeyword(element.getKeyword())
+                    .setName(element.getName())
+                    .setDescription(feature.getDescription())
+                    .setTestOutputString(stepOutResults)
+                    .setTestErrorOutputString("Stack Trace: \n".concat(stepErrResults))
+                    .setTestDuration(durationOfTest)
+                    .setTags(tagStrValues));
+
+            durationOfAllTest += durationOfTest;
+            stepOutResults = "";
+            stepErrResults = "";
+            testCaseStatus = "";
+            durationOfTest = 0L;
+
+            featureTagsMap.remove("elementTags");
+        } else {
+            throw new GenerateXMLReportException("Arguments feature & element should not be null but are null. See detailed stack trace: ", new NullPointerException());
+        }
+    }
+
+    private SingleReportSuite getSingleReportSuite(final Feature feature, final Collection<Feature> features) {
         var increment = 1;
         var ignored = 0;
         var disabled = 0;
+        Collection<TestCase> testCases = new ArrayList<>();
 
         if (featureTags.contains(XMLBuilderConstants.IGNORED) || featureTags.contains(XMLBuilderConstants.DISABLED)) {
             ignored = StringUtils.countMatches(featureTags, XMLBuilderConstants.IGNORED);
             disabled = StringUtils.countMatches(featureTags, XMLBuilderConstants.DISABLED);
         }
+        if (tests != null) {
+            testCases = getTestCasesFromFeature(tests);
+        } else {
+            throw new GenerateXMLReportException("Map of tests should not be null but is null. See detailed stack trace: ", new NullPointerException());
+        }
 
         return new SingleReportSuite()
-                .setName(getLastElement(Arrays.stream(feature.getName().split("/")).collect(Collectors.toList())))
+                .setName(getLastElement(Arrays.stream(feature.getName().split(XMLBuilderConstants.SLASH)).collect(Collectors.toList())))
                 .setTests(String.valueOf(countScenariosInSuite))
                 .setFailures(String.valueOf(countFailuresTestFromOneFile))
                 .setDisabled(String.valueOf(ignored + disabled))
@@ -165,7 +172,7 @@ public class ReportService {
                 .setTime(String.valueOf(UtilsConverter.round.apply(durationOfAllTest * XMLBuilderConstants.RATIO)))
                 .setTimestamp(LocalDateTime.parse(responseDate, DateTimeFormatter.ofPattern(XMLBuilderConstants.DATE_FORMATTER_PATTERN, Locale.ENGLISH)).toString())
                 .setTags(featureTagsMap.get("featureTags"))
-                .setTestCases(getTestCasesFromFeature(tests));
+                .setTestCases(testCases);
     }
 
     private void resetVariables() {
@@ -179,47 +186,59 @@ public class ReportService {
         tests.clear();
     }
 
-    private void stepProcessing(@NonNull final Element element, @NotNull final Step step) {
-        switch (step.getResult().getStatus()) {
-            case XMLBuilderConstants.FAILED:
-                countFailures += 1;
-                countFailuresTestFromOneFile += 1;
-                if (!testCaseStatus.contains(XMLBuilderConstants.FAILED))
-                    testCaseStatus += step.getResult().getStatus().concat(" ");
-                stringErrBuilder(step.getResult().getErrorMessage());
-                break;
-            case XMLBuilderConstants.SKIPPED:
-                countSkippedTestFromOneFile += 1;
-                break;
-            case XMLBuilderConstants.PASSED:
-                if (!testCaseStatus.contains(XMLBuilderConstants.PASSED))
-                    testCaseStatus += step.getResult().getStatus().concat(" ");
-                break;
-        }
+    private void stepProcessing(final Element element, final Step step) {
+        if (element != null & step != null) {
+            switch (step.getResult().getStatus()) {
+                case XMLBuilderConstants.FAILED:
+                    countFailures += 1;
+                    countFailuresTestFromOneFile += 1;
+                    if (!testCaseStatus.contains(XMLBuilderConstants.FAILED))
+                        testCaseStatus += step.getResult().getStatus().concat(" ");
+                    stringErrBuilder(step.getResult().getError_message());
+                    break;
+                case XMLBuilderConstants.SKIPPED:
+                    countSkippedTestFromOneFile += 1;
+                    break;
+                case XMLBuilderConstants.PASSED:
+                    if (!testCaseStatus.contains(XMLBuilderConstants.PASSED))
+                        testCaseStatus += step.getResult().getStatus().concat(" ");
+                    break;
+            }
 
-        stringOutBuilder(element.getKeyword(), step.getKeyword(), step.getName(), step.getResult().getStatus());
-        durationOfTest += step.getResult().getDuration();
+            stringOutBuilder(element.getKeyword(), step.getKeyword(), step.getName(), step.getResult().getStatus());
+            durationOfTest += step.getResult().getDuration();
 
-        if (step.getDocString() != null)
-            getArrayStringBySeparator(step.getDocString().getValue(), ">").forEach(
-                    request -> {
-                        if (request.toLowerCase().contains(XMLBuilderConstants.HOST)) {
-                            hostName = UtilsConverter.removeRedundantSymbols.apply(getArrayStringBySeparator(request, ":").get(1));
-                        } else if (request.toLowerCase().contains(XMLBuilderConstants.USER_AGENT)) {
-                            getArrayStringBySeparator(request, "<").forEach(
-                                    response -> {
-                                        if (response.contains(XMLBuilderConstants.DATE_TEXT)) {
-                                            responseDate = response.substring(7, 32);
-                                        }
+            if (step.getDoc_string() != null) {
+                if (step.getDoc_string().getValue() != null) {
+                    getArrayStringBySeparator(step.getDoc_string().getValue(), ">").forEach(
+                            request -> {
+                                if (request != null) {
+                                    if (request.toLowerCase().contains(XMLBuilderConstants.HOST)) {
+                                        hostName = UtilsConverter.removeRedundantSymbols.apply(getArrayStringBySeparator(request, ":").get(1));
+                                    } else if (request.toLowerCase().contains(XMLBuilderConstants.USER_AGENT)) {
+                                        getArrayStringBySeparator(request, "<").forEach(
+                                                response -> {
+                                                    if (response.contains(XMLBuilderConstants.DATE_TEXT)) {
+                                                        responseDate = response.substring(7, 32);
+                                                    }
+                                                }
+                                        );
                                     }
-                            );
-                        }
-                    }
-            );
+                                } else {
+                                    throw new GenerateXMLReportException("Argument request from Array should be null but is null. See detailed stack trace: ", new NullPointerException());
+                                }
+                            }
+                    );
+                } else {
+                    throw new GenerateXMLReportException("Argument value from doc_String element of steps should not be null but is null. Please check your JSON.");
+                }
+            }
+        } else {
+            throw new GenerateXMLReportException("Arguments element & step should not be null but are null. See detailed stack trace: ", new NullPointerException());
+        }
     }
 
-    @NotNull
-    private Collection<TestCase> getTestCasesFromFeature(@NotNull final Map<Integer, TemporaryTestCase> tests) {
+    private Collection<TestCase> getTestCasesFromFeature(final Map<Integer, TemporaryTestCase> tests) {
         Collection<TestCase> testCases = new ArrayList<>();
 
         tests.values().stream()
@@ -235,7 +254,11 @@ public class ReportService {
                                 .setCaseOutInfo(backgroundValue.concat(t.getTestOutputString()))
                                 .setCaseOutErr(t.getTestErrorOutputString())));
 
-        return testCases;
+        if (testCases != null) {
+            return testCases;
+        } else {
+            throw new GenerateXMLReportException("Argument testCases should be null but is null. See detailed stack trace: ", new NullPointerException());
+        }
     }
 
     /**
@@ -248,12 +271,11 @@ public class ReportService {
      * @param singleReportSuites             object {@link SingleReportSuite} with prepared data
      * @return prepared object {@link XMLReport} with all prepared data
      */
-    @NotNull
     private XMLReport getReportSuites(
             final int countFailuresTestsFromAllFiles,
             final int successfulCountTests,
-            @NonNull final Long duration,
-            @NonNull final Collection<SingleReportSuite> singleReportSuites
+            final Long duration,
+            final Collection<SingleReportSuite> singleReportSuites
     ) {
         var xmlReport = new XMLReport();
         xmlReport
@@ -275,10 +297,10 @@ public class ReportService {
      */
     @Contract(pure = true)
     private void stringOutBuilder(
-            @NonNull final String keywordType,
-            @NonNull final String keyword,
-            @NonNull final String stepName,
-            @NonNull final String stepResult
+            final String keywordType,
+            final String keyword,
+            final String stepName,
+            final String stepResult
     ) {
         var outLength = 15;
         var outLengthSecond = 180;
@@ -298,7 +320,7 @@ public class ReportService {
      * @param errMessage string value that should be accumulated
      */
     @Contract(pure = true)
-    private void stringErrBuilder(@NonNull final String errMessage) {
+    private void stringErrBuilder(final String errMessage) {
         stepErrResults += "\n".concat(errMessage);
     }
 
@@ -309,7 +331,7 @@ public class ReportService {
      * @return T the type of elements returned by the iterator
      */
     @Contract(pure = true)
-    private <T> T getLastElement(@NotNull final Iterable<T> elements) {
+    private <T> T getLastElement(final Iterable<T> elements) {
         T lastElement = null;
 
         for (T element : elements) {
@@ -326,16 +348,18 @@ public class ReportService {
      * @param separator string value of separator for split the string
      * @return string arrays
      */
-    @NotNull
-    private List<String> getArrayStringBySeparator(
-            @NotNull final String str,
-            @NonNull final String separator
-    ) {
-        return Arrays.asList(str.split(separator));
+    private List<String> getArrayStringBySeparator(final String str, final String separator) {
+        if (str != null & separator != null) {
+            try {
+                return Arrays.asList(str.split(separator));
+            } catch (NullPointerException e) {
+                throw new GenerateXMLReportException(e);
+            }
+        } else {
+            throw new GenerateXMLReportException("Arguments str, separator should not be null but are null. See detailed stack trace: ", new NullPointerException());
+        }
     }
 
-    @NoArgsConstructor
-    @Getter
     static class TemporaryTestCase {
         private String keyword;
         private String status;
@@ -347,49 +371,85 @@ public class ReportService {
         private String testOutputString;
         private String testErrorOutputString;
 
-        public TemporaryTestCase setKeyword(@NonNull final String keyword) {
+        public TemporaryTestCase setKeyword(final String keyword) {
             this.keyword = keyword;
             return this;
         }
 
-        public TemporaryTestCase setStatus(@NonNull final String status) {
+        public TemporaryTestCase setStatus(final String status) {
             this.status = status;
             return this;
         }
 
-        public TemporaryTestCase setLine(@NonNull final Integer line) {
+        public TemporaryTestCase setLine(final Integer line) {
             this.line = line;
             return this;
         }
 
-        public TemporaryTestCase setName(@NonNull final String name) {
+        public TemporaryTestCase setName(final String name) {
             this.name = name;
             return this;
         }
 
-        public TemporaryTestCase setTestDuration(@NonNull final Long testDuration) {
+        public TemporaryTestCase setTestDuration(final Long testDuration) {
             this.testDuration = testDuration;
             return this;
         }
 
-        public TemporaryTestCase setTags(@NonNull final String tags) {
+        public TemporaryTestCase setTags(final String tags) {
             this.tags = tags;
             return this;
         }
 
-        public TemporaryTestCase setTestOutputString(@NonNull final String testOutputString) {
+        public TemporaryTestCase setTestOutputString(final String testOutputString) {
             this.testOutputString = testOutputString;
             return this;
         }
 
-        public TemporaryTestCase setDescription(@NonNull final String description) {
+        public TemporaryTestCase setDescription(final String description) {
             this.description = description;
             return this;
         }
 
-        public TemporaryTestCase setTestErrorOutputString(@NonNull final String testErrorOutputString) {
+        public TemporaryTestCase setTestErrorOutputString(final String testErrorOutputString) {
             this.testErrorOutputString = testErrorOutputString;
             return this;
+        }
+
+        public String getKeyword() {
+            return keyword;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public Integer getLine() {
+            return line;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public Long getTestDuration() {
+            return testDuration;
+        }
+
+        public String getTags() {
+            return tags;
+        }
+
+        public String getTestOutputString() {
+            return testOutputString;
+        }
+
+        public String getTestErrorOutputString() {
+            return testErrorOutputString;
         }
     }
 }

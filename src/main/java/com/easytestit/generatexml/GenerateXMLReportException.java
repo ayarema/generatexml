@@ -1,5 +1,8 @@
 package com.easytestit.generatexml;
 
+/**
+ *
+ */
 public class GenerateXMLReportException extends RuntimeException {
 
     public GenerateXMLReportException(final Exception e) {

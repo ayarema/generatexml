@@ -1,6 +1,6 @@
 package com.easytestit.generatexml.utils.config;
 
-import lombok.NonNull;
+import com.easytestit.generatexml.GenerateXMLReportException;
 
 public enum Sender {
     TOKEN("rp.token"),
@@ -11,8 +11,12 @@ public enum Sender {
 
     private final String key;
 
-    Sender(@NonNull final String key) {
-        this.key = key;
+    Sender(final String key) {
+        if (key != null) {
+            this.key = key;
+        } else {
+            throw new GenerateXMLReportException("Argument key should not be null but is null");
+        }
     }
 
     /**

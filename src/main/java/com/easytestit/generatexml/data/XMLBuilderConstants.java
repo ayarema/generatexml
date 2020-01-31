@@ -17,6 +17,6 @@ public class XMLBuilderConstants {
     public static final double RATIO = 0.000000001;
     public static final String SCENARIO = "Scenario";
     public static final String BACKGROUND = "Background";
-    public static final String SLASH_SEPARATOR = "/";
+    public static final String SLASH = "/";
 
 }

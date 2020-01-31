@@ -1,8 +1,5 @@
 package com.easytestit.generatexml.dto.output.testcase;
 
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -10,10 +7,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Testcase can appear multiple times, see /testsuites/testsuite@tests
  */
-@NoArgsConstructor
-@NonNull
 @XmlRootElement(name = "testcase")
 public class TestCase {
+
+    public TestCase() {
+
+    }
 
     /**
      * Name of the test method

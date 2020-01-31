@@ -11,17 +11,20 @@ jobs:
     - stage: test
       jdk: openjdk12
       script: mvn clean
-      after_success:
-        - mvn clean
+      name: "Check"
 
     # 1.2 Check javadoc. We need to use this version to properly detect errors.
-    - jdk: oraclejdk12
+    - stage: test
+      jdk: oraclejdk12
       env: JAVADOC=true
       script:
         - mvn clean verify -DskipTests=true
         - mvn javadoc:aggregate
+      name: "Java Doc Creating"
 
 branches:
   only:
     - master
-    - development
+
+notifications:
+  slack: easytestit:CjqjZLdZMpVFzJEDK8ItU4C0

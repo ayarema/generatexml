@@ -1,9 +1,6 @@
 package com.easytestit.generatexml.configuration;
 
-import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
+import com.easytestit.generatexml.GenerateXMLReportException;
 
 import java.io.File;
 
@@ -12,14 +9,9 @@ import java.io.File;
  */
 public class ConfigureXMLReport {
 
-    private static final Logger LOGGER = LogManager.getLogger(ConfigureXMLReport.class.getName());
-    @Getter
-    private final String path;
-    @Getter
+    private final String projectName;
     private final File source;
-    @Getter
     private final boolean reportAsZip;
-    @Getter
     private final boolean sendReport;
 
     /**
@@ -27,10 +19,17 @@ public class ConfigureXMLReport {
      *
      * @param path path to source folder
      */
-    public ConfigureXMLReport(@NotNull final String path) {
-        LOGGER.info(String.format("Create configuration with defined path '%s' to source folder", path));
-        this.path = path;
-        this.source = new File(path);
+    public ConfigureXMLReport(final String path, final String projectName) {
+        if (path != null) {
+            this.source = new File(path);
+        } else {
+            throw new GenerateXMLReportException("Argument path should not be null but is null. See detailed stack trace: ", new NullPointerException());
+        }
+        if (projectName != null) {
+            this.projectName = projectName;
+        } else {
+            throw new GenerateXMLReportException("Argument projectName should not be null but is null. See detailed stack trace: ", new NullPointerException());
+        }
         this.reportAsZip = false;
         this.sendReport = false;
     }
@@ -43,14 +42,38 @@ public class ConfigureXMLReport {
      * @param sendReport send report to report portal
      */
     public ConfigureXMLReport(
-            @NotNull final String path,
+            final String path,
+            final String projectName,
             final boolean reportAsZip,
             final boolean sendReport
     ) {
-        LOGGER.info(String.format("Create configuration with defined path '%s' to source folder", path));
-        this.path = path;
-        this.source = new File(path);
+        if (path != null) {
+            this.source = new File(path);
+        } else {
+            throw new GenerateXMLReportException("Argument path should not be null but is null. See detailed stack trace: ", new NullPointerException());
+        }
+        if (projectName != null) {
+            this.projectName = projectName;
+        } else {
+            throw new GenerateXMLReportException("Argument projectName should not be null but is null. See detailed stack trace: ", new NullPointerException());
+        }
         this.reportAsZip = reportAsZip;
         this.sendReport = sendReport;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public File getSource() {
+        return source;
+    }
+
+    public boolean isReportAsZip() {
+        return reportAsZip;
+    }
+
+    public boolean isSendReport() {
+        return sendReport;
     }
 }

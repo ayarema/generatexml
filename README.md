@@ -1,12 +1,12 @@
 ## Generate XML report by [[ `easytestit` ](http://easytestit.com/)]
 Let's imagine that you need to convert Cucumber's JSON BDD reports files to one aggregated JUnit's XML report.
 
-This is the open-source library that will convert JSON reports and will generate one detailed report file in [JUnit XML format](https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.2.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html#junitschema).
+This is the open-source library that will convert JSON reports and will generate one detailed report file in [JUnit's XML format](https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.2.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html#junitschema).
 
-`Generate-XML` library was written to be used if new separate JSON report files are created on your project for each individual feature file during the test. Or in case if new XML reports are created for each Cucumber feature file but without detailed information.
-You could use the `Generate-XML` library if you want to create one detailed and aggregated report.
+`Generate-XML` library was written to be used if new separate JSON report files are created on your project for each individual feature file during the test. Or in case if new XML reports are created for each Cucumber's feature file but without detailed information.
+You could use the `Generate-XML` library if you want to create one detailed and aggregate report.
 
-Before setting up and using the library, please note that your Cucumber reports are similar in format as in the [appendix example](#appendix example). These reports were generated, for example, using the Karate framework for testing functionality on the API layer. You can check this from the ["quick start"](https://github.com/intuit/karate#quickstart) block with the addition of the ["run in parallel"](https://github.com/intuit/karate#junit-5-parallel-execution) functionality.
+Before setting up and using the library, please note that your Cucumber's reports are similar in format as in the [appendix example](#appendix example). These reports were generated, for example, using the Karate framework for testing functionality on the API layer. You can check this from the ["quick start"](https://github.com/intuit/karate#quickstart) block with the addition of the ["run in parallel"](https://github.com/intuit/karate#junit-5-parallel-execution) functionality.
 
 In addition, the implementation of this `Generate-XML` library includes the ability to send a generated aggregated XML report to the server, where the results of all reports are displayed, for example, [ReportPortal.io](https://github.com/reportportal/reportportal).
 
@@ -30,31 +30,33 @@ compile group: 'com.easytestit', name: 'generate-xml', version: '1.0.0'
 ```
 
 ### How to use it?
-`Generate-XML` is simple library to use and to configure:
+`Generate-XML` is simple library to use and to configure. You could use Generate-XML with two different ways. The first way is creating functionality with predefined configuration:
 
 ```java
     @AfterAll
     public void afterAll() {
-        var conf = new ConfigureXMLReport(new File("out/reports/"));
-        conf.addConfigureXMLMode(ConfigureXMLMode.ZIP_XML_RESULT_TO_FILE);
-        conf.addConfigureXMLMode(ConfigureXMLMode.SEND_RESULT_TO_RP);
-        GenerateXML generateXML = new GenerateXML(conf);
-        generateXML.make();
+        var conf = new ConfigureXMLReport("out/reports/cucumber-reports/", true, true);
+        new GenerateXML(conf).make();
     }
 ```
-If you don't want to create additional configuration then you could use your code like this:
+In this way you will create a object of ConfigureXMLReport() class with a configuration that takes 3 parameters:
+* String value - a path to JSON files 
+* boolean value which is responsible for creating a ZIP file 
+* and third parameter with boolean value to which is responsible for a sending ZIP file to the report server.
+ 
+And the second way, if you don't want to create additional configuration then you could use your code like this:
 ```java
     @AfterAll
     public void afterAll() {
-        GenerateXML generateXML = new GenerateXML();
-        generateXML.make();
+        new GenerateXML().make();
     }
 ```
 In this case keep in mind that system will take default folder where locate Cucumber JSON reports after launch all tests:
-`String reportDirPath = "target/surefire-reports/";`
+`target folder path = "target/surefire-reports/";`
+If you pay attention to the path you can see that this is the default path for tests that were launched via Maven. Be careful if your project is used Gradle build tools, in this case, the path to reports will be different.
 
 ### Additional configuration
-Keep it mind that if you add `ConfigureXMLMode.SEND_RESULT_TO_RP` parameter you need to add to your `resources` a new `.properies` file with name `sender.properties` :
+Keep it mind that if you create Generate-XML with predefined configuration (`new ConfigureXMLReport("out/reports/cucumber-reports/", true, true);`), in this case application will need specified parameters for a sending created data to the report server. So, you need to add to your `resources` a new `.properies` file with name `sender.properties` :
 
 ```groovy
 rp.token=token that you could find on RP in personal page
@@ -65,7 +67,10 @@ rp.service.url=/launch/import
 ```
 
 ### Results
-After launching `Generate-XML` functionality the new aggregated JUnit XML report will be created in: `String reportResultsFolder = "out/xml-reports/";
+After launching `Generate-XML` functionality the new aggregated JUnit XML report will be created in: `report.result.folder.path=out/xml-reports/`
+
+### License
+`Generate-XML` is open-source project, and distributed under the [MIT](https://choosealicense.com/licenses/mit/) license.
 
 ### Appendix example
 This block presents an example of the Cucumber JSON report; in this example, all the fields that the report may contain are not completely presented, this is just an example.

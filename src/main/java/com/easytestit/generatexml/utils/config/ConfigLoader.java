@@ -1,6 +1,6 @@
 package com.easytestit.generatexml.utils.config;
 
-import lombok.NonNull;
+import com.easytestit.generatexml.GenerateXMLReportException;
 
 import java.util.Properties;
 
@@ -12,17 +12,18 @@ public class ConfigLoader {
      * This static initializer performs configuration data loading from class path
      */
     static {
-        System.out.println("Loading system properties");
         load("sender.properties");
     }
 
-    private static void load(@NonNull final String name) {
-        System.out.println("Reading " + name);
+    private static void load(final String name) {
         try {
-            properties.load(ConfigLoader.class.getClassLoader().getResourceAsStream(name));
-            System.out.println("Reading " + name + " done successfully");
+            if (name != null) {
+                properties.load(ConfigLoader.class.getClassLoader().getResourceAsStream(name));
+            } else {
+                throw new GenerateXMLReportException("Argument name should not be null nut is null");
+            }
         } catch (Throwable e) {
-            System.out.println("Unable to read " + name + " cause is " + e.getMessage());
+            throw new GenerateXMLReportException("Unable to read " + name + " cause is " + e.getMessage());
         }
     }
 
@@ -33,10 +34,14 @@ public class ConfigLoader {
      * @return Associated value
      * @throws ArrayIndexOutOfBoundsException If value not configured
      */
-    static String getValue(@NonNull final String key) {
-        if (!properties.containsKey(key)) {
-            throw new ArrayIndexOutOfBoundsException("Key " + key + " is not configured");
+    static String getValue(final String key) {
+        if (key != null) {
+            if (!properties.containsKey(key)) {
+                throw new ArrayIndexOutOfBoundsException("Key " + key + " is not configured");
+            }
+            return properties.getProperty(key);
+        } else {
+            throw new GenerateXMLReportException("Argument key should not be null but is null");
         }
-        return properties.getProperty(key);
     }
 }

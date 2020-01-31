@@ -1,17 +1,14 @@
 package com.easytestit.generatexml;
 
 import com.easytestit.generatexml.dto.input.Feature;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import lombok.NonNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,9 +17,15 @@ import java.util.Collection;
  * Class {@link ParseJSON} describes functionality where JSON files will deserialize to Java Objects
  */
 @SuppressWarnings("unchecked")
-class ParseJSON {
+public class ParseJSON {
 
-    private static final Logger LOGGER = LogManager.getLogger(ParseJSON.class.getName());
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    public ParseJSON() {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // this prevents printing eg. 2.20 as 2.2
+        mapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+    }
 
     /**
      * Make a list of Features objects which was deserialized from JSON files
@@ -30,27 +33,29 @@ class ParseJSON {
      * @param pathList path to real files which locate in compiled folder
      * @return Collection of Features objects with deserialized values
      */
-    @NotNull
-    public Collection<Feature> parse(@NotNull final Collection<String> pathList) {
-        Collection<Feature> features = new ArrayList<>();
+    public Collection<Feature> parse(final Collection<String> pathList) {
+        if (pathList != null) {
+            Collection<Feature> features = new ArrayList<>();
 
-        if (pathList.isEmpty()) {
-            throw new GenerateXMLReportException("Empty argument provided");
-        }
-
-        pathList.forEach(path -> {
-            Collection<Feature> reportFeatures = parseFeatures(path);
-            if (reportFeatures != null && !reportFeatures.isEmpty()) {
-                LOGGER.info(String.format("File '%s' contains %d features", path, reportFeatures.size()));
-                features.addAll(reportFeatures);
+            if (pathList.isEmpty()) {
+                throw new GenerateXMLReportException("Empty argument provided");
             }
-        });
 
-        if (features.isEmpty()) {
-            throw new GenerateXMLReportException("Feature files not found");
+            pathList.forEach(path -> {
+                Collection<Feature> reportFeatures = parseFeatures(path);
+                if (reportFeatures != null && !reportFeatures.isEmpty()) {
+                    features.addAll(reportFeatures);
+                }
+            });
+
+            if (features.isEmpty()) {
+                throw new GenerateXMLReportException("Feature files not found");
+            }
+
+            return features;
+        } else {
+            throw new GenerateXMLReportException("Argument pathList should not be null but is null. See detailed stack trace: ");
         }
-
-        return features;
     }
 
     /**
@@ -59,16 +64,10 @@ class ParseJSON {
      * @param path JSON files with a Cucumber standard describing the result of running tests
      * @return ReportDocument object with values from JSON files
      */
-    private Collection<Feature> parseFeatures(@NonNull final String path) {
-        Type collectionType = new TypeToken<Collection<Feature>>() {
-        }.getType();
-
-        try {
-            return (Collection<Feature>) new Gson().fromJson(
-                    new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8),
-                    collectionType
-            );
-        } catch (FileNotFoundException e) {
+    private Collection<Feature> parseFeatures(final String path) {
+        try (Reader reader = new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) {
+            return (Collection<Feature>) mapper.readValue(reader, new TypeReference<Collection<Feature>>(){});
+        } catch (IOException e) {
             throw new GenerateXMLReportException(e);
         }
     }

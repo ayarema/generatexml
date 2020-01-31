@@ -6,29 +6,26 @@ import com.easytestit.generatexml.http.SenderService;
 import com.easytestit.generatexml.service.ReportService;
 import com.easytestit.generatexml.service.Serialization;
 import com.easytestit.generatexml.service.ZipService;
-import lombok.NonNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class GenerateXML {
 
-    private static final Logger LOGGER = LogManager.getLogger(GenerateXML.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GenerateXML.class.getName());
     private ConfigureXMLReport configuration;
 
     public GenerateXML() {
-        LOGGER.info("Starting application to convert JSON report to XML report with default parameters");
     }
 
-    public GenerateXML(@NotNull final ConfigureXMLReport configuration) {
-        LOGGER.info("Starting application to convert JSON report to XML report with specified Configuration");
-        this.configuration = configuration;
+    public GenerateXML(final ConfigureXMLReport configuration) {
+        if (configuration != null)
+            this.configuration = configuration;
     }
 
     /**
@@ -42,22 +39,23 @@ public class GenerateXML {
 
         try {
             if (configuration != null) {
-                LOGGER.info("Try to convert JSON files according to provided configuration");
 
                 //convert JSON file in XML
-                convert(resolvePath(configuration.getSource()));
+                convert(resolvePath(configuration.getSource()), configuration.getProjectName());
 
                 //create ZIP file from XML which created from previews step
                 boolean isZipCreated = false;
                 if (configuration.isReportAsZip()) {
-                    isZipCreated = new ZipService().createZip();
+                    isZipCreated = configuration.getProjectName() != null
+                            ? new ZipService().createZip(configuration.getProjectName())
+                            : new ZipService().createZip(ConfigDataProvider.ZIP_NAME);
                 }
 
                 // send XML file to report server
                 if (configuration.isSendReport() && isZipCreated) {
                     new SenderService().post(ConfigDataProvider.ZIP_NAME);
                 } else {
-                    LOGGER.info(isZipCreated
+                    LOGGER.log(Level.INFO, isZipCreated
                             ? "Zip was created, but no need to send it"
                             : "Zip was not created. Nothing to send to report server"
                     );
@@ -65,22 +63,24 @@ public class GenerateXML {
 
             } else {
                 //when configuration is null start functionality with default parameters
-                LOGGER.info("No configuration passed, try to convert JSON files from target directory");
-
-                convert(resolvePath(new File(ConfigDataProvider.TARGET_FOLDER_PATH)));
+                convert(resolvePath(new File("target/surefire-reports/")), "AggregatedReport");
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error during XML report generation");
-            throw new GenerateXMLReportException(e);
+            throw new GenerateXMLReportException("Error during XML report generation ", e);
         }
     }
 
-    private void convert(@NonNull final Collection<String> pathList) {
-        new Serialization().serializeToXML(
-                new ReportService().transformFeaturesToReport(
-                        new ParseJSON().parse(pathList))
-        );
+    private void convert(final Collection<String> pathList, final String projectName) {
+        if (pathList != null & projectName != null) {
+            new Serialization().serializeToXML(
+                    new ReportService().transformFeaturesToReport(
+                            new ParseJSON().parse(pathList)),
+                    projectName
+            );
+        } else {
+            throw new GenerateXMLReportException("Arguments pathList, projectName should not be null but are null. See detailed stack trace: ", new NullPointerException());
+        }
     }
 
     /**
@@ -90,12 +90,10 @@ public class GenerateXML {
      * Also, this folder will zip later if needed configuration will pass
      */
     private void createResultsReportFolder() {
-        LOGGER.info("Try to create new folder in project directory");
-
         String path = ConfigDataProvider.REPORT_RESULTS_FOLDER;
         File resultsFolder = new File(path);
 
-        LOGGER.info(!resultsFolder.exists() && resultsFolder.mkdirs()
+        LOGGER.log(Level.INFO, !resultsFolder.exists() && resultsFolder.mkdirs()
                 ? "Direction " + path + " created successfully"
                 : "Direction " + path + " was already created"
         );
@@ -109,29 +107,28 @@ public class GenerateXML {
      * @param source the folder where locate all files after launching tests
      * @return the collection of String with defined path to JSON files
      */
-    @NotNull
-    private Collection<String> resolvePath(@NotNull final File source) {
-        File[] files = source.listFiles();
+    private Collection<String> resolvePath(final File source) {
+        Collection<String> filePathList = new ArrayList<>();
+        if (source != null) {
+            File[] files = source.listFiles();
 
-        //might be null
-        if (files == null) {
-            LOGGER.info("Provided source folder " + source.getName() + " doesn't contain any files!");
-            return Collections.emptyList();
+            if (files == null) {
+                throw new GenerateXMLReportException("Provided source folder " + source.getName() + " doesn't contain any files!");
+            }
+
+            filePathList = Arrays.stream(files)
+                    .filter(File::isFile)
+                    .filter(file -> file.getName().endsWith("json"))
+                    .map(file -> String.valueOf(source)
+                            .concat(String.valueOf(File.separatorChar))
+                            .concat(file.getName())
+                    )
+                    .collect(Collectors.toList());
+
+            if (filePathList.isEmpty()) {
+                throw new GenerateXMLReportException("Provided source folder " + source.getName() + " doesn't contain files with JSON format!");
+            }
         }
-
-        Collection<String> filePathList = Arrays.stream(files)
-                .filter(File::isFile)
-                .filter(file -> file.getName().endsWith("json"))
-                .map(file -> String.valueOf(source)
-                        .concat(String.valueOf(File.separatorChar))
-                        .concat(file.getName())
-                )
-                .collect(Collectors.toList());
-
-        if (filePathList.isEmpty()) {
-            LOGGER.info("Provided source folder " + source.getName() + " doesn't contain files with JSON format!");
-        }
-
         return filePathList;
     }
 }

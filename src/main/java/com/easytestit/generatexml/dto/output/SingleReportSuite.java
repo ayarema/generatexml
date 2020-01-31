@@ -2,8 +2,6 @@ package com.easytestit.generatexml.dto.output;
 
 import com.easytestit.generatexml.dto.output.properties.SuiteProperties;
 import com.easytestit.generatexml.dto.output.testcase.TestCase;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -15,10 +13,12 @@ import java.util.Collection;
  * Testsuite can appear multiple times, if contained in a testsuites element.
  * It can also be the root element
  */
-@NoArgsConstructor
-@NonNull
 @XmlRootElement(name = "testsuite")
 public class SingleReportSuite {
+
+    public SingleReportSuite() {
+
+    }
 
     /**
      * Full (class) name of the test for non-aggregated testsuite documents.

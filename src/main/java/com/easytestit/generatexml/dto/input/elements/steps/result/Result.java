@@ -1,24 +1,26 @@
 package com.easytestit.generatexml.dto.input.elements.steps.result;
 
-import com.google.gson.annotations.SerializedName;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
-@NoArgsConstructor
-@Getter
 public class Result {
 
-    @NonNull
-    @SerializedName("duration")
+    public Result() {
+
+    }
+
     private Long duration;
 
-    @NonNull
-    @SerializedName("error_message")
-    private String errorMessage;
+    private String error_message;
 
-    @NonNull
-    @SerializedName("status")
     private String status;
 
+    public Long getDuration() {
+        return duration;
+    }
+
+    public String getError_message() {
+        return error_message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

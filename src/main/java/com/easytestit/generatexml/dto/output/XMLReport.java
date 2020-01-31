@@ -1,7 +1,5 @@
 package com.easytestit.generatexml.dto.output;
 
-import lombok.NoArgsConstructor;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -11,9 +9,12 @@ import java.util.Collection;
  * If only a single testsuite element is present, the testsuites
  * element can be omitted. All attributes are optional.
  */
-@NoArgsConstructor
 @XmlRootElement(name = "testsuites")
 public class XMLReport {
+
+    public XMLReport() {
+
+    }
 
     /**
      * Total number of failed tests from all testsuites

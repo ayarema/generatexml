@@ -1,23 +1,26 @@
 package com.easytestit.generatexml.dto.input.elements.steps.docstring;
 
-import com.google.gson.annotations.SerializedName;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Getter;
-
-@NoArgsConstructor
-@Getter
 public class DocString {
 
-    @NonNull
-    @SerializedName("content_type")
-    private String contentType;
+    public DocString() {
 
-    @NonNull
-    @SerializedName("value")
+    }
+
+    private String content_type;
+
     private String value;
 
-    @NonNull
-    @SerializedName("line")
     private Integer line;
+
+    public String getContent_type() {
+        return content_type;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public Integer getLine() {
+        return line;
+    }
 }
