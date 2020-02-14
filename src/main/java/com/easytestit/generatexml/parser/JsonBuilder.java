@@ -1,5 +1,19 @@
 package com.easytestit.generatexml.parser;
 
+import com.easytestit.generatexml.parser.adapter.DefaultDateTypeAdapter;
+import com.easytestit.generatexml.parser.adapter.TreeTypeAdapter;
+import com.easytestit.generatexml.parser.adapter.TypeAdapter;
+import com.easytestit.generatexml.parser.adapter.TypeAdapterFactory;
+import com.easytestit.generatexml.parser.adapter.TypeAdapters;
+import com.easytestit.generatexml.parser.annotations.Expose;
+import com.easytestit.generatexml.parser.internal.$Json$Preconditions;
+import com.easytestit.generatexml.parser.internal.Excluder;
+import com.easytestit.generatexml.parser.reflect.TypeToken;
+import com.easytestit.generatexml.parser.rules.FieldNamingPolicy;
+import com.easytestit.generatexml.parser.rules.FieldNamingStrategy;
+import com.easytestit.generatexml.parser.rules.LongSerializationPolicy;
+import com.easytestit.generatexml.parser.stream.JsonReader;
+
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -10,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.easytestit.generatexml.parser.Json.*;
+import static com.easytestit.generatexml.parser.JsonParser.*;
 
 public class JsonBuilder {
     private Excluder excluder = Excluder.DEFAULT;
@@ -45,25 +59,25 @@ public class JsonBuilder {
      * Constructs a JsonBuilder instance from a Json instance. The newly constructed JsonBuilder
      * has the same configuration as the previously built Json instance.
      *
-     * @param json the json instance whose configuration should by applied to a new JsonBuilder.
+     * @param jsonParser the json instance whose configuration should by applied to a new JsonBuilder.
      */
-    JsonBuilder(Json json) {
-        this.excluder = json.excluder;
-        this.fieldNamingPolicy = json.fieldNamingStrategy;
-        this.instanceCreators.putAll(json.instanceCreators);
-        this.serializeNulls = json.serializeNulls;
-        this.complexMapKeySerialization = json.complexMapKeySerialization;
-        this.generateNonExecutableJson = json.generateNonExecutableJson;
-        this.escapeHtmlChars = json.htmlSafe;
-        this.prettyPrinting = json.prettyPrinting;
-        this.lenient = json.lenient;
-        this.serializeSpecialFloatingPointValues = json.serializeSpecialFloatingPointValues;
-        this.longSerializationPolicy = json.longSerializationPolicy;
-        this.datePattern = json.datePattern;
-        this.dateStyle = json.dateStyle;
-        this.timeStyle = json.timeStyle;
-        this.factories.addAll(json.builderFactories);
-        this.hierarchyFactories.addAll(json.builderHierarchyFactories);
+    JsonBuilder(JsonParser jsonParser) {
+        this.excluder = jsonParser.excluder;
+        this.fieldNamingPolicy = jsonParser.fieldNamingStrategy;
+        this.instanceCreators.putAll(jsonParser.instanceCreators);
+        this.serializeNulls = jsonParser.serializeNulls;
+        this.complexMapKeySerialization = jsonParser.complexMapKeySerialization;
+        this.generateNonExecutableJson = jsonParser.generateNonExecutableJson;
+        this.escapeHtmlChars = jsonParser.htmlSafe;
+        this.prettyPrinting = jsonParser.prettyPrinting;
+        this.lenient = jsonParser.lenient;
+        this.serializeSpecialFloatingPointValues = jsonParser.serializeSpecialFloatingPointValues;
+        this.longSerializationPolicy = jsonParser.longSerializationPolicy;
+        this.datePattern = jsonParser.datePattern;
+        this.dateStyle = jsonParser.dateStyle;
+        this.timeStyle = jsonParser.timeStyle;
+        this.factories.addAll(jsonParser.builderFactories);
+        this.hierarchyFactories.addAll(jsonParser.builderHierarchyFactories);
     }
 
     /**
@@ -110,7 +124,7 @@ public class JsonBuilder {
 
     /**
      * Configures Gson to exclude all fields from consideration for serialization or deserialization
-     * that do not have the {@link com.easytestit.generatexml.parser.Expose} annotation.
+     * that do not have the {@link Expose} annotation.
      *
      * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
      */
@@ -515,12 +529,12 @@ public class JsonBuilder {
     }
 
     /**
-     * Creates a {@link Json} instance based on the current configuration. This method is free of
+     * Creates a {@link JsonParser} instance based on the current configuration. This method is free of
      * side-effects to this {@code JsonBuilder} instance and hence can be called multiple times.
      *
      * @return an instance of Json configured with the options currently set in this builder
      */
-    public Json create() {
+    public JsonParser create() {
         List<TypeAdapterFactory> factories = new ArrayList<TypeAdapterFactory>(this.factories.size() + this.hierarchyFactories.size() + 3);
         factories.addAll(this.factories);
         Collections.reverse(factories);
@@ -531,7 +545,7 @@ public class JsonBuilder {
 
         addTypeAdaptersForDate(datePattern, dateStyle, timeStyle, factories);
 
-        return new Json(excluder, fieldNamingPolicy, instanceCreators,
+        return new JsonParser(excluder, fieldNamingPolicy, instanceCreators,
                 serializeNulls, complexMapKeySerialization,
                 generateNonExecutableJson, escapeHtmlChars, prettyPrinting, lenient,
                 serializeSpecialFloatingPointValues, longSerializationPolicy,

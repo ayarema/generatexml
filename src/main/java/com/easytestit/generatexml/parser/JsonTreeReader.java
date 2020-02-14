@@ -1,5 +1,8 @@
 package com.easytestit.generatexml.parser;
 
+import com.easytestit.generatexml.parser.stream.JsonReader;
+import com.easytestit.generatexml.parser.stream.JsonToken;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;

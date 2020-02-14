@@ -1,5 +1,7 @@
 package com.easytestit.generatexml.parser;
 
+import com.easytestit.generatexml.parser.stream.JsonWriter;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;

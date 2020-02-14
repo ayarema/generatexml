@@ -1,5 +1,8 @@
 package com.easytestit.generatexml.parser;
 
+import com.easytestit.generatexml.parser.internal.Streams;
+import com.easytestit.generatexml.parser.stream.JsonWriter;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;

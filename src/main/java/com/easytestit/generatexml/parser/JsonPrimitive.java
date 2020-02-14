@@ -1,5 +1,8 @@
 package com.easytestit.generatexml.parser;
 
+import com.easytestit.generatexml.parser.internal.$Json$Preconditions;
+import com.easytestit.generatexml.parser.internal.LazilyParsedNumber;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 

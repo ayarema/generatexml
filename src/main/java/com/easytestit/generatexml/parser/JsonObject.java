@@ -1,5 +1,7 @@
 package com.easytestit.generatexml.parser;
 
+import com.easytestit.generatexml.parser.internal.LinkedTreeMap;
+
 import java.util.Map;
 import java.util.Set;
 

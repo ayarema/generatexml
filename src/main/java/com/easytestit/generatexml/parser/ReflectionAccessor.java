@@ -1,5 +1,7 @@
 package com.easytestit.generatexml.parser;
 
+import com.easytestit.generatexml.parser.internal.JavaVersion;
+
 import java.lang.reflect.AccessibleObject;
 
 /**
