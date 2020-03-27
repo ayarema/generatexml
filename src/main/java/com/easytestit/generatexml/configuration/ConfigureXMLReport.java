@@ -1,6 +1,7 @@
 package com.easytestit.generatexml.configuration;
 
 import com.easytestit.generatexml.GenerateXMLReportException;
+import com.easytestit.generatexml.data.ConfigDataProvider;
 
 import java.io.File;
 
@@ -42,10 +43,24 @@ import java.io.File;
  */
 public class ConfigureXMLReport {
 
-    private final String projectName;
-    private final File source;
+    private String projectName;
+    private File source;
     private final boolean reportAsZip;
     private final boolean sendReport;
+
+    /**
+     * Use this constructor if you added project name and path to JSON's folder
+     * to gxml.property file
+     *
+     * @param reportAsZip boolean value which turn on or turnoff functionality for creating zip file
+     * @param sendReport boolean value which turn on or turnoff functionality for sending zip file on report server
+     */
+    public ConfigureXMLReport(final boolean reportAsZip, final boolean sendReport) {
+        this.source = new File(ConfigDataProvider.DEFAULT_FOLDER);
+        this.projectName = ConfigDataProvider.PROJECT_NAME;
+        this.reportAsZip = reportAsZip;
+        this.sendReport = sendReport;
+    }
 
     /**
      * Configuration by default (no zip, no report)
@@ -96,8 +111,16 @@ public class ConfigureXMLReport {
         this.sendReport = sendReport;
     }
 
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
     public String getProjectName() {
         return projectName;
+    }
+
+    public void setSource(String path) {
+        this.source = new File(path);
     }
 
     public File getSource() {

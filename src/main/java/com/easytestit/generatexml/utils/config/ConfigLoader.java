@@ -12,7 +12,7 @@ public class ConfigLoader {
      * This static initializer performs configuration data loading from class path
      */
     static {
-        load("sender.properties");
+        load("gxml.properties");
     }
 
     private static void load(final String name) {

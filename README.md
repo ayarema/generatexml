@@ -62,7 +62,7 @@ In this case keep in mind that system will take default folder where locate Cucu
 If you pay attention to the path you can see that this is the default path for tests that were launched via Maven. Be careful if your project is used Gradle build tools, in this case, the path to reports will be different. So, in this case, most likely you will need to use functionality with predefined parameters.
 
 ### Additional configuration
-Keep it mind that if you create Generate-XML with predefined configuration (`new ConfigureXMLReport("out/reports/cucumber-reports/", true, true);`), in this case application will need specified parameters for a sending created data to the report server. So, you need to add to your `resources` a new `.properies` file with name `sender.properties` :
+Keep it mind that if you create Generate-XML with predefined configuration (`new ConfigureXMLReport("out/reports/cucumber-reports/", true, true);`), in this case application will need specified parameters for a sending created data to the report server. So, you need to add to your `resources` a new `.properies` file with name `gxml.properties` :
 
 ```groovy
 rp.token=token that you could find on RP in personal page

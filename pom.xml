@@ -176,6 +176,7 @@
                 <version>${maven.java.doc.version}</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
+                    <additionalOptions>-Xdoclint:none</additionalOptions>
                 </configuration>
                 <executions>
                     <execution>

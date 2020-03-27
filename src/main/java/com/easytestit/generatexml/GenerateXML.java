@@ -59,6 +59,12 @@ public class GenerateXML {
 
         try {
             if (configuration != null) {
+                if (configuration.getSource() == null) {
+                    configuration.setSource(ConfigDataProvider.DEFAULT_FOLDER);
+                }
+                if (configuration.getProjectName() == null) {
+                    configuration.setProjectName(ConfigDataProvider.PROJECT_NAME);
+                }
                 //convert JSON file in XML
                 convert(resolvePath(configuration.getSource()), configuration.getProjectName());
                 //create ZIP file from XML which created from previews step
@@ -81,7 +87,7 @@ public class GenerateXML {
 
             } else {
                 //when configuration is null start functionality with default parameters
-                convert(resolvePath(new File("target/surefire-reports/")), "AggregatedReport");
+                convert(resolvePath(new File(ConfigDataProvider.DEFAULT_FOLDER)), ConfigDataProvider.DEFAULT_PROJECT_NAME);
             }
 
         } catch (Exception e) {
