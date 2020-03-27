@@ -1,4 +1,4 @@
-## Generate XML report by [[ `testiteasy.net` ](http://easytestit.com/)]
+## Generate XML report by [[ `testiteasy` ](http://testiteasy.net/)]
 Let's imagine that you need to convert Cucumber's JSON BDD reports files to one aggregated JUnit's XML report.
 
 This is the open-source library that will convert JSON reports and will generate one detailed report file in [JUnit's XML format](https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.2.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html#junitschema).
@@ -18,7 +18,7 @@ For start with `Generate-XML` you need just to add dependency to your:
 #### Maven
 ```xml
 <dependency>
-    <groupId>testiteasy.net</groupId>
+    <groupId>net.testiteasy</groupId>
     <artifactId>generate-xml</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -26,7 +26,7 @@ For start with `Generate-XML` you need just to add dependency to your:
 #### Gradle
 Or, if you use Gradle build tool you can add
 ```groovy
-compile group: 'testiteasy.net', name: 'generate-xml', version: '1.0.0'
+compile group: 'net.testiteasy', name: 'generate-xml', version: '1.0.0'
 ```
 
 ### How to use it?
@@ -35,14 +35,20 @@ compile group: 'testiteasy.net', name: 'generate-xml', version: '1.0.0'
 ```java
     @AfterAll
     public void afterAll() {
-        var conf = new ConfigureXMLReport("out/reports/cucumber-reports/", true, true);
+        ConfigureXMLReport conf = new ConfigureXMLReport(
+                        "src/test/resources/",
+                        "Test Project",
+                        false,
+                        false
+                );
         new GenerateXML(conf).make();
     }
 ```
 In this way you will create a object of ConfigureXMLReport() class with a configuration that takes 3 parameters:
-* String value - a path to JSON files 
-* boolean value which is responsible for creating a ZIP file 
-* and third parameter with boolean value to which is responsible for a sending ZIP file to the report server.
+* first String value - a path to JSON files
+* second String value - a name of project (this name will use for creating aggregated XML file) 
+* third parameter is boolean value which is responsible for creating a ZIP file 
+* and fourth parameter with boolean value to which is responsible for a sending ZIP file to the report server.
  
 And the second way, if you don't want to create additional configuration then you could use your code like this:
 ```java
@@ -53,7 +59,7 @@ And the second way, if you don't want to create additional configuration then yo
 ```
 In this case keep in mind that system will take default folder where locate Cucumber JSON reports after launch all tests:
 `target folder path = "target/surefire-reports/";`
-If you pay attention to the path you can see that this is the default path for tests that were launched via Maven. Be careful if your project is used Gradle build tools, in this case, the path to reports will be different.
+If you pay attention to the path you can see that this is the default path for tests that were launched via Maven. Be careful if your project is used Gradle build tools, in this case, the path to reports will be different. So, in this case, most likely you will need to use functionality with predefined parameters.
 
 ### Additional configuration
 Keep it mind that if you create Generate-XML with predefined configuration (`new ConfigureXMLReport("out/reports/cucumber-reports/", true, true);`), in this case application will need specified parameters for a sending created data to the report server. So, you need to add to your `resources` a new `.properies` file with name `sender.properties` :
@@ -63,6 +69,7 @@ rp.token=token that you could find on RP in personal page
 rp.url=http://your_host:8080
 rp.api.version=/api/v1
 rp.project.name=/your_project_name
+rp.project.project=/project
 rp.service.url=/launch/import
 ```
 
