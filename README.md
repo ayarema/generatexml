@@ -1,4 +1,4 @@
-## Generate XML report by [[ `easytestit` ](http://easytestit.com/)]
+## Generate XML report by [[ `testiteasy.net` ](http://easytestit.com/)]
 Let's imagine that you need to convert Cucumber's JSON BDD reports files to one aggregated JUnit's XML report.
 
 This is the open-source library that will convert JSON reports and will generate one detailed report file in [JUnit's XML format](https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.2.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html#junitschema).
@@ -6,7 +6,7 @@ This is the open-source library that will convert JSON reports and will generate
 `Generate-XML` library was written to be used if new separate JSON report files are created on your project for each individual feature file during the test. Or in case if new XML reports are created for each Cucumber's feature file but without detailed information.
 You could use the `Generate-XML` library if you want to create one detailed and aggregate report.
 
-Before setting up and using the library, please note that your Cucumber's reports are similar in format as in the [appendix example](#appendix example). These reports were generated, for example, using the Karate framework for testing functionality on the API layer. You can check this from the ["quick start"](https://github.com/intuit/karate#quickstart) block with the addition of the ["run in parallel"](https://github.com/intuit/karate#junit-5-parallel-execution) functionality.
+Before setting up and using the library, please note that your Cucumber's reports are similar in format as in the [appendix example](#appendix example). These reports were generated, for example, using the [Karate framework](https://intuit.github.io/karate/) for testing functionality on the API layer. You can check this from the ["quick start"](https://github.com/intuit/karate#quickstart) block with the addition of the ["run in parallel"](https://github.com/intuit/karate#junit-5-parallel-execution) functionality.
 
 In addition, the implementation of this `Generate-XML` library includes the ability to send a generated aggregated XML report to the server, where the results of all reports are displayed, for example, [ReportPortal.io](https://github.com/reportportal/reportportal).
 
@@ -18,7 +18,7 @@ For start with `Generate-XML` you need just to add dependency to your:
 #### Maven
 ```xml
 <dependency>
-    <groupId>com.easytestit</groupId>
+    <groupId>testiteasy.net</groupId>
     <artifactId>generate-xml</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -26,7 +26,7 @@ For start with `Generate-XML` you need just to add dependency to your:
 #### Gradle
 Or, if you use Gradle build tool you can add
 ```groovy
-compile group: 'com.easytestit', name: 'generate-xml', version: '1.0.0'
+compile group: 'testiteasy.net', name: 'generate-xml', version: '1.0.0'
 ```
 
 ### How to use it?

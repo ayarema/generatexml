@@ -20,18 +20,38 @@ public class GenerateXML {
     private static final Logger LOGGER = Logger.getLogger(GenerateXML.class.getName());
     private ConfigureXMLReport configuration;
 
+    /**
+     * Constructor a {@link GenerateXML()} class without parameters is necessary
+     * only if you need to use functionality with default parameters.
+     *
+     * Default parameter located in code in hardcode view.
+     */
     public GenerateXML() {
     }
 
+    /**
+     * Constructor a {@link GenerateXML()} class with {@link ConfigureXMLReport()} as a parameter
+     * is necessary when you need to use functionality with your specific configuration data.
+     *
+     * @param configuration the parameter which store specific configuration
+     */
     public GenerateXML(final ConfigureXMLReport configuration) {
         if (configuration != null)
             this.configuration = configuration;
     }
 
     /**
-     * <p> Method describes functionality which provided files and generates the aggregated XML report.
+     * This method is the entry point to the application for converting files
+     * from JSON to XML. This method analyzes the configuration, which may have been passed
+     * to the constructor of class {@link GenerateXML()}.
+     *
+     * It is also analyzed depending on the configuration, what will be done.
+     * <p>For example, if the configuration was transferred without creating a
+     * ZIP of the archive, then this functionality {@link com.easytestit.generatexml.service.ZipService()#createZip()}
+     * for creating the archive will not be launched.
+     * <p/>
+     *
      * When generating process fails report with information about error is provided.
-     * </p>
      */
     public void make() {
         //create new folder where new XML report will be created
@@ -39,10 +59,8 @@ public class GenerateXML {
 
         try {
             if (configuration != null) {
-
                 //convert JSON file in XML
                 convert(resolvePath(configuration.getSource()), configuration.getProjectName());
-
                 //create ZIP file from XML which created from previews step
                 boolean isZipCreated = false;
                 if (configuration.isReportAsZip()) {
@@ -84,9 +102,9 @@ public class GenerateXML {
     }
 
     /**
-     * Void function which provides the ability to create a directory that will later serve as the folder
+     * The method which provides the ability to create a directory that will later serve as the folder
      * where the aggregated XML report will be created
-     * </p>
+     *
      * Also, this folder will zip later if needed configuration will pass
      */
     private void createResultsReportFolder() {
@@ -102,7 +120,6 @@ public class GenerateXML {
     /**
      * A convenience method which read files with specific extension
      * and collects path to these files in a new String collection
-     * </p>
      *
      * @param source the folder where locate all files after launching tests
      * @return the collection of String with defined path to JSON files

@@ -1,8 +1,8 @@
 package com.easytestit.generatexml;
 
 import com.easytestit.generatexml.dto.input.Feature;
-import com.easytestit.generatexml.parser.JsonParser;
-import com.easytestit.generatexml.parser.reflect.TypeToken;
+import com.easytestit.generatexml.com.google.gson.Gson;
+import com.easytestit.generatexml.com.google.gson.reflect.TypeToken;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -62,7 +62,7 @@ public class ParseJSON {
     private Collection<Feature> parseFeatures(final String path) {
         Type collectionType = new TypeToken<Collection<Feature>>(){}.getType();
         try {
-            return (Collection<Feature>) new JsonParser().fromJson(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8), collectionType);
+            return (Collection<Feature>) new Gson().fromJson(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8), collectionType);
         } catch (FileNotFoundException e) {
             throw new GenerateXMLReportException(e);
         }

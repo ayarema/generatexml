@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 /**
  * HTTP client class created for making POST request and sending files to server
+ * with dependency on OkHttpClient
  */
 public class SenderService {
 

@@ -43,12 +43,17 @@ public class TestCase {
 
     @XmlAttribute(name = "description")
     private String description;
-
     /**
      * Data that was written to standard error while the test was executed
      */
     @XmlElement(name = "system-err")
     private String caseOutErr;
+
+    /**
+     * Data that was written to standard error while the test was executed
+     */
+    @XmlElement(name = "failure")
+    private String failure;
 
     /**
      * Data that was written to standard out while the test was executed
@@ -73,6 +78,11 @@ public class TestCase {
 
     public TestCase setCaseOutErr(String caseOutErr) {
         this.caseOutErr = caseOutErr;
+        return this;
+    }
+
+    public TestCase setFailure(String failure) {
+        this.failure = failure;
         return this;
     }
 

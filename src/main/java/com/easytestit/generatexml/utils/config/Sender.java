@@ -6,6 +6,7 @@ public enum Sender {
     TOKEN("rp.token"),
     URL("rp.url"),
     VERSION("rp.api.version"),
+    PROJECT("rp.project.project"),
     PROJECT_NAME("rp.project.name"),
     SERVICE_URL("rp.service.url");
 

@@ -19,7 +19,7 @@ public class ZipService {
         boolean isZipCreated;
         if (projectName != null) {
             try {
-                FileOutputStream fos = new FileOutputStream(ConfigDataProvider.ZIP_NAME);
+                FileOutputStream fos = new FileOutputStream(ConfigDataProvider.REPORT_RESULTS_FOLDER.concat("zip" + projectName + ".zip"));
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
                 File fileToZip = new File(ConfigDataProvider.REPORT_RESULTS_FOLDER.concat("zip" + projectName + ".zip"));
 
