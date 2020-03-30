@@ -11,6 +11,7 @@ public class ConfigDataProvider {
     public static final String DEFAULT_FOLDER = Default.PATH_TO_REPORTS.getString();
     public static final String DEFAULT_PROJECT_NAME = Default.PROJECT_NAME.getString();
 
+    public static final String ZIP_EXTENSION = ".zip";
     public static final String ZIP_NAME = "zipAggregatedReport.zip";
     public static final String REPORT_RESULTS_FOLDER = "out/xml-report/";
 

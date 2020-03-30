@@ -62,10 +62,10 @@ public class SenderService {
                         ? "Empty response body"
                         : response.body().toString());
             } catch (IOException e) {
-                throw new GenerateXMLReportException("Error during send request to the server: ", e);
+                throw new GenerateXMLReportException("Error during send request to the server: ");
             }
         } else {
-            throw new GenerateXMLReportException("Argument file should not be null but is null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Argument file should not be null but is null. See detailed stack trace: ");
         }
     }
 }

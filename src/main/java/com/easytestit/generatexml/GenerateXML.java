@@ -66,7 +66,7 @@ public class GenerateXML {
                     configuration.setProjectName(ConfigDataProvider.PROJECT_NAME);
                 }
                 //convert JSON file in XML
-                convert(resolvePath(configuration.getSource()), configuration.getProjectName());
+                convert(resolvePath(configuration.getSource()), configuration.getProjectName(), configuration);
                 //create ZIP file from XML which created from previews step
                 boolean isZipCreated = false;
                 if (configuration.isReportAsZip()) {
@@ -87,23 +87,24 @@ public class GenerateXML {
 
             } else {
                 //when configuration is null start functionality with default parameters
-                convert(resolvePath(new File(ConfigDataProvider.DEFAULT_FOLDER)), ConfigDataProvider.DEFAULT_PROJECT_NAME);
+                convert(resolvePath(new File(ConfigDataProvider.DEFAULT_FOLDER)), ConfigDataProvider.DEFAULT_PROJECT_NAME, null);
             }
 
         } catch (Exception e) {
-            throw new GenerateXMLReportException("Error during XML report generation ", e);
+            throw new GenerateXMLReportException("Error during XML report generation ");
         }
     }
 
-    private void convert(final Collection<String> pathList, final String projectName) {
+    private void convert(final Collection<String> pathList, final String projectName, ConfigureXMLReport configuration) {
         if (pathList != null & projectName != null) {
             new Serialization().serializeToXML(
                     new ReportService().transformFeaturesToReport(
                             new ParseJSON().parse(pathList)),
-                    projectName
+                    projectName,
+                    configuration
             );
         } else {
-            throw new GenerateXMLReportException("Arguments pathList, projectName should not be null but are null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Arguments pathList, projectName should not be null but are null. See detailed stack trace: ");
         }
     }
 
@@ -114,9 +115,14 @@ public class GenerateXML {
      * Also, this folder will zip later if needed configuration will pass
      */
     private void createResultsReportFolder() {
-        String path = ConfigDataProvider.REPORT_RESULTS_FOLDER;
-        File resultsFolder = new File(path);
+        String path;
+        if (configuration == null) {
+            path = ConfigDataProvider.DEFAULT_FOLDER;
+        } else {
+            path = ConfigDataProvider.REPORT_RESULTS_FOLDER;
+        }
 
+        File resultsFolder = new File(path);
         LOGGER.log(Level.INFO, !resultsFolder.exists() && resultsFolder.mkdirs()
                 ? "Direction " + path + " created successfully"
                 : "Direction " + path + " was already created"

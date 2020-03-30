@@ -64,7 +64,7 @@ public class ParseJSON {
         try {
             return (Collection<Feature>) new Gson().fromJson(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8), collectionType);
         } catch (FileNotFoundException e) {
-            throw new GenerateXMLReportException(e);
+            throw new GenerateXMLReportException("Error occurred while parsing JSON files in Java objects! See detailed stack trace: ");
         }
     }
 }

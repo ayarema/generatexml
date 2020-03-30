@@ -1,25 +1,31 @@
 import com.easytestit.generatexml.GenerateXML;
 import com.easytestit.generatexml.GenerateXMLReportException;
 import com.easytestit.generatexml.configuration.ConfigureXMLReport;
-import jdk.jfr.Description;
+import com.easytestit.generatexml.data.ConfigDataProvider;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 public class GenerateXMLTest {
 
-    @Description("The test which check that functionality successfully create .xml file without configuration, simple default parameters")
     @Test
     public void testGenerateXMLWithoutConfiguration() {
+        String expectedProjectName = ConfigDataProvider.DEFAULT_PROJECT_NAME + ".xml";
+        String result = prepareDocumentsForDefaultTesting();
+
         new GenerateXML().make();
-        Assert.assertEquals(
-                "AggregatedReport.xml",
+
+        Assert.assertEquals(result + " and file was created: - ",
+                expectedProjectName,
                 getFileName("target/surefire-reports/", "xml"));
     }
 
-    @Description("The test which check that functionality successfully create .xml file with passed configuration")
     @Test
     public void testGenerateXMLWithConfiguration() {
         ConfigureXMLReport conf = new ConfigureXMLReport(
@@ -34,7 +40,6 @@ public class GenerateXMLTest {
                 getFileName("out/xml-report/", "xml"));
     }
 
-    @Description("The test which check that functionality successfully create .zip file with passed configuration for zipping")
     @Test
     public void testThatXMLFileWasCreated() {
         ConfigureXMLReport conf = new ConfigureXMLReport(
@@ -59,5 +64,32 @@ public class GenerateXMLTest {
         return Arrays.stream(files).findFirst()
                 .filter(File::isFile)
                 .filter(file -> file.getName().endsWith(type)).get().getName();
+    }
+
+    private String prepareDocumentsForDefaultTesting() {
+        String defaultReportsFolder = ConfigDataProvider.DEFAULT_FOLDER;
+
+        File resultsFolder = new File(defaultReportsFolder);
+
+        String result = !resultsFolder.exists() && resultsFolder.mkdirs()
+                ? "Direction " + defaultReportsFolder + " created successfully"
+                : "Direction " + defaultReportsFolder + " was already created";
+
+        File[] origins = {
+                new File("src/test/resources/test.customer.json"),
+                new File("src/test/resources/test.users.json")
+        };
+        File[] destination = {
+                new File("target/surefire-reports/test.customer.json"),
+                new File("target/surefire-reports/test.users.json")
+        };
+        try {
+            for (int i = 0; i < origins.length; i++) {
+                Files.copy(origins[i].toPath(), destination[i].toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            e.getMessage();
+        }
+        return result;
     }
 }

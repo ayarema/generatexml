@@ -19,15 +19,15 @@ public class ZipService {
         boolean isZipCreated;
         if (projectName != null) {
             try {
-                FileOutputStream fos = new FileOutputStream(ConfigDataProvider.REPORT_RESULTS_FOLDER.concat("zip" + projectName + ".zip"));
+                FileOutputStream fos = new FileOutputStream(ConfigDataProvider.REPORT_RESULTS_FOLDER.concat(projectName + ConfigDataProvider.ZIP_EXTENSION));
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
-                File fileToZip = new File(ConfigDataProvider.REPORT_RESULTS_FOLDER.concat("zip" + projectName + ".zip"));
+                File fileToZip = new File(ConfigDataProvider.REPORT_RESULTS_FOLDER.concat(projectName + ConfigDataProvider.ZIP_EXTENSION));
 
                 isZipCreated = zipFile(fileToZip, fileToZip.getName(), zipOut);
                 zipOut.close();
                 fos.close();
             } catch (IOException e) {
-                throw new GenerateXMLReportException("ZIP wasn't created, because of: ", e);
+                throw new GenerateXMLReportException("ZIP wasn't created, because of: ");
             }
 
             return isZipCreated;
@@ -67,7 +67,7 @@ public class ZipService {
                 }
                 fis.close();
             } catch (IOException e) {
-                throw new GenerateXMLReportException(e);
+                throw new GenerateXMLReportException("FileInputString throw input/output exception during try to create a ZIP file");
             }
 
             return true;

@@ -97,7 +97,7 @@ public class HttpSimpleClient extends CloseableHttpClient {
             content = readInputStream(con);
 
         } catch (IOException e) {
-            throw new GenerateXMLReportException("Something went wrong! See detailed stack trace: ", e);
+            throw new GenerateXMLReportException("Something went wrong! See detailed stack trace: ");
         } finally {
             if (con != null)
                 con.disconnect();

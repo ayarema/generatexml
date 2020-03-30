@@ -13,14 +13,13 @@ jobs:
       script: mvn clean
       name: "Check"
 
-    # 1.2 Check javadoc. We need to use this version to properly detect errors.
+    # 1.2 Compile project.
     - stage: test
       jdk: oraclejdk12
       env: JAVADOC=true
       script:
-        - mvn clean verify -DskipTests=true
-        - mvn javadoc:aggregate
-      name: "Java Doc Creating"
+        - mvn clean compile
+      name: "Java Application Compile"
 
 branches:
   only:

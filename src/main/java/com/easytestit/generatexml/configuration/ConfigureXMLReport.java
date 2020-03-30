@@ -72,12 +72,12 @@ public class ConfigureXMLReport {
         if (path != null) {
             this.source = new File(path);
         } else {
-            throw new GenerateXMLReportException("Argument path should not be null but is null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Argument path should not be null but is null!");
         }
         if (projectName != null) {
             this.projectName = projectName.replaceAll("\\s+", "");
         } else {
-            throw new GenerateXMLReportException("Argument projectName should not be null but is null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Argument projectName should not be null but is null!");
         }
         this.reportAsZip = false;
         this.sendReport = false;
@@ -100,12 +100,12 @@ public class ConfigureXMLReport {
         if (path != null) {
             this.source = new File(path);
         } else {
-            throw new GenerateXMLReportException("Argument path should not be null but is null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Argument path should not be null but is null!");
         }
         if (projectName != null) {
             this.projectName = projectName.replaceAll("\\s+", "");
         } else {
-            throw new GenerateXMLReportException("Argument projectName should not be null but is null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Argument projectName should not be null but is null!");
         }
         this.reportAsZip = reportAsZip;
         this.sendReport = sendReport;

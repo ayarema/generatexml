@@ -84,7 +84,7 @@ public class ReportService {
 
             return getReportSuites(countFailures, countScenarios, durationOfAllTestFromAllSuites, singleReportSuites);
         } else {
-            throw new GenerateXMLReportException("Argument features should not be null but is null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Argument features should not be null but is null!");
         }
     }
 
@@ -103,7 +103,7 @@ public class ReportService {
             if (!tagsValue.isEmpty()) featureTagsMap.put(tagKey, tagsValue);
             tagsValue = "";
         } else {
-            throw new GenerateXMLReportException("Arguments tags, tagKey should not be null but are null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Arguments tags, tagKey should not be null but are null!");
         }
     }
 
@@ -141,7 +141,7 @@ public class ReportService {
 
             featureTagsMap.remove("elementTags");
         } else {
-            throw new GenerateXMLReportException("Arguments feature & element should not be null but are null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Arguments feature & element should not be null but are null!");
         }
     }
 
@@ -170,7 +170,7 @@ public class ReportService {
                     .setTimestamp(LocalDateTime.parse(this.responseDate, DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH)).toString())
                     .setTags((String)this.featureTagsMap.get("featureTags")).setTestCases(testCases);
         } else {
-            throw new GenerateXMLReportException("Map of tests should not be null but is null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Map of tests should not be null but is null!");
         }
     }
 
@@ -240,17 +240,16 @@ public class ReportService {
                                 if (response.contains("Date:")) {
                                     this.responseDate = response.substring(7, 32);
                                 }
-
                             });
                         }
 
                     } else {
-                        throw new GenerateXMLReportException("Argument request from Array should be null but is null. See detailed stack trace: ", new NullPointerException());
+                        throw new GenerateXMLReportException("Argument request from Array should be null but is null!");
                     }
                 });
             }
         } else {
-            throw new GenerateXMLReportException("Arguments element & step should not be null but are null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Arguments element & step should not be null but are null!");
         }
     }
 
@@ -259,7 +258,7 @@ public class ReportService {
 
         tests.values().stream()
                 .filter(t -> t.getKeyword().equals(GenerateXMLConstants.BACKGROUND))
-                .forEach(t -> backgroundValue = t.getTestOutputString());//TODO what?
+                .findFirst().ifPresent(t -> backgroundValue = t.getTestOutputString());
         tests.values().stream()
                 .filter(t -> t.getKeyword().equals(GenerateXMLConstants.SCENARIO))
                 .forEach(t -> {
@@ -277,7 +276,7 @@ public class ReportService {
         if (testCases != null) {
             return testCases;
         } else {
-            throw new GenerateXMLReportException("Argument testCases should be null but is null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Argument testCases should be null but is null!");
         }
     }
 
@@ -381,10 +380,10 @@ public class ReportService {
             try {
                 return Arrays.asList(str.split(separator));
             } catch (NullPointerException e) {
-                throw new GenerateXMLReportException(e);
+                throw new GenerateXMLReportException("Something went wrong with splitting up the line into components.");
             }
         } else {
-            throw new GenerateXMLReportException("Arguments str, separator should not be null but are null. See detailed stack trace: ", new NullPointerException());
+            throw new GenerateXMLReportException("Arguments str, separator should not be null but are null!");
         }
     }
 
