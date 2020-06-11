@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Contract;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,9 +26,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ReportService {
+
+    private static final Logger LOGGER = Logger.getLogger(ReportService.class.getName());
 
     public ReportService() {
 
@@ -156,19 +161,32 @@ public class ReportService {
 
         if (this.tests != null) {
             Collection<TestCase> testCases = this.getTestCasesFromFeature(this.tests);
-            return (
-                    new SingleReportSuite())
-                    .setName((String)this.getLastElement((Iterable)Arrays.stream(feature.getName().split("/")).collect(Collectors.toList())))
-                    .setTests(String.valueOf(this.countScenariosInSuite))
-                    .setFailures(String.valueOf(this.countFailuresTestFromOneFile))
-                    .setDisabled(String.valueOf(ignored + disabled))
-                    .setHostname(this.hostName)
-                    .setId(String.valueOf(((ArrayList)features).indexOf(feature) + increment))
-                    .setPackageName(feature.getName())
-                    .setSkipped(String.valueOf(this.countSkippedTestFromOneFile))
-                    .setTime(String.valueOf(UtilsConverter.round.apply((double)this.durationOfAllTest * 1.0E-9D)))
-                    .setTimestamp(LocalDateTime.parse(this.responseDate, DateTimeFormatter.ofPattern(GenerateXMLConstants.DATE_FORMATTER_PATTERN, Locale.ENGLISH)).toString())
-                    .setTags((String)this.featureTagsMap.get("featureTags")).setTestCases(testCases);
+            
+            SingleReportSuite singleReportSuite =
+                    new SingleReportSuite().setName((String) this.getLastElement((Iterable) Arrays.stream(feature.getName()
+                                                                                                                 .split("/"))
+                                                                                                  .collect(Collectors.toList())))
+                                           .setTests(String.valueOf(this.countScenariosInSuite))
+                                           .setFailures(String.valueOf(this.countFailuresTestFromOneFile))
+                                           .setDisabled(String.valueOf(ignored + disabled))
+                                           .setHostname(this.hostName)
+                                           .setId(String.valueOf(((ArrayList) features).indexOf(feature) + increment))
+                                           .setPackageName(feature.getName())
+                                           .setSkipped(String.valueOf(this.countSkippedTestFromOneFile))
+                                           .setTime(String.valueOf(UtilsConverter.round.apply(
+                                                   (double) this.durationOfAllTest * 1.0E-9D)))
+                                           .setTags((String) this.featureTagsMap.get("featureTags"))
+                                           .setTestCases(testCases);
+            try {
+                String timastamp = LocalDateTime.parse(this.responseDate,
+                                                       DateTimeFormatter.ofPattern(
+                                                               GenerateXMLConstants.DATE_FORMATTER_PATTERN,
+                                                               Locale.ENGLISH)).toString();
+                singleReportSuite.setTimestamp(timastamp);
+            } catch (DateTimeParseException ex) {
+                LOGGER.log(Level.WARNING, "Failed date parsing for: " + responseDate, ex);
+            }
+            return singleReportSuite;
         } else {
             throw new GenerateXMLReportException("Map of tests should not be null but is null!");
         }
