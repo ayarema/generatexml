@@ -81,3 +81,4 @@ target
 generatexml.iml
 /*.json
 *.zip
+*.properties

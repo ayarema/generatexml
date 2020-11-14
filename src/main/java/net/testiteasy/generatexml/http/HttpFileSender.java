@@ -22,14 +22,14 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-public class MyClient {
+public class HttpFileSender {
 
     private final HttpClient client;
     private final String uri;
     private final String path;
     private final Duration timeOut;
 
-    public MyClient(final String filePath) {
+    public HttpFileSender(final String filePath) {
         path = filePath;
         timeOut = Duration.ofSeconds(ConfigDataProvider.TIMEOUT);
         client = HttpClient.newHttpClient();
@@ -40,7 +40,7 @@ public class MyClient {
     }
 
     public void post() throws IOException, InterruptedException {
-        final Logger log = Logger.getLogger(MyClient.class.getName());
+        final Logger log = Logger.getLogger(HttpFileSender.class.getName());
         MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
                 .addString("projectName", ConfigDataProvider.PROJECT_NAME)
                 .addFile("file", Path.of(path));

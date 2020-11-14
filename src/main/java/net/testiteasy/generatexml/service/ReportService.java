@@ -12,7 +12,6 @@ import net.testiteasy.generatexml.dto.output.testcase.TestCase;
 import net.testiteasy.generatexml.dto.input.tags.Tag;
 import net.testiteasy.generatexml.utils.UtilsConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Contract;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -332,7 +331,6 @@ public class ReportService {
      * @param stepName    string value name of Step
      * @param stepResult  string value result of Step
      */
-    @Contract(pure = true)
     private void stringOutBuilder(
             final String keywordType,
             final String keyword,
@@ -364,7 +362,6 @@ public class ReportService {
      *
      * @param errMessage string value that should be accumulated
      */
-    @Contract(pure = true)
     private void stringErrBuilder(final String errMessage) {
         stepErrResults += "\n".concat(errMessage);
     }
@@ -375,7 +372,6 @@ public class ReportService {
      * @param elements iterable object which should processed
      * @return T the type of elements returned by the iterator
      */
-    @Contract(pure = true)
     private <T> T getLastElement(final Iterable<T> elements) {
         T lastElement = null;
 
