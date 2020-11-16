@@ -12,10 +12,11 @@ public class ConfigDataProvider {
     public static final String DEFAULT_PROJECT_NAME = Default.PROJECT_NAME.getString();
 
     public static final String ZIP_EXTENSION = ".zip";
-    public static final String ZIP_NAME = "AggregatedReport.zip";
-    public static final String REPORT_RESULTS_FOLDER = "out/xml-report/";
+    public static final String ZIP_NAME = "TestProject.zip";
+    public static final String REPORT_RESULTS_FOLDER = "out/xml-reports/";
 
     public static final String TOKEN = Sender.TOKEN.getString();
+    public static final Integer TIMEOUT = 30;
 
     public static final String URL = Sender.URL.getString();
     public static final String VERSION = Sender.VERSION.getString();

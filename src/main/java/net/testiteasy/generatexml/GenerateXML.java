@@ -2,7 +2,7 @@ package net.testiteasy.generatexml;
 
 import net.testiteasy.generatexml.configuration.ConfigureXMLReport;
 import net.testiteasy.generatexml.data.ConfigDataProvider;
-import net.testiteasy.generatexml.http.SenderService;
+import net.testiteasy.generatexml.http.HttpFileSender;
 import net.testiteasy.generatexml.service.ReportService;
 import net.testiteasy.generatexml.service.Serialization;
 import net.testiteasy.generatexml.service.ZipService;
@@ -30,7 +30,8 @@ public class GenerateXML {
                 ConfigDataProvider.DEFAULT_FOLDER,
                 ConfigDataProvider.DEFAULT_PROJECT_NAME,
                 false,
-                false);
+                false
+        );
     }
 
     /**
@@ -75,7 +76,8 @@ public class GenerateXML {
 
             // send XML file to report server
             if (configuration.isSendReport() && isZipCreated) {
-                new SenderService().post(ConfigDataProvider.ZIP_NAME);
+                new HttpFileSender(ConfigDataProvider.REPORT_RESULTS_FOLDER.concat(ConfigDataProvider.ZIP_NAME)).post();
+                //new SenderService().post(ConfigDataProvider.ZIP_NAME);
             } else {
                 LOGGER.log(Level.INFO, isZipCreated
                         ? "Zip was created, but no need to send it"
