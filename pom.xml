@@ -79,7 +79,7 @@
         <okhttp.version>4.2.0</okhttp.version>
         <tika.version>1.22</tika.version>
 
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
 
         <maven.compiler.version>3.8.0</maven.compiler.version>
         <maven.surefire.version>2.22.0</maven.surefire.version>
