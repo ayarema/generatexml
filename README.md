@@ -1,3 +1,4 @@
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
 ## Generate XML report by [[ `testiteasy` ](http://testiteasy.net/)]
 Let's imagine that you need to convert Cucumber's JSON BDD reports files to one aggregated JUnit's XML report.
 
