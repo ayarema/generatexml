@@ -77,7 +77,7 @@
         <jaxb.runtime.version>2.3.2</jaxb.runtime.version>
         <apache.common.version>3.9</apache.common.version>
         <okhttp.version>4.2.0</okhttp.version>
-        <tika.version>1.22</tika.version>
+        <tika.version>1.28.3</tika.version>
 
         <junit.version>4.13.1</junit.version>
 
